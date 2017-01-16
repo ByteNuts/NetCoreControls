@@ -42,13 +42,13 @@ namespace ByteNuts.NetCoreControls.Controls.GridView
             switch (ContentType)
             {
                 case GridViewHtmlContentType.PreContent:
-                    _nccTagContext.PreContent += output.GetChildContentAsync().Result.GetContent();
+                    _nccTagContext.PreContent += (await output.GetChildContentAsync()).GetContent();
                     break;
                 case GridViewHtmlContentType.PostContent:
-                    _nccTagContext.PostContent += output.GetChildContentAsync().Result.GetContent();
+                    _nccTagContext.PostContent += (await output.GetChildContentAsync()).GetContent();
                     break;
                 default:
-                    _nccTagContext.PostContent += output.GetChildContentAsync().Result.GetContent();
+                    _nccTagContext.PostContent += (await output.GetChildContentAsync()).GetContent();
                     break;
             }
         }
