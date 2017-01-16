@@ -1,11 +1,24 @@
 {
-  "version": "1.0.0-*",
+  "version": "0.1.0-beta-*",
+  "packOptions": {
+    "licenseUrl": "https://github.com/ByteNuts/NetCoreControls/blob/master/LICENSE",
+    "requireLicenseAcceptance": true,
+    "repository": {
+      "type": "git",
+      "url": "https://github.com/ByteNuts/NetCoreControls"
+    },
+    "tags": [
+      ".NET Core",
+      "MVC Core"
+    ],
+    "summary": "Various controls to render and manage data information on a web app."
+  },
 
   "dependencies": {
     "Microsoft.AspNetCore.DataProtection.Abstractions": "1.1.0",
     "Microsoft.AspNetCore.Mvc.ViewFeatures": "1.1.0",
     "Microsoft.AspNetCore.Razor.Runtime": "1.1.0",
-    "NETStandard.Library": "1.6.0",
+    "NETStandard.Library": "1.6.1",
     "System.Runtime.Loader": "4.0.0"
   },
 
