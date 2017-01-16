@@ -1,4 +1,4 @@
-version: '{build}'
+version: 0.1.0-beta-{build}
 pull_requests:  
   do_not_increment_build_number: true
 branches:  
@@ -9,3 +9,11 @@ build_script:
 test: off  
 artifacts:  
 - path: artifacts/*.nupkg
+deploy:
+- provider: NuGet
+  server: https://www.myget.org/F/netcorecontrols/
+  api_key:
+    secure: 2C4NOeN4awY+fC0FncLK59Ov9Kn/TRfHgn74JWoHMvMfvWE27azJMiadfRfRDiYi
+  skip_symbols: true
+  on:
+    branch: dev
