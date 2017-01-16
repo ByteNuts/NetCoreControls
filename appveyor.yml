@@ -9,3 +9,11 @@ build_script:
 test: off  
 artifacts:  
 - path: artifacts/*.nupkg
+deploy:
+- provider: NuGet
+  server: https://www.myget.org/F/netcorecontrols/
+  api_key:
+    secure: 2C4NOeN4awY+fC0FncLK59Ov9Kn/TRfHgn74JWoHMvMfvWE27azJMiadfRfRDiYi
+  skip_symbols: true
+  on:
+    branch: dev
