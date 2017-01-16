@@ -8,4 +8,4 @@ build_script:
 - ps: .\Build.ps1
 test: off  
 artifacts:  
-- path: artifacts/packages/*.nupkg
+- path: artifacts/*.nupkg
