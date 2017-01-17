@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using ByteNuts.NetCoreControls.Models;
+using ByteNuts.NetCoreControls.Models.HtmlRender;
 using ByteNuts.NetCoreControls.Services;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -18,7 +19,7 @@ namespace ByteNuts.NetCoreControls.Controls.HtmlRender
         public ViewContext ViewContext { get; set; }
 
         [HtmlAttributeName("Context")]
-        public NccContext Context { get; set; }
+        public HtmlRenderContext Context { get; set; }
 
         [HtmlAttributeName("RenderForm")]
         public bool RenderForm { get; set; }
@@ -44,17 +45,14 @@ namespace ByteNuts.NetCoreControls.Controls.HtmlRender
 
             object service = null;
 
-            if (!string.IsNullOrEmpty(EventHandler))
-                service = ReflectionService.NccGetClassInstance(EventHandler, null);
+            if (!string.IsNullOrEmpty(Context.EventHandlerClass)) service = ReflectionService.NccGetClassInstance(Context.EventHandlerClass, null);
 
-            service?.NccInvokeMethod("Load", new object[] { Context, ViewContext });
+            service?.NccInvokeMethod(Models.Enums.NccEvents.Load, new object[] { new NccEventArgs { NccControlContext = Context, ViewContext = ViewContext } });
+
 
             //Get grid id and share it with siblings parents
             if (string.IsNullOrEmpty(Context.Id))
                 Context.Id = Guid.NewGuid().ToString();
-
-            output.TagName = "div";
-            output.Attributes.SetAttribute("id", Context.Id);
 
             if (Context.Visible)
             {
@@ -68,10 +66,9 @@ namespace ByteNuts.NetCoreControls.Controls.HtmlRender
 
                 //Get data from datasource
 
-                Context = DataService.GetControlData<NccContext>(Context, ViewContext.HttpContext);
+                Context = DataService.GetControlData(Context, ViewContext.HttpContext);
 
-                //if (!string.IsNullOrEmpty(EventHandler))
-                //    (service as IHtmlContentEvents)?.DataBound(Context.DataObjects as IEnumerable);
+                service?.NccInvokeMethod(Models.Enums.NccEvents.DataBound, new object[] { new NccEventArgs { NccControlContext = Context, ViewContext = ViewContext, DataObjects = Context.DataObjects } });
 
                 ViewContext.ViewData.Model = Context.DataObjects;
 
@@ -82,14 +79,15 @@ namespace ByteNuts.NetCoreControls.Controls.HtmlRender
 
 
                 if (RenderForm)
-                    output.PostContent.AppendHtml("</form>");
+                    output.PostContent.AppendHtml(new TagBuilder("form") { TagRenderMode = TagRenderMode.EndTag });
             }
+            else
+                output.SuppressOutput();
 
+            service?.NccInvokeMethod(Models.Enums.NccEvents.PreRender, new object[] { new NccEventArgs { NccControlContext = Context, ViewContext = ViewContext } });
 
-            //Context.ActionUrl = ViewContext.ViewBag.ActionUrlCollection?.Count > 0 ? ViewContext.ViewBag.ActionUrlCollection?.Peek() : null;
-            //Context.ActionOption = ViewContext.ViewBag.ActionOptionCollection?.Count > 0 ? ViewContext.ViewBag.ActionOptionCollection?.Peek() : null;
-
-
+            output.TagName = "div";
+            output.Attributes.SetAttribute("id", Context.Id);
 
             var encContext = new TagBuilder("input");
             encContext.Attributes.Add("name", "encContext");

@@ -7,8 +7,8 @@ namespace ByteNuts.NetCoreControls.Models.GridView
 {
     public enum GridViewEvent
     {
-        OnUpdate,
-        OnUpdateRow,
-        OnDeleteRow
+        Update,
+        UpdateRow,
+        DeleteRow
     }
 }

@@ -59,6 +59,8 @@ namespace ByteNuts.NetCoreControls.Controls.GridView
 
         public override async Task ProcessAsync(TagHelperContext tagContext, TagHelperOutput output)
         {
+            if (Context == null) throw new Exception("The GridViewContext is null... Please check the reference.");
+
             _nccTagContext.CssClassGrid = CssClass;
             _nccTagContext.CssClassBody = BodyCssClass;
             _nccTagContext.CssClassHeader = HeaderCssClass;
@@ -79,7 +81,7 @@ namespace ByteNuts.NetCoreControls.Controls.GridView
             output.TagName = "div";
             output.Attributes.SetAttribute("id", Context.Id);
 
-            if (_nccTagContext.Visible)
+            if (Context.Visible)
             {
                 tagContext.Items.Add(typeof(GridViewContext), Context);
 

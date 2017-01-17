@@ -62,20 +62,20 @@ namespace ByteNuts.NetCoreControls.Controllers
                     EventService.ProcessEvent(service, ControllerContext, controlCtx, formCollection, parametersList);
                     break;
                     //Events from Controls are mapped here
-                case "gridviewevent":
+                case "gridviewaction":
                     if (!parametersList.ContainsKey($"{DefaultParameters.EventName.ToString().NccAddPrefix()}"))
                         throw new Exception("No EventName specified for the GridView action!");
                     if (!(controlCtx is GridViewContext))
                         throw new Exception("A GridViewAction was specified but the context is not of type GridViewContext!");
                     switch (parametersList[$"{DefaultParameters.EventName.ToString().NccAddPrefix()}"].ToLower())
                     {
-                        case "onupdate":
+                        case "update":
                             if (service == null) throw new Exception("EventHandler must be registered and must exist to process events");
                             service.NccInvokeMethod(GridViewEvents.Update, new object[] { new NccEventArgs { Controller = this, NccControlContext = controlCtx, FormCollection = formCollection } });
                             break;
-                        case "onupdaterow":
+                        case "updaterow":
                             break;
-                        case "ondeleterow":
+                        case "deleterow":
                             if (!parametersList.ContainsKey($"{GridViewParameters.RowNumber.ToString().NccAddPrefix()}"))
                                 throw new Exception("The row number wasn't received... Something wrong has happened...");
 

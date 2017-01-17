@@ -33,7 +33,8 @@ namespace ByteNuts.NetCoreControls.Controls.GridView
 
         public override async Task ProcessAsync(TagHelperContext tagContext, TagHelperOutput output)
         {
-            if (!tagContext.Items.ContainsKey(typeof(GridViewNccTagContext)))
+            output.TagName = null;
+            if (!tagContext.Items.ContainsKey(typeof(GridViewContext)))
             {
                 output.SuppressOutput();
                 return;
