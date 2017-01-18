@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using ByteNuts.NetCoreControls.Helpers;
 using ByteNuts.NetCoreControls.Models;
 using ByteNuts.NetCoreControls.Models.HtmlRender;
 using ByteNuts.NetCoreControls.Services;
@@ -93,7 +94,7 @@ namespace ByteNuts.NetCoreControls.Controls.HtmlRender
             encContext.Attributes.Add("name", "encContext");
             encContext.Attributes.Add("id", $"{Context.Id}_context");
             encContext.Attributes.Add("type", "hidden");
-            encContext.Attributes.Add("value", _protector.Protect(JsonService.SetObjectAsJson(Context)));
+            encContext.Attributes.Add("value", _protector.Protect(NccJson.SetObjectAsJson(Context)));
             output.PostContent.AppendHtml(encContext);
 
         }

@@ -5,11 +5,13 @@ using Microsoft.AspNetCore.Mvc;
 using ByteNuts.NetCoreControls.Services;
 using ByteNuts.NetCoreControls.Models.GridView;
 using System;
+using System.Linq;
 using System.Reflection;
 using ByteNuts.NetCoreControls.Models.Enums;
 using ByteNuts.NetCoreControls.Extensions;
 using ByteNuts.NetCoreControls.Models;
 using System.Runtime.Loader;
+using ByteNuts.NetCoreControls.Helpers;
 
 namespace ByteNuts.NetCoreControls.Controllers
 {
@@ -28,7 +30,7 @@ namespace ByteNuts.NetCoreControls.Controllers
             if (context == null)
                 throw new Exception("The control context wasn't submitted. Please, verify if the target id is correct.");
 
-            var controlCtx = JsonService.GetObjectFromJson<object>(_protector.Unprotect(context));
+            var controlCtx = NccJson.GetObjectFromJson<object>(_protector.Unprotect(context));
 
             if (controlCtx == null)
                 throw new Exception("The control context is invalid! Please, refresh the page to get a new valid context.");
@@ -48,11 +50,17 @@ namespace ByteNuts.NetCoreControls.Controllers
             switch (parametersList[$"{DefaultParameters.ActionType.ToString().NccAddPrefix()}"].ToLower())
             {
                 case "filter":
-                    if (!(parametersList.ContainsKey($"{DefaultParameters.ElemName.ToString().NccAddPrefix()}") && parametersList.ContainsKey($"{DefaultParameters.ElemValue.ToString().NccAddPrefix()}")))
+                    //if (!(parametersList.ContainsKey($"{DefaultParameters.ElemName.ToString().NccAddPrefix()}") && parametersList.ContainsKey($"{DefaultParameters.ElemValue.ToString().NccAddPrefix()}")))
+                    if (!(parametersList.Keys.Any(k => k.StartsWith($"{DefaultParameters.ElemName.ToString().NccAddPrefix()}")) && parametersList.Keys.Any(k => k.StartsWith($"{DefaultParameters.ElemValue.ToString().NccAddPrefix()}"))))
                         throw new Exception("The filter doesn't contain the necessary name and value pair.");
 
                     var filters = controlCtx.NccGetPropertyValue<Dictionary<string, string>>("Filters") ?? new Dictionary<string, string>();
-                    filters[parametersList[$"{DefaultParameters.ElemName.ToString().NccAddPrefix()}"]] = parametersList[$"{DefaultParameters.ElemValue.ToString().NccAddPrefix()}"];
+                    foreach (var inputFilters in parametersList.Where(x => x.Key.StartsWith($"{DefaultParameters.ElemName.ToString().NccAddPrefix()}")).ToList())
+                    {
+                        var filterId = inputFilters.Key.Replace($"{DefaultParameters.ElemName.ToString().NccAddPrefix()}", "");
+                        filters[inputFilters.Value] = parametersList[$"{DefaultParameters.ElemValue.ToString().NccAddPrefix()}{filterId}"];
+                    }
+                    //filters[parametersList[$"{DefaultParameters.ElemName.ToString().NccAddPrefix()}"]] = parametersList[$"{DefaultParameters.ElemValue.ToString().NccAddPrefix()}"];
 
                     controlCtx.NccSetPropertyValue("Filters", filters);
                     break;

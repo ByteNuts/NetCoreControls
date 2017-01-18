@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 using System.Collections;
+using ByteNuts.NetCoreControls.Helpers;
 using ByteNuts.NetCoreControls.Models;
 using ByteNuts.NetCoreControls.Models.GridView;
 
@@ -36,9 +37,6 @@ namespace ByteNuts.NetCoreControls.Controls.GridView
 
         [HtmlAttributeName("FooterCssClass")]
         public string FooterCssClass { get; set; }
-
-        [HtmlAttributeName("AutoDataBind")]
-        public bool AutoDataBind { get; set; } = true;
 
         [HtmlAttributeName("RenderForm")]
         public bool RenderForm { get; set; }
@@ -96,9 +94,14 @@ namespace ByteNuts.NetCoreControls.Controls.GridView
                 if (Context.PageSize == 0)
                     Context.PageSize = int.MaxValue;
 
-                Context = DataService.GetControlData(Context, ViewContext.HttpContext);
+                if (Context.AutoBind)
+                {
+                    Context = DataService.GetControlData(Context, ViewContext.HttpContext);
 
-                service?.NccInvokeMethod(Models.Enums.NccEvents.DataBound, new object[] { new NccEventArgs { NccTagContext = _nccTagContext, NccControlContext = Context, ViewContext = ViewContext, DataObjects = Context.DataObjects } });
+                    service?.NccInvokeMethod(Models.Enums.NccEvents.DataBound, new object[] { new NccEventArgs { NccTagContext = _nccTagContext, NccControlContext = Context, ViewContext = ViewContext, DataObjects = Context.DataObjects } });
+                }
+                else
+                    Context.DataObjects = Context.DataSource;
 
                 _nccTagContext.GridHeader = new GridViewRow { Cells = new List<GridViewCell>(), CssClass = HeaderCssClass };
 
@@ -121,7 +124,7 @@ namespace ByteNuts.NetCoreControls.Controls.GridView
             encContext.Attributes.Add("name", "encContext");
             encContext.Attributes.Add("id", $"{Context.Id}_context");
             encContext.Attributes.Add("type", "hidden");
-            encContext.Attributes.Add("value", _protector.Protect(JsonService.SetObjectAsJson(Context)));
+            encContext.Attributes.Add("value", _protector.Protect(NccJson.SetObjectAsJson(Context)));
             output.PostContent.AppendHtml(encContext);
         }
     }
