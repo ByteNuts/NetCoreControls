@@ -14,7 +14,7 @@ using ByteNuts.NetCoreControls.Models.GridView;
 
 namespace ByteNuts.NetCoreControls.Controls.GridView
 {
-    [RestrictChildren("ncc:Columns", "ncc:columns", "ncc:HtmlContent", "ncc:html-content")]
+    [RestrictChildren("ncc:Columns", "ncc:columns", "ncc:HtmlContent", "ncc:html-content", "ncc:grid-pager")]
     [HtmlTargetElement("ncc:grid-view")]
     [HtmlTargetElement("NCC:GridView")]
     public class GridViewTagHelper : TagHelper
@@ -41,6 +41,9 @@ namespace ByteNuts.NetCoreControls.Controls.GridView
         [HtmlAttributeName("RenderForm")]
         public bool RenderForm { get; set; }
 
+        [HtmlAttributeName("AllowPaging")]
+        public bool AllowPaging { get; set; }
+
         private GridViewNccTagContext _nccTagContext;
         private IDataProtector _protector;
 
@@ -63,6 +66,18 @@ namespace ByteNuts.NetCoreControls.Controls.GridView
             _nccTagContext.CssClassBody = BodyCssClass;
             _nccTagContext.CssClassHeader = HeaderCssClass;
             _nccTagContext.CssClassFooter = FooterCssClass;
+
+            Context.AllowPaging = AllowPaging;
+            if (AllowPaging)
+            {
+                if (Context.PageSize == 0 || Context.PageSize == int.MaxValue)
+                    Context.PageSize = 10;
+            }
+            else
+                Context.PageSize = int.MaxValue;
+
+            if (Context.Filters.ContainsKey("pageNumber"))
+                Context.PageNumber = Convert.ToInt32(Context.Filters["pageNumber"]);
 
             object service = null;
 
@@ -91,9 +106,6 @@ namespace ByteNuts.NetCoreControls.Controls.GridView
                     output.PreContent.AppendHtml(form);
                 }
 
-                if (Context.PageSize == 0)
-                    Context.PageSize = int.MaxValue;
-
                 if (Context.AutoBind)
                 {
                     Context = DataService.GetControlData(Context, ViewContext.HttpContext);
@@ -107,7 +119,7 @@ namespace ByteNuts.NetCoreControls.Controls.GridView
 
                 await output.GetChildContentAsync();
 
-                output.Content.SetHtmlContent(GridViewService.BuildTableHtml(_nccTagContext));
+                output.Content.SetHtmlContent(GridViewService.BuildTableHtml(_nccTagContext, Context));
 
                 output.PreContent.AppendHtml(_nccTagContext.PreContent);
                 output.PostContent.AppendHtml(_nccTagContext.PostContent);

@@ -68,7 +68,11 @@ function addElementToForm(form, elem, paramId, prefix) {
         form.append("<input type='hidden' name='parameters[" + paramId + "].value' value='" + elem.prop('name') + "' />");
         paramId++;
         form.append("<input type='hidden' name='parameters[" + paramId + "].key' value='" + prefix + "-ElemValue' />");
-        form.append("<input type='hidden' name='parameters[" + paramId + "].value' value='" + elem.val() + "' />");
+        if (elem.attr("value") != null) {
+            form.append("<input type='hidden' name='parameters[" + paramId + "].value' value='" + elem.attr("value") + "' />");
+        } else {
+            form.append("<input type='hidden' name='parameters[" + paramId + "].value' value='" + elem.val() + "' />");
+        }
         paramId++;
     } else {
         var elemCount = 0;
@@ -81,7 +85,11 @@ function addElementToForm(form, elem, paramId, prefix) {
             form.append("<input type='hidden' name='parameters[" + paramId + "].value' value='" + ctrl.prop("name") + "' />");
             paramId++;
             form.append("<input type='hidden' name='parameters[" + paramId + "].key' value='" + prefix + "-ElemValue" + elemCount + "' />");
-            form.append("<input type='hidden' name='parameters[" + paramId + "].value' value='" + ctrl.val() + "' />");
+            if (ctrl.attr("value") != null) {
+                form.append("<input type='hidden' name='parameters[" + paramId + "].value' value='" + ctrl.attr("value") + "' />");
+            } else {
+                form.append("<input type='hidden' name='parameters[" + paramId + "].value' value='" + ctrl.val() + "' />");
+            }
             paramId++;
             elemCount++;
         });
@@ -98,7 +106,12 @@ function addElementToPostData(postData, elem, paramId, prefix) {
         postData["parameters[" + paramId + "].value"] = elem.prop("name");
         paramId++;
         postData["parameters[" + paramId + "].key"] = prefix + "-ElemValue";
-        postData["parameters[" + paramId + "].value"] = elem.val();
+        if (elem.attr("value") != null) {
+            postData["parameters[" + paramId + "].value"] = elem.attr("value");
+        } else {
+            postData["parameters[" + paramId + "].value"] = elem.val();
+        }
+
         paramId++;
     } else {
         var elemCount = 0;
@@ -111,7 +124,11 @@ function addElementToPostData(postData, elem, paramId, prefix) {
             postData["parameters[" + paramId + "].value"] = ctrl.prop("name");
             paramId++;
             postData["parameters[" + paramId + "].key"] = prefix + "-ElemValue" + elemCount;
-            postData["parameters[" + paramId + "].value"] = ctrl.val();
+            if (ctrl.attr("value") != null) {
+                postData["parameters[" + paramId + "].value"] = ctrl.attr("value");
+            } else {
+                postData["parameters[" + paramId + "].value"] = ctrl.val();
+            }
             paramId++;
             elemCount++;
         });

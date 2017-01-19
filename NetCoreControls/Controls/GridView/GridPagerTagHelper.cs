@@ -17,6 +17,8 @@ namespace ByteNuts.NetCoreControls.Controls.GridView
         [ViewContext]
         public ViewContext ViewContext { get; set; }
 
+        [HtmlAttributeName("PagerNavigationSize")]
+        public int PagerNavigationSize { get; set; }
 
         private GridViewNccTagContext _nccTagContext;
         private GridViewContext _context;
@@ -30,7 +32,7 @@ namespace ByteNuts.NetCoreControls.Controls.GridView
                 throw new Exception("GridViewNccTagContext was lost between tags...");
         }
 
-        public override async Task ProcessAsync(TagHelperContext tagContext, TagHelperOutput output)
+        public override void Process(TagHelperContext tagContext, TagHelperOutput output)
         {
             output.SuppressOutput();
 
@@ -39,8 +41,11 @@ namespace ByteNuts.NetCoreControls.Controls.GridView
             else
                 return;
 
-            var gridViewContext = (GridViewContext)tagContext.Items[typeof(GridViewContext)];
-
+            _context.AllowPaging = true;
+            if (_context.PageSize == int.MaxValue)
+                _context.PageSize = 10;
         }
+
+
     }
 }

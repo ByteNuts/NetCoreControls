@@ -50,21 +50,25 @@ namespace ByteNuts.NetCoreControls.Controllers
             switch (parametersList[$"{DefaultParameters.ActionType.ToString().NccAddPrefix()}"].ToLower())
             {
                 case "filter":
-                    //if (!(parametersList.ContainsKey($"{DefaultParameters.ElemName.ToString().NccAddPrefix()}") && parametersList.ContainsKey($"{DefaultParameters.ElemValue.ToString().NccAddPrefix()}")))
                     if (!(parametersList.Keys.Any(k => k.StartsWith($"{DefaultParameters.ElemName.ToString().NccAddPrefix()}")) && parametersList.Keys.Any(k => k.StartsWith($"{DefaultParameters.ElemValue.ToString().NccAddPrefix()}"))))
                         throw new Exception("The filter doesn't contain the necessary name and value pair.");
 
                     var filters = controlCtx.NccGetPropertyValue<Dictionary<string, string>>("Filters") ?? new Dictionary<string, string>();
+                    var resetPaging = true;
                     foreach (var inputFilters in parametersList.Where(x => x.Key.StartsWith($"{DefaultParameters.ElemName.ToString().NccAddPrefix()}")).ToList())
                     {
+                        if (inputFilters.Value.Contains("pageNumber"))
+                            resetPaging = false;
                         var filterId = inputFilters.Key.Replace($"{DefaultParameters.ElemName.ToString().NccAddPrefix()}", "");
                         filters[inputFilters.Value] = parametersList[$"{DefaultParameters.ElemValue.ToString().NccAddPrefix()}{filterId}"];
                     }
-                    //filters[parametersList[$"{DefaultParameters.ElemName.ToString().NccAddPrefix()}"]] = parametersList[$"{DefaultParameters.ElemValue.ToString().NccAddPrefix()}"];
+
+                    if (resetPaging)
+                        filters["pageNumber"] = "1";
 
                     controlCtx.NccSetPropertyValue("Filters", filters);
+                    
                     break;
-
                 case "event":
                     if (service == null) throw new Exception("EventHandler must be registered and must exist to process events");
                     EventService.ProcessEvent(service, ControllerContext, controlCtx, formCollection, parametersList);
@@ -118,6 +122,17 @@ namespace ByteNuts.NetCoreControls.Controllers
 
 
             return File(stream, "application/javascript");
+        }
+
+        public FileResult GetNccCssFile()
+        {
+            var assembly = this.GetType().GetTypeInfo().Assembly;
+            //(typeof(NetCoreControls.Constants).Assembly).GetManifestResourceStream("NetCoreControls.Scripts.ncc.js")
+
+            var stream = assembly.GetManifestResourceStream("NetCoreControls.Styles.ncc.css");
+
+
+            return File(stream, "text/css");
         }
     }
 }

@@ -60,17 +60,13 @@ namespace ByteNuts.NetCoreControls.Services
             {
                 var item1 = result.GetType().GetProperty("Item1").GetValue(result);
 
-                if (result is IList)
-                    context.NccSetPropertyValue("DataObjects", new List<object>(((IList)item1).Cast<object>()));
-                else
-                    context.NccSetPropertyValue("DataObjects", item1);
+                var list = item1 as IList;
+                context.NccSetPropertyValue("DataObjects", list != null ? new List<object>(list.Cast<object>()) : item1);
             }
             else
             {
-                if (result is IList)
-                    context.NccSetPropertyValue("DataObjects", new List<object>(((IList)result).Cast<object>()));
-                else
-                    context.NccSetPropertyValue("DataObjects", result);
+                var list = result as IList;
+                context.NccSetPropertyValue("DataObjects", list != null ? new List<object>(list.Cast<object>()) : result);
             }
 
             context = ProcessControlDataResult(context, result);
