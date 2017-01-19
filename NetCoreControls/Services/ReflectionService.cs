@@ -13,6 +13,9 @@ namespace ByteNuts.NetCoreControls.Services
     {
         public static object NccGetClassInstance(string assemblyName, object[] constructorParameters)
         {
+            if (string.IsNullOrEmpty(assemblyName))
+                return null;
+
             var type = Type.GetType(assemblyName);
 
             return NccGetClassInstance(type, constructorParameters);

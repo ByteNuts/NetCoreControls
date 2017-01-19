@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Http;
 using System.Reflection;
 using System;
 using System.Collections;
+using System.Collections.Concurrent;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 using ByteNuts.NetCoreControls.Models.GridView;
@@ -29,13 +30,17 @@ namespace ByteNuts.NetCoreControls.Services
                 if (dbService == null) return context;
 
                 var methodName = context.NccGetPropertyValue<string>("SelectMethod");
+
+
                 var methodParams = context.NccGetPropertyValue<ExpandoObject>("SelectParameters") as IDictionary<string, object>;
+                var callParameters = methodParams.ToDictionary(x => x.Key, x => x.Value).NccToExpando() as IDictionary<string, object>;
+
                 var filters = context.NccGetPropertyValue<Dictionary<string, string>>("Filters") ?? new Dictionary<string, string>();
 
-                methodParams = AddFiltersToParameters(methodParams, filters);
-                methodParams = AddExtraToParameters(methodParams, context);
+                callParameters = AddFiltersToParameters(callParameters, filters);
+                callParameters = AddExtraToParameters(callParameters, context);
 
-                var result = dbService.NccInvokeMethod(methodName, (ExpandoObject)methodParams);
+                var result = dbService.NccInvokeMethod(methodName, (ExpandoObject)callParameters);
 
                 if (result != null)
                 {
@@ -55,17 +60,13 @@ namespace ByteNuts.NetCoreControls.Services
             {
                 var item1 = result.GetType().GetProperty("Item1").GetValue(result);
 
-                if (result is IList)
-                    context.NccSetPropertyValue("DataObjects", new List<object>(((IList)item1).Cast<object>()));
-                else
-                    context.NccSetPropertyValue("DataObjects", item1);
+                var list = item1 as IList;
+                context.NccSetPropertyValue("DataObjects", list != null ? new List<object>(list.Cast<object>()) : item1);
             }
             else
             {
-                if (result is IList)
-                    context.NccSetPropertyValue("DataObjects", new List<object>(((IList)result).Cast<object>()));
-                else
-                    context.NccSetPropertyValue("DataObjects", result);
+                var list = result as IList;
+                context.NccSetPropertyValue("DataObjects", list != null ? new List<object>(list.Cast<object>()) : result);
             }
 
             context = ProcessControlDataResult(context, result);
@@ -85,15 +86,15 @@ namespace ByteNuts.NetCoreControls.Services
         }
 
 
-        private static IDictionary<string, object> AddExtraToParameters(IDictionary<string, object> methodParams, object context)
+        private static IDictionary<string, object> AddExtraToParameters(IDictionary<string, object> callParams, object context)
         {
             if (context is GridViewContext)
             {
-                return GridViewService.GetExtraParameters(methodParams, context as GridViewContext);
+                return GridViewService.GetExtraParameters(callParams, context as GridViewContext);
             }
             else if (context is HtmlRenderContext)
             {
-                return HtmlRenderService.GetExtraParameters(context as HtmlRenderContext);
+                return HtmlRenderService.GetExtraParameters(callParams, context as HtmlRenderContext);
             }
 
             return null;

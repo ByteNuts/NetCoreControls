@@ -33,7 +33,8 @@ namespace ByteNuts.NetCoreControls.Controls.GridView
 
         public override async Task ProcessAsync(TagHelperContext tagContext, TagHelperOutput output)
         {
-            if (!tagContext.Items.ContainsKey(typeof(GridViewNccTagContext)))
+            output.TagName = null;
+            if (!tagContext.Items.ContainsKey(typeof(GridViewContext)))
             {
                 output.SuppressOutput();
                 return;
@@ -42,13 +43,13 @@ namespace ByteNuts.NetCoreControls.Controls.GridView
             switch (ContentType)
             {
                 case GridViewHtmlContentType.PreContent:
-                    _nccTagContext.PreContent += output.GetChildContentAsync().Result.GetContent();
+                    _nccTagContext.PreContent += (await output.GetChildContentAsync()).GetContent();
                     break;
                 case GridViewHtmlContentType.PostContent:
-                    _nccTagContext.PostContent += output.GetChildContentAsync().Result.GetContent();
+                    _nccTagContext.PostContent += (await output.GetChildContentAsync()).GetContent();
                     break;
                 default:
-                    _nccTagContext.PostContent += output.GetChildContentAsync().Result.GetContent();
+                    _nccTagContext.PostContent += (await output.GetChildContentAsync()).GetContent();
                     break;
             }
         }

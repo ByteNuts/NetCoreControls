@@ -11,24 +11,24 @@ using Newtonsoft.Json;
 
 namespace ByteNuts.NetCoreControls.Controls.GridView
 {
-    [HtmlTargetElement(Attributes = "grid-view-event,grid-view-event-target")]
-    public class GridViewEventTagHelper : TagHelper
+    [HtmlTargetElement(Attributes = "ncc-grid-view-action,ncc-grid-view-action-target")]
+    public class GridViewActionTagHelper : TagHelper
     {
-        [HtmlAttributeName("grid-view-event-target")]
-        public string GridViewEventTarget { get; set; }
+        [HtmlAttributeName("ncc-grid-view-action-target")]
+        public string GridViewActionTarget { get; set; }
 
-        [HtmlAttributeName("grid-view-event")]
-        public GridViewEvent GridViewEvent { get; set; }
+        [HtmlAttributeName("ncc-grid-view-action")]
+        public GridViewEvent GridViewAction { get; set; }
 
-        [HtmlAttributeName("grid-view-row")]
+        [HtmlAttributeName("ncc-grid-view-row")]
         public int GridRowPos { get; set; }
 
         public override void Process(TagHelperContext tagContext, TagHelperOutput output)
         {
             var model = new NccActionModel();
-            model.TargetIds = GridViewEventTarget.Split(',');
-            model.Parameters.Add($"{DefaultParameters.ActionType.ToString().NccAddPrefix()}", "GridViewEvent");
-            model.Parameters.Add($"{DefaultParameters.EventName.ToString().NccAddPrefix()}", GridViewEvent.ToString());
+            model.TargetIds = GridViewActionTarget.Split(',');
+            model.Parameters.Add($"{DefaultParameters.ActionType.ToString().NccAddPrefix()}", "GridViewAction");
+            model.Parameters.Add($"{DefaultParameters.EventName.ToString().NccAddPrefix()}", GridViewAction.ToString());
             model.Parameters.Add($"{GridViewParameters.RowNumber.ToString().NccAddPrefix()}", GridRowPos.ToString());
 
             if (output.TagName.ToLower() == "select")

@@ -5,11 +5,10 @@ namespace ByteNuts.NetCoreControls.Services
 {
     public static class HtmlRenderService
     {
-        public static Dictionary<string, object> GetExtraParameters(HtmlRenderContext context)
+        public static IDictionary<string, object> GetExtraParameters(IDictionary<string, object> callParams, HtmlRenderContext context)
         {
-            var extraParameters = new Dictionary<string, object>();
 
-            return extraParameters;
+            return callParams;
         }
 
         public static HtmlRenderContext SetDataResult(HtmlRenderContext context, object result)

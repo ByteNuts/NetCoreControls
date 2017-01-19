@@ -8,10 +8,13 @@
       "url": "https://github.com/ByteNuts/NetCoreControls"
     },
     "tags": [
+      "aspnetcore",
       ".NET Core",
-      "MVC Core"
+      "MVC Core",
+      "ASP.NET",
+      "MVC"
     ],
-    "summary": "Various controls to render and manage data information on a web app."
+    "summary": "TagHelpers Controls for ASP.NET Core to render and manage data information."
   },
 
   "dependencies": {
@@ -28,6 +31,6 @@
     }
   },
   "buildOptions": {
-    "embed": "Scripts/**"
+    "embed": [ "Scripts/**" , "Styles/**"]
   }
 }

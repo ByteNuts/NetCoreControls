@@ -8,12 +8,13 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 using System.Collections;
+using ByteNuts.NetCoreControls.Helpers;
 using ByteNuts.NetCoreControls.Models;
 using ByteNuts.NetCoreControls.Models.GridView;
 
 namespace ByteNuts.NetCoreControls.Controls.GridView
 {
-    [RestrictChildren("ncc:Columns", "ncc:columns", "ncc:HtmlContent", "ncc:html-content")]
+    [RestrictChildren("ncc:Columns", "ncc:columns", "ncc:HtmlContent", "ncc:html-content", "ncc:grid-pager")]
     [HtmlTargetElement("ncc:grid-view")]
     [HtmlTargetElement("NCC:GridView")]
     public class GridViewTagHelper : TagHelper
@@ -37,11 +38,11 @@ namespace ByteNuts.NetCoreControls.Controls.GridView
         [HtmlAttributeName("FooterCssClass")]
         public string FooterCssClass { get; set; }
 
-        [HtmlAttributeName("AutoDataBind")]
-        public bool AutoDataBind { get; set; } = true;
-
         [HtmlAttributeName("RenderForm")]
         public bool RenderForm { get; set; }
+
+        [HtmlAttributeName("AllowPaging")]
+        public bool AllowPaging { get; set; }
 
         private GridViewNccTagContext _nccTagContext;
         private IDataProtector _protector;
@@ -59,10 +60,24 @@ namespace ByteNuts.NetCoreControls.Controls.GridView
 
         public override async Task ProcessAsync(TagHelperContext tagContext, TagHelperOutput output)
         {
+            if (Context == null) throw new Exception("The GridViewContext is null... Please check the reference.");
+
             _nccTagContext.CssClassGrid = CssClass;
             _nccTagContext.CssClassBody = BodyCssClass;
             _nccTagContext.CssClassHeader = HeaderCssClass;
             _nccTagContext.CssClassFooter = FooterCssClass;
+
+            Context.AllowPaging = AllowPaging;
+            if (AllowPaging)
+            {
+                if (Context.PageSize == 0 || Context.PageSize == int.MaxValue)
+                    Context.PageSize = 10;
+            }
+            else
+                Context.PageSize = int.MaxValue;
+
+            if (Context.Filters.ContainsKey("pageNumber"))
+                Context.PageNumber = Convert.ToInt32(Context.Filters["pageNumber"]);
 
             object service = null;
 
@@ -79,7 +94,7 @@ namespace ByteNuts.NetCoreControls.Controls.GridView
             output.TagName = "div";
             output.Attributes.SetAttribute("id", Context.Id);
 
-            if (_nccTagContext.Visible)
+            if (Context.Visible)
             {
                 tagContext.Items.Add(typeof(GridViewContext), Context);
 
@@ -91,18 +106,20 @@ namespace ByteNuts.NetCoreControls.Controls.GridView
                     output.PreContent.AppendHtml(form);
                 }
 
-                if (Context.PageSize == 0)
-                    Context.PageSize = int.MaxValue;
+                if (Context.AutoBind)
+                {
+                    Context = DataService.GetControlData(Context, ViewContext.HttpContext);
 
-                Context = DataService.GetControlData(Context, ViewContext.HttpContext);
-
-                service?.NccInvokeMethod(Models.Enums.NccEvents.DataBound, new object[] { new NccEventArgs { NccTagContext = _nccTagContext, NccControlContext = Context, ViewContext = ViewContext, DataObjects = Context.DataObjects } });
+                    service?.NccInvokeMethod(Models.Enums.NccEvents.DataBound, new object[] { new NccEventArgs { NccTagContext = _nccTagContext, NccControlContext = Context, ViewContext = ViewContext, DataObjects = Context.DataObjects } });
+                }
+                else
+                    Context.DataObjects = Context.DataSource;
 
                 _nccTagContext.GridHeader = new GridViewRow { Cells = new List<GridViewCell>(), CssClass = HeaderCssClass };
 
                 await output.GetChildContentAsync();
 
-                output.Content.SetHtmlContent(GridViewService.BuildTableHtml(_nccTagContext));
+                output.Content.SetHtmlContent(GridViewService.BuildTableHtml(_nccTagContext, Context));
 
                 output.PreContent.AppendHtml(_nccTagContext.PreContent);
                 output.PostContent.AppendHtml(_nccTagContext.PostContent);
@@ -119,7 +136,7 @@ namespace ByteNuts.NetCoreControls.Controls.GridView
             encContext.Attributes.Add("name", "encContext");
             encContext.Attributes.Add("id", $"{Context.Id}_context");
             encContext.Attributes.Add("type", "hidden");
-            encContext.Attributes.Add("value", _protector.Protect(JsonService.SetObjectAsJson(Context)));
+            encContext.Attributes.Add("value", _protector.Protect(NccJson.SetObjectAsJson(Context)));
             output.PostContent.AppendHtml(encContext);
         }
     }

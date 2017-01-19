@@ -62,7 +62,7 @@ namespace ByteNuts.NetCoreControls.Controls.GridView
 
                 _nccTagContext.GridRows = new List<GridViewRow>();
 
-                if (data.Count > _context.PageNumber)
+                if (data.Count > _context.PageSize)
                     data = new List<object>(data.Cast<object>()).Skip(_context.PageSize * (_context.PageNumber - 1)).Take(_context.PageSize).ToList();
 
                 _context.DataObjects = data;

@@ -1,8 +1,5 @@
-﻿using ByteNuts.NetCoreControls.Controllers;
-using System.Collections;
-using ByteNuts.NetCoreControls.Models;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc.Rendering;
+﻿using ByteNuts.NetCoreControls.Models;
+using ByteNuts.NetCoreControls.Services;
 
 namespace ByteNuts.NetCoreControls.Controls
 {
@@ -16,6 +13,7 @@ namespace ByteNuts.NetCoreControls.Controls
         /// <param name="eventArgs"></param>
         public virtual void Load(NccEventArgs eventArgs)
         {
+            eventArgs.NccControlContext.NccSetPropertyValue("Visible", true);
         }
         public virtual void DataBound(NccEventArgs eventArgs)
         {

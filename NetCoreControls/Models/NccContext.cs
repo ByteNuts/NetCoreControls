@@ -13,7 +13,7 @@ namespace ByteNuts.NetCoreControls.Models
 
         public object DataSource { get; set; }
 
-        public bool Visible { get; set; }
+        public bool Visible { get; set; } = true;
 
         [JsonIgnore]
         public object DataObjects { get; internal set; }
