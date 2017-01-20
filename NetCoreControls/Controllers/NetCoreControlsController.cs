@@ -25,6 +25,7 @@ namespace ByteNuts.NetCoreControls.Controllers
         }
 
         [HttpPost]
+        //[ValidateAntiForgeryToken]
         public IActionResult ControlAction(IFormCollection formCollection, string context, Dictionary<string, string> parameters)
         {
             if (context == null)

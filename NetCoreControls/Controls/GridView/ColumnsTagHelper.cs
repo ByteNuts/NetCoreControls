@@ -51,7 +51,7 @@ namespace ByteNuts.NetCoreControls.Controls.GridView
             output.TagName = null;
             var data = gridViewContext.DataObjects as IList;
 
-            ViewContext.ViewBag.RowCount = 0;
+            _nccTagContext.RowNumber = 0;
             ViewContext.ViewBag.EmptyData = false;
 
             if (data != null && data.Count > 0)
@@ -67,17 +67,35 @@ namespace ByteNuts.NetCoreControls.Controls.GridView
 
                 _context.DataObjects = data;
 
+                var dataKeys = _context.DataKeys?.Split(',')?.ToList();
+                if (dataKeys != null) _context.DataKeysValues = new List<Dictionary<string, object>>();
+
                 foreach (var row in data)
                 {
+                    if (dataKeys != null)
+                    {
+                        var dataKeysRow = new Dictionary<string, object>();
+                        foreach (var dataKey in dataKeys)
+                        {
+                            var keyValue = row.NccGetPropertyValue<object>(dataKey);
+                            if (keyValue != null)
+                                dataKeysRow[dataKey] = keyValue;
+                        }
+                        _context.DataKeysValues.Add(dataKeysRow);
+                    }
+
                     service?.NccInvokeMethod(GridViewEvents.RowDataBound, new object[] { new NccEventArgs { NccTagContext = _nccTagContext, NccControlContext = _context, DataObjects = data}, row });
 
-                    _nccTagContext.GridRows.Add(new GridViewRow { Cells = new List<GridViewCell>(), RowNumber = ViewContext.ViewBag.RowCount });
+                    _nccTagContext.GridRows.Add(new GridViewRow { Cells = new List<GridViewCell>(), RowNumber = _nccTagContext.RowNumber });
 
-                    ViewContext.ViewData.Model = row.ExtToExpandoObject();
+                    var rowData = row.NccToExpando() as IDictionary<string, object>;
+                    rowData["NccRowNumber"] = _nccTagContext.RowNumber;
+
+                    ViewContext.ViewData.Model = rowData.ExtToExpandoObject();
 
                     await output.GetChildContentAsync(false);
-
-                    ViewContext.ViewBag.RowCount++;
+                    //ViewContext.ViewBag.RowCount
+                    _nccTagContext.RowNumber++;
                     _nccTagContext.ColCountComplete = true;
 
                     service?.NccInvokeMethod(GridViewEvents.RowCreated, new object[] { new NccEventArgs { NccTagContext = _nccTagContext, NccControlContext = _context, DataObjects = data }, _nccTagContext.GridRows.LastOrDefault() });

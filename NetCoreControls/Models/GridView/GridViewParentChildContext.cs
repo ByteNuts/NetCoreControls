@@ -5,6 +5,7 @@ namespace ByteNuts.NetCoreControls.Models.GridView
 {
     public class GridViewNccTagContext : NccTagContext
     {
+        public int RowNumber { get; set; }
         public int ColCount { get; set; }
         public bool ColCountComplete { get; set; }
 
@@ -22,5 +23,6 @@ namespace ByteNuts.NetCoreControls.Models.GridView
         public string CssClassBody { get; set; }
         public string CssClassHeader { get; set; }
         public string CssClassFooter { get; set; }
+
     }
 }

@@ -40,7 +40,7 @@ namespace ByteNuts.NetCoreControls.Controls.GridView
                 return;
 
             var data = _context.DataObjects as IList;
-            if (ViewContext.ViewBag.RowCount > 0 || data == null || data.Count == 0)
+            if (_nccTagContext.RowNumber > 0 || data == null || data.Count == 0)
                 return;
 
             object showHeader = null;

@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 using System.Collections;
+using System.Linq;
 using ByteNuts.NetCoreControls.Helpers;
 using ByteNuts.NetCoreControls.Models;
 using ByteNuts.NetCoreControls.Models.GridView;
@@ -25,6 +26,9 @@ namespace ByteNuts.NetCoreControls.Controls.GridView
 
         [HtmlAttributeName("Context")]
         public GridViewContext Context { get; set; }
+
+        [HtmlAttributeName("DataKeys")]
+        public string DataKeys { get; set; }
 
         [HtmlAttributeName("CssClass")]
         public string CssClass { get; set; }
@@ -46,10 +50,12 @@ namespace ByteNuts.NetCoreControls.Controls.GridView
 
         private GridViewNccTagContext _nccTagContext;
         private IDataProtector _protector;
+        protected IHtmlGenerator Generator { get; }
 
-        public GridViewTagHelper(IDataProtectionProvider protector)
+        public GridViewTagHelper(IDataProtectionProvider protector, IHtmlGenerator generator)
         {
             _protector = protector.CreateProtector(Constants.DataProtectionKey);
+            Generator = generator;
         }
 
         public override void Init(TagHelperContext tagContext)
@@ -66,6 +72,9 @@ namespace ByteNuts.NetCoreControls.Controls.GridView
             _nccTagContext.CssClassBody = BodyCssClass;
             _nccTagContext.CssClassHeader = HeaderCssClass;
             _nccTagContext.CssClassFooter = FooterCssClass;
+
+            if (!string.IsNullOrEmpty(DataKeys) && DataKeys != Context.DataKeys)
+                Context.DataKeys = DataKeys;
 
             Context.AllowPaging = AllowPaging;
             if (AllowPaging)
@@ -100,8 +109,7 @@ namespace ByteNuts.NetCoreControls.Controls.GridView
 
                 if (RenderForm)
                 {
-                    var form = new TagBuilder("form");
-                    form.TagRenderMode = TagRenderMode.StartTag;
+                    var form = new TagBuilder("form") { TagRenderMode = TagRenderMode.StartTag };
 
                     output.PreContent.AppendHtml(form);
                 }
@@ -125,7 +133,14 @@ namespace ByteNuts.NetCoreControls.Controls.GridView
                 output.PostContent.AppendHtml(_nccTagContext.PostContent);
 
                 if (RenderForm)
-                    output.PostContent.AppendHtml(new TagBuilder("form") { TagRenderMode = TagRenderMode.EndTag});
+                {
+                    var antiforgeryTag = Generator.GenerateAntiforgery(ViewContext);
+                    if (antiforgeryTag != null)
+                    {
+                        output.PostContent.AppendHtml(antiforgeryTag);
+                    }
+                    output.PostContent.AppendHtml(new TagBuilder("form") { TagRenderMode = TagRenderMode.EndTag });
+                }
             }
 
             service?.NccInvokeMethod(Models.Enums.NccEvents.PreRender, new object[] { new NccEventArgs { NccTagContext = _nccTagContext, NccControlContext = Context, ViewContext = ViewContext } });

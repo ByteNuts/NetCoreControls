@@ -65,7 +65,7 @@ namespace ByteNuts.NetCoreControls.Controls.GridView
 
                 if (ShowHeader)
                 {
-                    if (ViewContext.ViewBag.RowCount == 0)
+                    if (_nccTagContext.RowNumber == 0)
                     {
                         _nccTagContext.GridHeader.Cells.Add(string.IsNullOrEmpty(HeaderText)
                             ? new GridViewCell { Value = DataValue }
