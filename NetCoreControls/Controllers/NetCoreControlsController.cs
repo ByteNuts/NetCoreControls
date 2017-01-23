@@ -117,7 +117,6 @@ namespace ByteNuts.NetCoreControls.Controllers
         public FileResult GetNccJsFile()
         {
             var assembly = this.GetType().GetTypeInfo().Assembly;
-            //(typeof(NetCoreControls.Constants).Assembly).GetManifestResourceStream("NetCoreControls.Scripts.ncc.js")
 
             var stream = assembly.GetManifestResourceStream("NetCoreControls.Scripts.ncc.js");
 
@@ -128,7 +127,6 @@ namespace ByteNuts.NetCoreControls.Controllers
         public FileResult GetNccCssFile()
         {
             var assembly = this.GetType().GetTypeInfo().Assembly;
-            //(typeof(NetCoreControls.Constants).Assembly).GetManifestResourceStream("NetCoreControls.Scripts.ncc.js")
 
             var stream = assembly.GetManifestResourceStream("NetCoreControls.Styles.ncc.css");
 
