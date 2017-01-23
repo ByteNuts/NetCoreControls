@@ -1,15 +1,16 @@
 ﻿using System.Collections.Generic;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 
-namespace ByteNuts.NetCoreControls.Models.GridView
+namespace ByteNuts.NetCoreControls.Models.Grid
 {
-    public class GridViewNccTagContext : NccTagContext
+    public class GridNccTagContext : NccTagContext
     {
+        public int RowNumber { get; set; }
         public int ColCount { get; set; }
         public bool ColCountComplete { get; set; }
 
-        public GridViewRow GridHeader { get; set; } = new GridViewRow();
-        public List<GridViewRow> GridRows { get; set; } = new List<GridViewRow>();
+        public GridRow GridHeader { get; set; } = new GridRow();
+        public List<GridRow> GridRows { get; set; } = new List<GridRow>();
 
         public string PreContent { get; set; }
         public string PostContent { get; set; }
@@ -22,5 +23,6 @@ namespace ByteNuts.NetCoreControls.Models.GridView
         public string CssClassBody { get; set; }
         public string CssClassHeader { get; set; }
         public string CssClassFooter { get; set; }
+
     }
 }

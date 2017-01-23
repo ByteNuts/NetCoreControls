@@ -1,6 +1,6 @@
-﻿namespace ByteNuts.NetCoreControls.Models.GridView
+﻿namespace ByteNuts.NetCoreControls.Models.Grid
 {
-    public class GridViewCell
+    public class GridCell
     {
         public string Value { get; set; }
         public bool Aggregate { get; set; }

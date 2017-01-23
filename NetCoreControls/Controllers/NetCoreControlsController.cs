@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using ByteNuts.NetCoreControls.Services;
-using ByteNuts.NetCoreControls.Models.GridView;
+using ByteNuts.NetCoreControls.Models.Grid;
 using System;
 using System.Linq;
 using System.Reflection;
@@ -25,6 +25,7 @@ namespace ByteNuts.NetCoreControls.Controllers
         }
 
         [HttpPost]
+        //[ValidateAntiForgeryToken]
         public IActionResult ControlAction(IFormCollection formCollection, string context, Dictionary<string, string> parameters)
         {
             if (context == null)
@@ -74,11 +75,11 @@ namespace ByteNuts.NetCoreControls.Controllers
                     EventService.ProcessEvent(service, ControllerContext, controlCtx, formCollection, parametersList);
                     break;
                     //Events from Controls are mapped here
-                case "gridviewaction":
+                case "gridaction":
                     if (!parametersList.ContainsKey($"{DefaultParameters.EventName.ToString().NccAddPrefix()}"))
                         throw new Exception("No EventName specified for the GridView action!");
-                    if (!(controlCtx is GridViewContext))
-                        throw new Exception("A GridViewAction was specified but the context is not of type GridViewContext!");
+                    if (!(controlCtx is GridContext))
+                        throw new Exception("A GridAction was specified but the context is not of type GridViewContext!");
                     switch (parametersList[$"{DefaultParameters.EventName.ToString().NccAddPrefix()}"].ToLower())
                     {
                         case "update":

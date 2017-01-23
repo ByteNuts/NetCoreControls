@@ -1,16 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using ByteNuts.NetCoreControls.Models.GridView;
+using ByteNuts.NetCoreControls.Models.Grid;
 
-namespace ByteNuts.NetCoreControls.Controls.GridView
+namespace ByteNuts.NetCoreControls.Controls.Grid
 {
-    [HtmlTargetElement("ncc:GridPager", ParentTag = "ncc:GridView", TagStructure = TagStructure.WithoutEndTag)]
-    [HtmlTargetElement("ncc:grid-pager", ParentTag = "ncc:grid-view")]
+    [HtmlTargetElement("ncc:grid-pager", ParentTag = "ncc:grid", TagStructure = TagStructure.WithoutEndTag)]
     public class GridPagerTagHelper : TagHelper
     {
         [HtmlAttributeNotBound]
@@ -20,14 +16,14 @@ namespace ByteNuts.NetCoreControls.Controls.GridView
         [HtmlAttributeName("PagerNavigationSize")]
         public int PagerNavigationSize { get; set; }
 
-        private GridViewNccTagContext _nccTagContext;
-        private GridViewContext _context;
+        private GridNccTagContext _nccTagContext;
+        private GridContext _context;
 
 
         public override void Init(TagHelperContext tagContext)
         {
-            if (tagContext.Items.ContainsKey(typeof(GridViewNccTagContext)))
-                _nccTagContext = (GridViewNccTagContext)tagContext.Items[typeof(GridViewNccTagContext)];
+            if (tagContext.Items.ContainsKey(typeof(GridNccTagContext)))
+                _nccTagContext = (GridNccTagContext)tagContext.Items[typeof(GridNccTagContext)];
             else
                 throw new Exception("GridViewNccTagContext was lost between tags...");
         }
@@ -36,8 +32,8 @@ namespace ByteNuts.NetCoreControls.Controls.GridView
         {
             output.SuppressOutput();
 
-            if (tagContext.Items.ContainsKey(typeof(GridViewContext)))
-                _context = (GridViewContext)tagContext.Items[typeof(GridViewContext)];
+            if (tagContext.Items.ContainsKey(typeof(GridContext)))
+                _context = (GridContext)tagContext.Items[typeof(GridContext)];
             else
                 return;
 

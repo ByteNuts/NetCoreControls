@@ -4,13 +4,12 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 using ByteNuts.NetCoreControls.Models.Enums;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using ByteNuts.NetCoreControls.Models.GridView;
+using ByteNuts.NetCoreControls.Models.Grid;
 
-namespace ByteNuts.NetCoreControls.Controls.GridView
+namespace ByteNuts.NetCoreControls.Controls.Grid
 {
-    [HtmlTargetElement("ncc:HtmlContent", ParentTag = "ncc:GridView")]
-    [HtmlTargetElement("ncc:html-content", ParentTag = "ncc:grid-view")]
-    public class HtmlContentTagHelper : TagHelper
+    [HtmlTargetElement("ncc:grid-content", ParentTag = "ncc:grid")]
+    public class GridContentTagHelper : TagHelper
     {
         [HtmlAttributeNotBound]
         [ViewContext]
@@ -21,12 +20,12 @@ namespace ByteNuts.NetCoreControls.Controls.GridView
         public GridViewHtmlContentType ContentType { get; set; }
 
 
-        private GridViewNccTagContext _nccTagContext;
+        private GridNccTagContext _nccTagContext;
 
         public override void Init(TagHelperContext tagContext)
         {
-            if (tagContext.Items.ContainsKey(typeof(GridViewNccTagContext)))
-                _nccTagContext = (GridViewNccTagContext)tagContext.Items[typeof(GridViewNccTagContext)];
+            if (tagContext.Items.ContainsKey(typeof(GridNccTagContext)))
+                _nccTagContext = (GridNccTagContext)tagContext.Items[typeof(GridNccTagContext)];
             else
                 throw new Exception("GridViewNccTagContext was lost between tags...");
         }
@@ -34,7 +33,7 @@ namespace ByteNuts.NetCoreControls.Controls.GridView
         public override async Task ProcessAsync(TagHelperContext tagContext, TagHelperOutput output)
         {
             output.TagName = null;
-            if (!tagContext.Items.ContainsKey(typeof(GridViewContext)))
+            if (!tagContext.Items.ContainsKey(typeof(GridContext)))
             {
                 output.SuppressOutput();
                 return;

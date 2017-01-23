@@ -1,14 +1,13 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Razor.TagHelpers;
-using ByteNuts.NetCoreControls.Models.GridView;
+using ByteNuts.NetCoreControls.Models.Grid;
 
-namespace ByteNuts.NetCoreControls.Controls.GridView
+namespace ByteNuts.NetCoreControls.Controls.Grid
 {
-    [HtmlTargetElement("ncc:TemplateField", ParentTag = "ncc:Columns")]
-    [HtmlTargetElement("ncc:template-field", ParentTag = "ncc:columns")]
-    [RestrictChildren("ncc:HeaderTemplate", "ncc:header-template", "ncc:ItemTemplate", "ncc:item-template")]
-    public class TemplateFieldTagHelper : TagHelper
+    [HtmlTargetElement("ncc:grid-columntemplate", ParentTag = "ncc:grid-columns")]
+    [RestrictChildren("ncc:grid-headertemplate", "ncc:grid-itemtemplate")]
+    public class GridColumntemplateTagHelper : TagHelper
     {
         [HtmlAttributeName("ShowHeader")]
         public bool ShowHeader { get; set; } = true;
@@ -16,20 +15,20 @@ namespace ByteNuts.NetCoreControls.Controls.GridView
         [HtmlAttributeName("Visible")]
         public bool Visible { get; set; } = true;
 
-        private GridViewNccTagContext _nccTagContext;
+        private GridNccTagContext _nccTagContext;
 
 
         public override void Init(TagHelperContext tagContext)
         {
-            if (tagContext.Items.ContainsKey(typeof(GridViewNccTagContext)))
-                _nccTagContext = (GridViewNccTagContext)tagContext.Items[typeof(GridViewNccTagContext)];
+            if (tagContext.Items.ContainsKey(typeof(GridNccTagContext)))
+                _nccTagContext = (GridNccTagContext)tagContext.Items[typeof(GridNccTagContext)];
             else
                 throw new Exception("GridViewNccTagContext was lost between tags...");
         }
 
         public override async Task ProcessAsync(TagHelperContext tagContext, TagHelperOutput output)
         {
-            if (!tagContext.Items.ContainsKey(typeof(GridViewContext)))
+            if (!tagContext.Items.ContainsKey(typeof(GridContext)))
             {
                 output.SuppressOutput();
                 return;

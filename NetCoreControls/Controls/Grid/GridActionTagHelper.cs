@@ -1,34 +1,30 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using ByteNuts.NetCoreControls.Extensions;
+﻿using ByteNuts.NetCoreControls.Extensions;
 using ByteNuts.NetCoreControls.Models;
 using ByteNuts.NetCoreControls.Models.Enums;
-using ByteNuts.NetCoreControls.Models.GridView;
+using ByteNuts.NetCoreControls.Models.Grid;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 using Newtonsoft.Json;
 
-namespace ByteNuts.NetCoreControls.Controls.GridView
+namespace ByteNuts.NetCoreControls.Controls.Grid
 {
-    [HtmlTargetElement(Attributes = "ncc-grid-view-action,ncc-grid-view-action-target")]
-    public class GridViewActionTagHelper : TagHelper
+    [HtmlTargetElement(Attributes = "ncc-grid-action,ncc-grid-action-target")]
+    public class GridActionTagHelper : TagHelper
     {
-        [HtmlAttributeName("ncc-grid-view-action-target")]
-        public string GridViewActionTarget { get; set; }
+        [HtmlAttributeName("ncc-grid-action-target")]
+        public string GridActionTarget { get; set; }
 
-        [HtmlAttributeName("ncc-grid-view-action")]
-        public GridViewEvent GridViewAction { get; set; }
+        [HtmlAttributeName("ncc-grid-action")]
+        public GridEvent GridAction { get; set; }
 
-        [HtmlAttributeName("ncc-grid-view-row")]
+        [HtmlAttributeName("ncc-grid-row")]
         public int GridRowPos { get; set; }
 
         public override void Process(TagHelperContext tagContext, TagHelperOutput output)
         {
             var model = new NccActionModel();
-            model.TargetIds = GridViewActionTarget.Split(',');
-            model.Parameters.Add($"{DefaultParameters.ActionType.ToString().NccAddPrefix()}", "GridViewAction");
-            model.Parameters.Add($"{DefaultParameters.EventName.ToString().NccAddPrefix()}", GridViewAction.ToString());
+            model.TargetIds = GridActionTarget.Split(',');
+            model.Parameters.Add($"{DefaultParameters.ActionType.ToString().NccAddPrefix()}", "GridAction");
+            model.Parameters.Add($"{DefaultParameters.EventName.ToString().NccAddPrefix()}", GridAction.ToString());
             model.Parameters.Add($"{GridViewParameters.RowNumber.ToString().NccAddPrefix()}", GridRowPos.ToString());
 
             if (output.TagName.ToLower() == "select")

@@ -91,10 +91,14 @@ namespace ByteNuts.NetCoreControls.Services
         {
             try
             {
+                var expando = obj as IDictionary<string, object>;
+                if (expando != null)
+                    return (T)Convert.ChangeType(expando[propertyName], typeof(T));
+                
                 var propVal = obj.GetType().GetProperty(propertyName).GetValue(obj, null);
                 return (T)Convert.ChangeType(propVal, typeof(T));
             }
-            catch (Exception)
+            catch (Exception e)
             {
                 return default(T);
             }

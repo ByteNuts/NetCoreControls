@@ -7,7 +7,7 @@ using System.Collections;
 using System.Collections.Concurrent;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
-using ByteNuts.NetCoreControls.Models.GridView;
+using ByteNuts.NetCoreControls.Models.Grid;
 using ByteNuts.NetCoreControls.Models.HtmlRender;
 
 namespace ByteNuts.NetCoreControls.Services
@@ -88,9 +88,9 @@ namespace ByteNuts.NetCoreControls.Services
 
         private static IDictionary<string, object> AddExtraToParameters(IDictionary<string, object> callParams, object context)
         {
-            if (context is GridViewContext)
+            if (context is GridContext)
             {
-                return GridViewService.GetExtraParameters(callParams, context as GridViewContext);
+                return GridService.GetExtraParameters(callParams, context as GridContext);
             }
             else if (context is HtmlRenderContext)
             {
@@ -103,9 +103,9 @@ namespace ByteNuts.NetCoreControls.Services
 
         private static T ProcessControlDataResult<T>(T context, object result)
         {
-            if (context is GridViewContext)
+            if (context is GridContext)
             {
-                return (T)Convert.ChangeType(GridViewService.SetDataResult(context as GridViewContext, result), typeof(T));
+                return (T)Convert.ChangeType(GridService.SetDataResult(context as GridContext, result), typeof(T));
             }
             else if (context is HtmlRenderContext)
             {
