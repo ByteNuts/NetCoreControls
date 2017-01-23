@@ -6,15 +6,15 @@ using System.Reflection;
 using ByteNuts.NetCoreControls.Extensions;
 using ByteNuts.NetCoreControls.Models;
 using ByteNuts.NetCoreControls.Models.Enums;
-using ByteNuts.NetCoreControls.Models.GridView;
+using ByteNuts.NetCoreControls.Models.Grid;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Newtonsoft.Json;
 
 namespace ByteNuts.NetCoreControls.Services
 {
-    public static class GridViewService
+    public static class GridService
     {
-        public static IDictionary<string, object> GetExtraParameters(IDictionary<string, object> methodParams, GridViewContext context)
+        public static IDictionary<string, object> GetExtraParameters(IDictionary<string, object> methodParams, GridContext context)
         {
             methodParams["pageNumber"] = context.PageNumber;
             methodParams["pageSize"] = context.PageSize;
@@ -22,7 +22,7 @@ namespace ByteNuts.NetCoreControls.Services
             return methodParams;
         }
 
-        public static GridViewContext SetDataResult(GridViewContext context, object result)
+        public static GridContext SetDataResult(GridContext context, object result)
         {
             if (result.GetType().ToString().Contains(typeof(Tuple).ToString()))
                 context.TotalItems = Convert.ToInt32(result.GetType().GetProperty("Item2").GetValue(result));
@@ -38,7 +38,7 @@ namespace ByteNuts.NetCoreControls.Services
 
         #region Table Html
 
-        public static TagBuilder BuildTableHtml(GridViewNccTagContext context, GridViewContext gridContext)
+        public static TagBuilder BuildTableHtml(GridNccTagContext context, GridContext gridContext)
         {
             var table = new TagBuilder("table");
             if (!string.IsNullOrEmpty(context.CssClassGrid)) table.Attributes.Add("class", context.CssClassGrid);
@@ -53,7 +53,7 @@ namespace ByteNuts.NetCoreControls.Services
             return table;
         }
 
-        private static TagBuilder BuildTableHeader(GridViewNccTagContext context)
+        private static TagBuilder BuildTableHeader(GridNccTagContext context)
         {
             var tableHeader = new TagBuilder("thead");
             if (!string.IsNullOrEmpty(context.GridHeader.CssClass)) tableHeader.Attributes.Add("class", context.GridHeader.CssClass);
@@ -67,7 +67,7 @@ namespace ByteNuts.NetCoreControls.Services
             return tableHeader;
         }
 
-        private static TagBuilder BuildTableBody(GridViewNccTagContext context)
+        private static TagBuilder BuildTableBody(GridNccTagContext context)
         {
             var gridContent = context.GridRows;
 
@@ -113,7 +113,7 @@ namespace ByteNuts.NetCoreControls.Services
             return tableBody;
         }
 
-        public static TagBuilder BuildTablePager(GridViewNccTagContext context, GridViewContext gridContext)
+        public static TagBuilder BuildTablePager(GridNccTagContext context, GridContext gridContext)
         {
             var tableFooter = new TagBuilder("tfoot");
             var tr = new TagBuilder("tr");

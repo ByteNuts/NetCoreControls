@@ -1,19 +1,15 @@
-﻿using ByteNuts.NetCoreControls.Controllers;
-using Microsoft.AspNetCore.Http;
-using System.Collections.Generic;
-using ByteNuts.NetCoreControls.Models;
-using ByteNuts.NetCoreControls.Models.GridView;
-using Microsoft.AspNetCore.Mvc.Rendering;
+﻿using ByteNuts.NetCoreControls.Models;
+using ByteNuts.NetCoreControls.Models.Grid;
 
-namespace ByteNuts.NetCoreControls.Controls.GridView.Events
+namespace ByteNuts.NetCoreControls.Controls.Grid.Events
 {
-    public class GridViewEvents : NccEvents
+    public class GridEvents : NccEvents
     {
         public virtual void RowDataBound(NccEventArgs eventArgs, object rowData)
         {
         }
 
-        public virtual void RowCreated(NccEventArgs eventArgs, GridViewRow row)
+        public virtual void RowCreated(NccEventArgs eventArgs, GridRow row)
         {
         }
 

@@ -4,13 +4,12 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using ByteNuts.NetCoreControls.Models.GridView;
+using ByteNuts.NetCoreControls.Models.Grid;
 
-namespace ByteNuts.NetCoreControls.Controls.GridView
+namespace ByteNuts.NetCoreControls.Controls.Grid
 {
-    [HtmlTargetElement("ncc:HeaderTemplate", ParentTag = "ncc:TemplateField")]
-    [HtmlTargetElement("ncc:header-template", ParentTag = "ncc:template-field")]
-    public class HeaderTemplateTagHelper : TagHelper
+    [HtmlTargetElement("ncc:grid-headertemplate", ParentTag = "ncc:grid-columntemplate")]
+    public class GridHeadertemplateTagHelper : TagHelper
     {
         [HtmlAttributeNotBound]
         [ViewContext]
@@ -19,13 +18,13 @@ namespace ByteNuts.NetCoreControls.Controls.GridView
         [HtmlAttributeName("CssClass")]
         public string CssClass { get; set; }
 
-        private GridViewNccTagContext _nccTagContext;
-        private GridViewContext _context;
+        private GridNccTagContext _nccTagContext;
+        private GridContext _context;
 
         public override void Init(TagHelperContext tagContext)
         {
-            if (tagContext.Items.ContainsKey(typeof(GridViewNccTagContext)))
-                _nccTagContext = (GridViewNccTagContext)tagContext.Items[typeof(GridViewNccTagContext)];
+            if (tagContext.Items.ContainsKey(typeof(GridNccTagContext)))
+                _nccTagContext = (GridNccTagContext)tagContext.Items[typeof(GridNccTagContext)];
             else
                 throw new Exception("GridViewNccTagContext was lost between tags...");
         }
@@ -34,8 +33,8 @@ namespace ByteNuts.NetCoreControls.Controls.GridView
         {
             output.SuppressOutput();
 
-            if (tagContext.Items.ContainsKey(typeof(GridViewContext)))
-                _context = (GridViewContext)tagContext.Items[typeof(GridViewContext)];
+            if (tagContext.Items.ContainsKey(typeof(GridContext)))
+                _context = (GridContext)tagContext.Items[typeof(GridContext)];
             else
                 return;
 
@@ -50,13 +49,13 @@ namespace ByteNuts.NetCoreControls.Controls.GridView
             {
                 var childContent = await output.GetChildContentAsync();
 
-                _nccTagContext.GridHeader.Cells.Add(new GridViewCell { Value = childContent.GetContent(), CssClass = CssClass });
+                _nccTagContext.GridHeader.Cells.Add(new GridCell { Value = childContent.GetContent(), CssClass = CssClass });
 
                 tagContext.Items.Remove("ShowHeader");
             }
             else
             {
-                _nccTagContext.GridHeader.Cells.Add(new GridViewCell { Value = "", CssClass = CssClass });
+                _nccTagContext.GridHeader.Cells.Add(new GridCell { Value = "", CssClass = CssClass });
             }
 
         }

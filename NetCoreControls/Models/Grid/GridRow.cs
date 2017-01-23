@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
 
-namespace ByteNuts.NetCoreControls.Models.GridView
+namespace ByteNuts.NetCoreControls.Models.Grid
 {
-    public class GridViewRow
+    public class GridRow
     {
-        public List<GridViewCell> Cells { get; set; }
+        public List<GridCell> Cells { get; set; }
         public int RowNumber { get; set; }
         public string CssClass { get; set; }
     }

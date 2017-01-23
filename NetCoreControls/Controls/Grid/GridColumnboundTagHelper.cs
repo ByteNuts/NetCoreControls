@@ -4,13 +4,12 @@ using System.Linq;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using ByteNuts.NetCoreControls.Models.GridView;
+using ByteNuts.NetCoreControls.Models.Grid;
 
-namespace ByteNuts.NetCoreControls.Controls.GridView
+namespace ByteNuts.NetCoreControls.Controls.Grid
 {
-    [HtmlTargetElement("ncc:BoundField", ParentTag = "ncc:Columns")]
-    [HtmlTargetElement("ncc:bound-field", ParentTag = "ncc:columns")]
-    public class BoundFieldTagHelper : TagHelper
+    [HtmlTargetElement("ncc:grid-columnbound", ParentTag = "ncc:grid-columns")]
+    public class GridColumnboundTagHelper : TagHelper
     {
         [HtmlAttributeNotBound]
         [ViewContext]
@@ -34,23 +33,23 @@ namespace ByteNuts.NetCoreControls.Controls.GridView
         [HtmlAttributeName("Aggregate")]
         public bool Aggregate { get; set; }
 
-        private GridViewNccTagContext _nccTagContext;
-        private GridViewContext _context;
+        private GridNccTagContext _nccTagContext;
+        private GridContext _context;
 
         public override void Init(TagHelperContext tagContext)
         {
-            if (tagContext.Items.ContainsKey(typeof(GridViewNccTagContext)))
-                _nccTagContext = (GridViewNccTagContext)tagContext.Items[typeof(GridViewNccTagContext)];
+            if (tagContext.Items.ContainsKey(typeof(GridNccTagContext)))
+                _nccTagContext = (GridNccTagContext)tagContext.Items[typeof(GridNccTagContext)];
             else
-                throw new Exception("GridViewNccTagContext was lost between tags...");
+                throw new Exception("GridNccTagContext was lost between tags...");
         }
 
         public override void Process(TagHelperContext tagContext, TagHelperOutput output)
         {
             output.SuppressOutput();
 
-            if (tagContext.Items.ContainsKey(typeof(GridViewContext)))
-                _context = (GridViewContext)tagContext.Items[typeof(GridViewContext)];
+            if (tagContext.Items.ContainsKey(typeof(GridContext)))
+                _context = (GridContext)tagContext.Items[typeof(GridContext)];
             else
                 return;
 
@@ -68,16 +67,16 @@ namespace ByteNuts.NetCoreControls.Controls.GridView
                     if (_nccTagContext.RowNumber == 0)
                     {
                         _nccTagContext.GridHeader.Cells.Add(string.IsNullOrEmpty(HeaderText)
-                            ? new GridViewCell { Value = DataValue }
-                            : new GridViewCell { Value = HeaderText });
+                            ? new GridCell { Value = DataValue }
+                            : new GridCell { Value = HeaderText });
                     }
                 }
                 else
-                    _nccTagContext.GridHeader.Cells.Add(new GridViewCell { Value = "" });
+                    _nccTagContext.GridHeader.Cells.Add(new GridCell { Value = "" });
 
                 if (!ViewContext.ViewBag.EmptyData)
                 {
-                    var cell = new GridViewCell
+                    var cell = new GridCell
                     {
                         Value = DataValue,
                         CssClass = CssClass,

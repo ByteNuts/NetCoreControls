@@ -1,31 +1,27 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using ByteNuts.NetCoreControls.Controls.GridView.Events;
 using ByteNuts.NetCoreControls.Services;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Razor.TagHelpers;
-using System.Collections;
-using System.Linq;
 using ByteNuts.NetCoreControls.Helpers;
 using ByteNuts.NetCoreControls.Models;
-using ByteNuts.NetCoreControls.Models.GridView;
+using ByteNuts.NetCoreControls.Models.Grid;
 
-namespace ByteNuts.NetCoreControls.Controls.GridView
+namespace ByteNuts.NetCoreControls.Controls.Grid
 {
-    [RestrictChildren("ncc:Columns", "ncc:columns", "ncc:HtmlContent", "ncc:html-content", "ncc:grid-pager")]
-    [HtmlTargetElement("ncc:grid-view")]
-    [HtmlTargetElement("NCC:GridView")]
-    public class GridViewTagHelper : TagHelper
+    [RestrictChildren("ncc:grid-columns", "ncc:grid-content", "ncc:grid-pager")]
+    [HtmlTargetElement("ncc:grid")]
+    public class GridTagHelper : TagHelper
     {
         [HtmlAttributeNotBound]
         [ViewContext]
         public ViewContext ViewContext { get; set; }
 
         [HtmlAttributeName("Context")]
-        public GridViewContext Context { get; set; }
+        public GridContext Context { get; set; }
 
         [HtmlAttributeName("DataKeys")]
         public string DataKeys { get; set; }
@@ -48,11 +44,11 @@ namespace ByteNuts.NetCoreControls.Controls.GridView
         [HtmlAttributeName("AllowPaging")]
         public bool AllowPaging { get; set; }
 
-        private GridViewNccTagContext _nccTagContext;
+        private GridNccTagContext _nccTagContext;
         private IDataProtector _protector;
         protected IHtmlGenerator Generator { get; }
 
-        public GridViewTagHelper(IDataProtectionProvider protector, IHtmlGenerator generator)
+        public GridTagHelper(IDataProtectionProvider protector, IHtmlGenerator generator)
         {
             _protector = protector.CreateProtector(Constants.DataProtectionKey);
             Generator = generator;
@@ -60,8 +56,8 @@ namespace ByteNuts.NetCoreControls.Controls.GridView
 
         public override void Init(TagHelperContext tagContext)
         {
-            _nccTagContext = new GridViewNccTagContext();
-            tagContext.Items.Add(typeof(GridViewNccTagContext), _nccTagContext);
+            _nccTagContext = new GridNccTagContext();
+            tagContext.Items.Add(typeof(GridNccTagContext), _nccTagContext);
         }
 
         public override async Task ProcessAsync(TagHelperContext tagContext, TagHelperOutput output)
@@ -105,7 +101,7 @@ namespace ByteNuts.NetCoreControls.Controls.GridView
 
             if (Context.Visible)
             {
-                tagContext.Items.Add(typeof(GridViewContext), Context);
+                tagContext.Items.Add(typeof(GridContext), Context);
 
                 if (RenderForm)
                 {
@@ -123,11 +119,11 @@ namespace ByteNuts.NetCoreControls.Controls.GridView
                 else
                     Context.DataObjects = Context.DataSource;
 
-                _nccTagContext.GridHeader = new GridViewRow { Cells = new List<GridViewCell>(), CssClass = HeaderCssClass };
+                _nccTagContext.GridHeader = new GridRow { Cells = new List<GridCell>(), CssClass = HeaderCssClass };
 
                 await output.GetChildContentAsync();
 
-                output.Content.SetHtmlContent(GridViewService.BuildTableHtml(_nccTagContext, Context));
+                output.Content.SetHtmlContent(GridService.BuildTableHtml(_nccTagContext, Context));
 
                 output.PreContent.AppendHtml(_nccTagContext.PreContent);
                 output.PostContent.AppendHtml(_nccTagContext.PostContent);

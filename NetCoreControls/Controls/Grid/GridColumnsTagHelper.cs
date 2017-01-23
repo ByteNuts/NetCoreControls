@@ -8,29 +8,28 @@ using System.Collections;
 using System.Threading.Tasks;
 using ByteNuts.NetCoreControls.Models;
 using ByteNuts.NetCoreControls.Models.Enums;
-using ByteNuts.NetCoreControls.Models.GridView;
+using ByteNuts.NetCoreControls.Models.Grid;
 using ByteNuts.NetCoreControls.Services;
 
-namespace ByteNuts.NetCoreControls.Controls.GridView
+namespace ByteNuts.NetCoreControls.Controls.Grid
 {
-    [RestrictChildren("ncc:BoundField", "ncc:bound-field", "ncc:TemplateField", "ncc:template-field")]
-    [HtmlTargetElement("ncc:Columns", ParentTag = "ncc:GridView")]
-    [HtmlTargetElement("ncc:columns", ParentTag = "ncc:grid-view")]
-    public class ColumnsTagHelper : TagHelper
+    [RestrictChildren("ncc:grid-columnbound", "ncc:grid-columntemplate")]
+    [HtmlTargetElement("ncc:grid-columns", ParentTag = "ncc:grid")]
+    public class GridColumnsTagHelper : TagHelper
     {
         [HtmlAttributeNotBound]
         [ViewContext]
         public ViewContext ViewContext { get; set; }
 
 
-        private GridViewNccTagContext _nccTagContext;
-        private GridViewContext _context;
+        private GridNccTagContext _nccTagContext;
+        private GridContext _context;
 
 
         public override void Init(TagHelperContext tagContext)
         {
-            if (tagContext.Items.ContainsKey(typeof(GridViewNccTagContext)))
-                _nccTagContext = (GridViewNccTagContext)tagContext.Items[typeof(GridViewNccTagContext)];
+            if (tagContext.Items.ContainsKey(typeof(GridNccTagContext)))
+                _nccTagContext = (GridNccTagContext)tagContext.Items[typeof(GridNccTagContext)];
             else
                 throw new Exception("GridViewNccTagContext was lost between tags...");
         }
@@ -39,12 +38,12 @@ namespace ByteNuts.NetCoreControls.Controls.GridView
         {
             output.SuppressOutput();
 
-            if (tagContext.Items.ContainsKey(typeof(GridViewContext)))
-                _context = (GridViewContext)tagContext.Items[typeof(GridViewContext)];
+            if (tagContext.Items.ContainsKey(typeof(GridContext)))
+                _context = (GridContext)tagContext.Items[typeof(GridContext)];
             else
                 return;
 
-            var gridViewContext = (GridViewContext)tagContext.Items[typeof(GridViewContext)];
+            var gridViewContext = (GridContext)tagContext.Items[typeof(GridContext)];
 
             var global = ViewContext.ViewData.Model;
 
@@ -60,7 +59,7 @@ namespace ByteNuts.NetCoreControls.Controls.GridView
                 if (!string.IsNullOrEmpty(_context.EventHandlerClass))
                     service = ReflectionService.NccGetClassInstance(_context.EventHandlerClass, null);
 
-                _nccTagContext.GridRows = new List<GridViewRow>();
+                _nccTagContext.GridRows = new List<GridRow>();
 
                 if (data.Count > _context.PageSize)
                     data = new List<object>(data.Cast<object>()).Skip(_context.PageSize * (_context.PageNumber - 1)).Take(_context.PageSize).ToList();
@@ -86,7 +85,7 @@ namespace ByteNuts.NetCoreControls.Controls.GridView
 
                     service?.NccInvokeMethod(GridViewEvents.RowDataBound, new object[] { new NccEventArgs { NccTagContext = _nccTagContext, NccControlContext = _context, DataObjects = data}, row });
 
-                    _nccTagContext.GridRows.Add(new GridViewRow { Cells = new List<GridViewCell>(), RowNumber = _nccTagContext.RowNumber });
+                    _nccTagContext.GridRows.Add(new GridRow { Cells = new List<GridCell>(), RowNumber = _nccTagContext.RowNumber });
 
                     var rowData = row.NccToExpando() as IDictionary<string, object>;
                     rowData["NccRowNumber"] = _nccTagContext.RowNumber;

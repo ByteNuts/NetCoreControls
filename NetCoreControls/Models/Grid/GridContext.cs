@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 
-namespace ByteNuts.NetCoreControls.Models.GridView
+namespace ByteNuts.NetCoreControls.Models.Grid
 {
-    public class GridViewContext : NccContext
+    public class GridContext : NccContext
     {
         public string DataKeys { get; set; }
         public List<Dictionary<string, object>> DataKeysValues { get; internal set; } = new List<Dictionary<string, object>>();
