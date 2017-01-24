@@ -1,5 +1,6 @@
 {
   "version": "0.1.0-beta-*",
+  "authors": [ "João Pereira" ],
   "packOptions": {
     "licenseUrl": "https://github.com/ByteNuts/NetCoreControls/blob/master/LICENSE",
     "repository": {
