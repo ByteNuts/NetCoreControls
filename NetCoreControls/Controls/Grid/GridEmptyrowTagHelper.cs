@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -6,15 +8,18 @@ using ByteNuts.NetCoreControls.Models.Grid;
 
 namespace ByteNuts.NetCoreControls.Controls.Grid
 {
-    [HtmlTargetElement("ncc:grid-pager", ParentTag = "ncc:grid", TagStructure = TagStructure.WithoutEndTag)]
-    public class GridPagerTagHelper : TagHelper
+    [HtmlTargetElement("ncc:grid-emptyrow", ParentTag = "ncc:grid")]
+    public class GridEmptyrowTagHelper : TagHelper
     {
         [HtmlAttributeNotBound]
         [ViewContext]
         public ViewContext ViewContext { get; set; }
 
-        [HtmlAttributeName("PagerNavigationSize")]
-        public int PagerNavigationSize { get; set; }
+        [HtmlAttributeName("RowCssClass")]
+        public string RowCssClass { get; set; }
+
+        [HtmlAttributeName("CellCssClass")]
+        public string CellCssClass { get; set; }
 
         private GridNccTagContext _nccTagContext;
         private GridContext _context;
@@ -28,7 +33,7 @@ namespace ByteNuts.NetCoreControls.Controls.Grid
                 throw new Exception("GridViewNccTagContext was lost between tags...");
         }
 
-        public override void Process(TagHelperContext tagContext, TagHelperOutput output)
+        public override async Task ProcessAsync(TagHelperContext tagContext, TagHelperOutput output)
         {
             output.SuppressOutput();
 
@@ -37,12 +42,21 @@ namespace ByteNuts.NetCoreControls.Controls.Grid
             else
                 return;
 
+            var childContent = await output.GetChildContentAsync();
 
-            _context.AllowPaging = true;
-            if (_context.PageSize == int.MaxValue)
-                _context.PageSize = 10;
+            _nccTagContext.EmptyRow = new GridRow
+            {
+                CssClass = RowCssClass,
+                Cells = new List<GridCell>
+                {
+                    new GridCell
+                    {
+                        Value = childContent.GetContent(),
+                        CssClass = CellCssClass,
+                        Aggregate = false
+                    }
+                }
+            };
         }
-
-
     }
 }

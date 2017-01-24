@@ -10,6 +10,6 @@ namespace ByteNuts.NetCoreControls.Models.Grid
         public int PageSize { get; set; } = 0;
         public int TotalItems { get; set; }
         public bool AllowPaging { get; set; } = false;
-        public int PagerNavigationSize { get; set; } = 10;
+        public int PagerNavSize { get; set; } = 10;
     }
 }

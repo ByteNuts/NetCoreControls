@@ -73,55 +73,68 @@ namespace ByteNuts.NetCoreControls.Services
 
             var tableBody = new TagBuilder("tbody");
             if (!string.IsNullOrEmpty(context.CssClassBody)) tableBody.Attributes.Add("class", context.CssClassBody);
-            for (var i = 0; i < gridContent.Count; i++)
+            if (gridContent != null && gridContent.Count > 0)
             {
-                var row = gridContent[i];
-                var tr = new TagBuilder("tr");
-                if (!string.IsNullOrEmpty(row.CssClass)) tr.Attributes.Add("class", row.CssClass);
-                for (var j = 0; j < row.Cells.Count; j++)
+                for (var i = 0; i < gridContent.Count; i++)
                 {
-                    var cell = row.Cells[j];
+                    var row = gridContent[i];
+                    var tr = new TagBuilder("tr");
+                    if (!string.IsNullOrEmpty(row.CssClass)) tr.Attributes.Add("class", row.CssClass);
+                    for (var j = 0; j < row.Cells.Count; j++)
+                    {
+                        var cell = row.Cells[j];
 
-                    if (!cell.Aggregate)
-                    {
-                        var td = new TagBuilder("td");
-                        if (!string.IsNullOrEmpty(cell.CssClass)) td.Attributes.Add("class", cell.CssClass);
-                        td.InnerHtml.AppendHtml(cell.Value);
-                        tr.InnerHtml.AppendHtml(td);
-                    }
-                    else
-                    {
-                        if (i == 0 || !(i > 0 && gridContent[i - 1].Cells[j].Value == cell.Value))
+                        if (!cell.Aggregate)
                         {
-                            var sameCount = 1;
-                            while (i + sameCount < gridContent.Count && gridContent[i + sameCount].Cells[j].Value == cell.Value)
-                            {
-                                sameCount++;
-                            }
                             var td = new TagBuilder("td");
                             if (!string.IsNullOrEmpty(cell.CssClass)) td.Attributes.Add("class", cell.CssClass);
-                            if (sameCount > 0) td.Attributes.Add("rowspan", sameCount.ToString());
                             td.InnerHtml.AppendHtml(cell.Value);
                             tr.InnerHtml.AppendHtml(td);
                         }
+                        else
+                        {
+                            if (i == 0 || !(i > 0 && gridContent[i - 1].Cells[j].Value == cell.Value))
+                            {
+                                var sameCount = 1;
+                                while (i + sameCount < gridContent.Count && gridContent[i + sameCount].Cells[j].Value == cell.Value)
+                                {
+                                    sameCount++;
+                                }
+                                var td = new TagBuilder("td");
+                                if (!string.IsNullOrEmpty(cell.CssClass)) td.Attributes.Add("class", cell.CssClass);
+                                if (sameCount > 0) td.Attributes.Add("rowspan", sameCount.ToString());
+                                td.InnerHtml.AppendHtml(cell.Value);
+                                tr.InnerHtml.AppendHtml(td);
+                            }
+                        }
                     }
-                }
 
+                    tableBody.InnerHtml.AppendHtml(tr);
+                }
+            }
+            else if (context.EmptyRow != null)
+            {
+                var tr = new TagBuilder("tr");
+                if (!string.IsNullOrEmpty(context.EmptyRow.CssClass)) tr.Attributes.Add("class", context.EmptyRow.CssClass);
+
+                var emptyCell = context.EmptyRow.Cells.FirstOrDefault();
+
+                var td = new TagBuilder("td")
+                {
+                    Attributes = { { "colspan", context.ColCount.ToString() } }
+                };
+                if (!string.IsNullOrEmpty(emptyCell.CssClass)) td.Attributes.Add("class", emptyCell.CssClass);
+
+                td.InnerHtml.AppendHtml(emptyCell.Value);
+                tr.InnerHtml.AppendHtml(td);
                 tableBody.InnerHtml.AppendHtml(tr);
             }
 
             return tableBody;
         }
 
-        public static TagBuilder BuildTablePager(GridNccTagContext context, GridContext gridContext)
+        private static TagBuilder BuildTablePager(GridNccTagContext context, GridContext gridContext)
         {
-            var tableFooter = new TagBuilder("tfoot");
-            var tr = new TagBuilder("tr");
-            var td = new TagBuilder("td") {Attributes = {{"colspan", context.ColCount.ToString()}}};
-
-            var div = new TagBuilder("div") { Attributes = { { "class", "nccGridPagerContainer" } } };
-            var ul = new TagBuilder("ul") { Attributes = { { "class", "nccGridPagerPagination" } } };
-
             var totalPages = gridContext.TotalItems % gridContext.PageSize > 0
                 ? gridContext.TotalItems / gridContext.PageSize + 1
                 : gridContext.TotalItems / gridContext.PageSize;
@@ -132,6 +145,13 @@ namespace ByteNuts.NetCoreControls.Services
             var model = new NccActionModel { TargetIds = new [] { gridContext.Id } };
             model.Parameters.Add($"{DefaultParameters.ActionType.ToString().NccAddPrefix()}", "Filter");
 
+            var tableFooter = new TagBuilder("tfoot");
+            var tr = new TagBuilder("tr");
+            var td = new TagBuilder("td") { Attributes = { { "colspan", context.ColCount.ToString() } } };
+
+            var div = new TagBuilder("div") { Attributes = { { "class", "nccGridPagerContainer" } } };
+            var ul = new TagBuilder("ul") { Attributes = { { "class", "nccGridPagerPagination" } } };
+
             var firstLink = BuilPagerLink(1, model, "<<", false, gridContext.PageNumber == 1);
             var prevLink = BuilPagerLink(gridContext.PageNumber - 1, model, "<", false, gridContext.PageNumber == 1);
 
@@ -141,11 +161,11 @@ namespace ByteNuts.NetCoreControls.Services
             var nextLink = BuilPagerLink(gridContext.PageNumber + 1, model, ">", false, gridContext.PageNumber == totalPages);
             var lastLink = BuilPagerLink(totalPages, model, ">>", false, gridContext.PageNumber == totalPages);
 
-            var navSize = gridContext.PagerNavigationSize >= totalPages ? totalPages : gridContext.PagerNavigationSize;
+            var navSize = gridContext.PagerNavSize >= totalPages ? totalPages : gridContext.PagerNavSize;
             var linksBefore = navSize / 2 < gridContext.PageNumber
                 ? navSize / 2
                 : gridContext.PageNumber - 1;
-            var linksAfter = navSize / 2 < totalPages - gridContext.PageNumber
+            var linksAfter = navSize / 2 <= totalPages - gridContext.PageNumber
                 ? navSize - linksBefore
                 : totalPages - gridContext.PageNumber;
 
@@ -156,6 +176,8 @@ namespace ByteNuts.NetCoreControls.Services
                     linksBefore--;
                 else
                     linksAfter--;
+            else
+                linksAfter--;
 
             for (var i = 0; i < linksBefore; i++)
             {

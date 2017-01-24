@@ -12,7 +12,7 @@ using ByteNuts.NetCoreControls.Models.Grid;
 
 namespace ByteNuts.NetCoreControls.Controls.Grid
 {
-    [RestrictChildren("ncc:grid-columns", "ncc:grid-content", "ncc:grid-pager")]
+    [RestrictChildren("ncc:grid-columns", "ncc:grid-content", "ncc:grid-pager", "ncc:grid-emptyrow")]
     [HtmlTargetElement("ncc:grid")]
     public class GridTagHelper : TagHelper
     {
@@ -44,6 +44,12 @@ namespace ByteNuts.NetCoreControls.Controls.Grid
         [HtmlAttributeName("AllowPaging")]
         public bool AllowPaging { get; set; }
 
+        [HtmlAttributeName("PageSize")]
+        public int PageSize { get; set; }
+
+        [HtmlAttributeName("PagerNavSize")]
+        public int PagerNavSize { get; set; }
+        
         private GridNccTagContext _nccTagContext;
         private IDataProtector _protector;
         protected IHtmlGenerator Generator { get; }
@@ -75,6 +81,9 @@ namespace ByteNuts.NetCoreControls.Controls.Grid
             Context.AllowPaging = AllowPaging;
             if (AllowPaging)
             {
+                Context.PagerNavSize = PagerNavSize;
+                if (PageSize > 0)
+                    Context.PageSize = PageSize;
                 if (Context.PageSize == 0 || Context.PageSize == int.MaxValue)
                     Context.PageSize = 10;
             }

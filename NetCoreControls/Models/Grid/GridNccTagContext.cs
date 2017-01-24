@@ -11,6 +11,7 @@ namespace ByteNuts.NetCoreControls.Models.Grid
 
         public GridRow GridHeader { get; set; } = new GridRow();
         public List<GridRow> GridRows { get; set; } = new List<GridRow>();
+        public GridRow EmptyRow { get; set; }
 
         public string PreContent { get; set; }
         public string PostContent { get; set; }
