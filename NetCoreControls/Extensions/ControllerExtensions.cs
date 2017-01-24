@@ -8,32 +8,28 @@ namespace ByteNuts.NetCoreControls.Extensions
 {
     public static class ControllerExtensions
     {
-        public static async Task<T> NccBindModel<T>(this NetCoreControlsController controller, T model, List<Dictionary<string, object>> dataKeys) where T : class 
+        public static async Task NccBindModel<T>(this NetCoreControlsController controller, T model, List<Dictionary<string, object>> dataKeys, string prefix = "") where T : class 
         {
-            var ok = await controller.TryUpdateModelAsync(model);
+            var ok = await controller.TryUpdateModelAsync(model, prefix);
 
-            if (!ok) return model;
+            if (!ok) return;
 
             var list = model as IList;
-            if (list?.Count == dataKeys.Count)
+            if (list?.Count != dataKeys.Count) return;
+
+            for (var i = 0; i < list.Count; i++)
             {
-                for (var i = 0; i < list.Count; i++)
-                {
-                    MapDataKeysToRow(list[i], dataKeys[i]);
-                }
+                MapDataKeysToRow(list[i], dataKeys[i]);
             }
-            return model;
         }
 
 
-        private static T MapDataKeysToRow<T>(T row, Dictionary<string, object> dataKeysRow)
+        private static void MapDataKeysToRow<T>(T row, Dictionary<string, object> dataKeysRow)
         {
             foreach (var dataKey in dataKeysRow)
             {
                 row.NccSetPropertyValue(dataKey.Key, dataKey.Value);
             }
-
-            return row;
         }
     }
 }

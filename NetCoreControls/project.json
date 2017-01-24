@@ -2,27 +2,28 @@
   "version": "0.1.0-beta-*",
   "packOptions": {
     "licenseUrl": "https://github.com/ByteNuts/NetCoreControls/blob/master/LICENSE",
-    "requireLicenseAcceptance": true,
     "repository": {
       "type": "git",
       "url": "https://github.com/ByteNuts/NetCoreControls"
     },
+    "requireLicenseAcceptance": true,
+    "summary": "TagHelpers Controls for ASP.NET Core to render and manage data information.",
     "tags": [
       "aspnetcore",
       ".NET Core",
       "MVC Core",
       "ASP.NET",
       "MVC"
-    ],
-    "summary": "TagHelpers Controls for ASP.NET Core to render and manage data information."
+    ]
   },
 
   "dependencies": {
     "Microsoft.AspNetCore.DataProtection.Abstractions": "1.1.0",
+    "Microsoft.AspNetCore.Mvc.Razor": "1.1.0",
     "Microsoft.AspNetCore.Mvc.ViewFeatures": "1.1.0",
     "Microsoft.AspNetCore.Razor.Runtime": "1.1.0",
     "NETStandard.Library": "1.6.1",
-    "System.Runtime.Loader": "4.0.0"
+    "System.Runtime.Loader": "4.3.0"
   },
 
   "frameworks": {

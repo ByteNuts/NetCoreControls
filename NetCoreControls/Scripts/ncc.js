@@ -4,134 +4,102 @@ function nccAction(event, elem, params, prefix) {
         event.preventDefault();
     }
     var nncActionModel = JSON.parse(params);
+    var postData = [];
+    var posId = 0;
+    $.each(nncActionModel.Parameters,
+        function (key, value) {
+            postData.push({
+                name: "parameters[" + posId + "].key",
+                value: key
+            });
+            postData.push({
+                name: "parameters[" + posId + "].value",
+                value: value
+            });
+            posId++;
+        });
+
+    addElementParameters(postData, elem, posId, prefix);
 
     $.each(nncActionModel.TargetIds, function () {
-        var postData;
         var controlId = this;
 
+        postData.push({
+            name: "context",
+            value: $("#" + controlId + "_context").val()
+        });
+
         var div = $("#" + controlId);
+
         var form = div.children("form");
-        var paramId = 0;
-        var elemCount = 0;
-        var elemIds;
-        if (form.length === 0) {
-            postData = {};
-            postData["context"] = $("#" + controlId + "_context").val();
-            $.each(nncActionModel.Parameters,
-                function (key, value) {
-                    postData["parameters[" + paramId + "].key"] = key;
-                    postData["parameters[" + paramId + "].value"] = value;
-                    paramId++;
+        if (form.length !== 0) {
+            $.each(form.serializeArray(), function (_, field) {
+                var fieldName = controlId + "." + field.name;
+                if (field.name.startsWith("[")) {
+                    fieldName = controlId + field.name;
+                }
+                postData.push({
+                    name: fieldName,
+                    value: field.value
                 });
-
-            //Add element properties
-            postData = addElementToPostData(postData, elem, paramId, prefix);
-        } else {
-            form.append("<input type='hidden' name='context' value='" + $("#" + controlId + "_context").val() + "' />");
-            $.each(nncActionModel.Parameters,
-                function (key, value) {
-                    form.append("<input type='hidden' name='parameters[" + paramId + "].key' value='" + key + "' />");
-                    form.append("<input type='hidden' name='parameters[" + paramId + "].value' value='" + value + "' />");
-                    paramId++;
-                });
-
-            //Add element properties
-            form = addElementToForm(form, elem, paramId, prefix);
-            postData = form.serializeArray();
+            });
         }
-        nccPost(controlId, postData);
     });
+    nccPost(nncActionModel.TargetIds, postData);
 }
 
 
-function nccPost(controlId, postData) {
-    if (postData != null && controlId != null) {
+function nccPost(controlIds, postData) {
+    if (postData != null && controlIds != null) {
         var options = {
             type: "POST",
             url: "/NetCoreControls/ControlAction",
             data: postData,
             success: function (data) {
-                var update = $("#" + controlId);
-                $(update).replaceWith(data);
+                for (var i = 0; i < data.length; i++) {
+                    var update = $("#" + controlIds[i]);
+                    $(update).replaceWith(data[i]);
+                }
             }
         }
         $.ajax(options);
     }
 }
 
-function addElementToForm(form, elem, paramId, prefix) {
+function addElementParameters(postData, elem, posId, prefix) {
     if (elem instanceof jQuery) {
-        form.append("<input type='hidden' name='parameters[" + paramId + "].key' value='" + prefix + "-ElemId' />");
-        form.append("<input type='hidden' name='parameters[" + paramId + "].value' value='" + elem.prop('id') + "' />");
-        paramId++;
-        form.append("<input type='hidden' name='parameters[" + paramId + "].key' value='" + prefix + "-ElemName' />");
-        form.append("<input type='hidden' name='parameters[" + paramId + "].value' value='" + elem.prop('name') + "' />");
-        paramId++;
-        form.append("<input type='hidden' name='parameters[" + paramId + "].key' value='" + prefix + "-ElemValue' />");
-        if (elem.attr("value") != null) {
-            form.append("<input type='hidden' name='parameters[" + paramId + "].value' value='" + elem.attr("value") + "' />");
-        } else {
-            form.append("<input type='hidden' name='parameters[" + paramId + "].value' value='" + elem.val() + "' />");
-        }
-        paramId++;
+        processElementData(postData, elem, posId, prefix, "");
     } else {
         var elemCount = 0;
         $.each(elem, function () {
             var ctrl = $("#" + this);
-            form.append("<input type='hidden' name='parameters[" + paramId + "].key' value='" + prefix + "-ElemId" + elemCount + "' />");
-            form.append("<input type='hidden' name='parameters[" + paramId + "].value' value='" + ctrl.prop('id') + "' />");
-            paramId++;
-            form.append("<input type='hidden' name='parameters[" + paramId + "].key' value='" + prefix + "-ElemName" + elemCount + "' />");
-            form.append("<input type='hidden' name='parameters[" + paramId + "].value' value='" + ctrl.prop("name") + "' />");
-            paramId++;
-            form.append("<input type='hidden' name='parameters[" + paramId + "].key' value='" + prefix + "-ElemValue" + elemCount + "' />");
-            if (ctrl.attr("value") != null) {
-                form.append("<input type='hidden' name='parameters[" + paramId + "].value' value='" + ctrl.attr("value") + "' />");
-            } else {
-                form.append("<input type='hidden' name='parameters[" + paramId + "].value' value='" + ctrl.val() + "' />");
-            }
-            paramId++;
+            processElementData(postData, ctrl, posId, prefix, elemCount);
             elemCount++;
         });
     }
-    return form;
+}
+function processElementData(postData, elem, posId, prefix, elemCount) {
+    appendDataToPostArray(postData, prefix + "-ElemId" + elemCount, elem.prop("id"), posId);
+    posId++;
+
+    appendDataToPostArray(postData, prefix + "-ElemName" + elemCount, elem.prop("name"), posId);
+    posId++;
+
+    if (elem.attr("value")) {
+        appendDataToPostArray(postData, prefix + "-ElemValue" + elemCount, elem.attr("value"), posId);
+    } else {
+        appendDataToPostArray(postData, prefix + "-ElemValue" + elemCount, elem.val(), posId);
+    }
+    posId++;
 }
 
-function addElementToPostData(postData, elem, paramId, prefix) {
-    if (elem instanceof jQuery) {
-        postData["parameters[" + paramId + "].key"] = prefix + "-ElemId";
-        postData["parameters[" + paramId + "].value"] = elem.prop("id");
-        paramId++;
-        postData["parameters[" + paramId + "].key"] = prefix + "-ElemName";
-        postData["parameters[" + paramId + "].value"] = elem.prop("name");
-        paramId++;
-        postData["parameters[" + paramId + "].key"] = prefix + "-ElemValue";
-        if (elem.attr("value") != null) {
-            postData["parameters[" + paramId + "].value"] = elem.attr("value");
-        } else {
-            postData["parameters[" + paramId + "].value"] = elem.val();
-        }
-
-        paramId++;
-    } else {
-        var elemCount = 0;
-        $.each(elem, function () {
-            var ctrl = $("#" + this);
-            postData["parameters[" + paramId + "].key"] = prefix + "-ElemId" + elemCount;
-            postData["parameters[" + paramId + "].value"] = ctrl.prop("id");
-            paramId++;
-            postData["parameters[" + paramId + "].key"] = prefix + "-ElemName" + elemCount;
-            postData["parameters[" + paramId + "].value"] = ctrl.prop("name");
-            paramId++;
-            postData["parameters[" + paramId + "].key"] = prefix + "-ElemValue" + elemCount;
-            if (ctrl.attr("value") != null) {
-                postData["parameters[" + paramId + "].value"] = ctrl.attr("value");
-            } else {
-                postData["parameters[" + paramId + "].value"] = ctrl.val();
-            }
-            paramId++;
-            elemCount++;
-        });
-    }
-    return postData;
+function appendDataToPostArray(postData, key, value, posId) {
+    postData.push({
+        name: "parameters[" + posId + "].key",
+        value: key
+    });
+    postData.push({
+        name: "parameters[" + posId + "].value",
+        value: value
+    });
 }

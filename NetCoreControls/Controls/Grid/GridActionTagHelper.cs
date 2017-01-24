@@ -21,8 +21,10 @@ namespace ByteNuts.NetCoreControls.Controls.Grid
 
         public override void Process(TagHelperContext tagContext, TagHelperOutput output)
         {
-            var model = new NccActionModel();
-            model.TargetIds = GridActionTarget.Split(',');
+            var model = new NccActionModel
+            {
+                TargetIds = GridActionTarget.Split(',')
+            };
             model.Parameters.Add($"{DefaultParameters.ActionType.ToString().NccAddPrefix()}", "GridAction");
             model.Parameters.Add($"{DefaultParameters.EventName.ToString().NccAddPrefix()}", GridAction.ToString());
             model.Parameters.Add($"{GridViewParameters.RowNumber.ToString().NccAddPrefix()}", GridRowPos.ToString());
