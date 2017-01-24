@@ -20,7 +20,7 @@ namespace ByteNuts.NetCoreControls.Controls.HtmlRender
         public ViewContext ViewContext { get; set; }
 
         [HtmlAttributeName("Context")]
-        public HtmlRenderContext Context { get; set; }
+        public NccHtmlRenderContext Context { get; set; }
 
         [HtmlAttributeName("RenderForm")]
         public bool RenderForm { get; set; }

@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 
 namespace ByteNuts.NetCoreControls.Models.Grid
 {
-    public class GridNccTagContext : NccTagContext
+    public class NccGridTagContext : NccTagContext
     {
         public int RowNumber { get; set; }
         public int ColCount { get; set; }

@@ -21,14 +21,14 @@ namespace ByteNuts.NetCoreControls.Controls.Grid
         [HtmlAttributeName("CellCssClass")]
         public string CellCssClass { get; set; }
 
-        private GridNccTagContext _nccTagContext;
-        private GridContext _context;
+        private NccGridTagContext _nccTagContext;
+        private NccGridContext _context;
 
 
         public override void Init(TagHelperContext tagContext)
         {
-            if (tagContext.Items.ContainsKey(typeof(GridNccTagContext)))
-                _nccTagContext = (GridNccTagContext)tagContext.Items[typeof(GridNccTagContext)];
+            if (tagContext.Items.ContainsKey(typeof(NccGridTagContext)))
+                _nccTagContext = (NccGridTagContext)tagContext.Items[typeof(NccGridTagContext)];
             else
                 throw new Exception("GridViewNccTagContext was lost between tags...");
         }
@@ -37,8 +37,8 @@ namespace ByteNuts.NetCoreControls.Controls.Grid
         {
             output.SuppressOutput();
 
-            if (tagContext.Items.ContainsKey(typeof(GridContext)))
-                _context = (GridContext)tagContext.Items[typeof(GridContext)];
+            if (tagContext.Items.ContainsKey(typeof(NccGridContext)))
+                _context = (NccGridContext)tagContext.Items[typeof(NccGridContext)];
             else
                 return;
 

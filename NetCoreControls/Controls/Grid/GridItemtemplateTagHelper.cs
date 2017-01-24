@@ -21,17 +21,17 @@ namespace ByteNuts.NetCoreControls.Controls.Grid
         [HtmlAttributeName("Aggregate")]
         public bool Aggregate { get; set; }
 
-        private GridNccTagContext _nccTagContext;
-        private GridContext _context;
+        private NccGridTagContext _nccTagContext;
+        private NccGridContext _context;
 
         public override void Init(TagHelperContext tagContext)
         {
-            if (tagContext.Items.ContainsKey(typeof(GridNccTagContext)))
-                _nccTagContext = (GridNccTagContext)tagContext.Items[typeof(GridNccTagContext)];
+            if (tagContext.Items.ContainsKey(typeof(NccGridTagContext)))
+                _nccTagContext = (NccGridTagContext)tagContext.Items[typeof(NccGridTagContext)];
             else
             {
-                _nccTagContext = new GridNccTagContext();
-                tagContext.Items.Add(typeof(GridNccTagContext), _nccTagContext);
+                _nccTagContext = new NccGridTagContext();
+                tagContext.Items.Add(typeof(NccGridTagContext), _nccTagContext);
             }
         }
 
@@ -39,8 +39,8 @@ namespace ByteNuts.NetCoreControls.Controls.Grid
         {
             output.SuppressOutput();
 
-            if (tagContext.Items.ContainsKey(typeof(GridContext)))
-                _context = (GridContext)tagContext.Items[typeof(GridContext)];
+            if (tagContext.Items.ContainsKey(typeof(NccGridContext)))
+                _context = (NccGridContext)tagContext.Items[typeof(NccGridContext)];
             else
                 return;
 

@@ -1,6 +1,6 @@
 ﻿namespace ByteNuts.NetCoreControls.Models.HtmlRender
 {
-    public class HtmlRenderContext : NccContext
+    public class NccHtmlRenderContext : NccContext
     {
     }
 }

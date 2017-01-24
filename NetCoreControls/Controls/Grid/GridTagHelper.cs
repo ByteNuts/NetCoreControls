@@ -21,7 +21,7 @@ namespace ByteNuts.NetCoreControls.Controls.Grid
         public ViewContext ViewContext { get; set; }
 
         [HtmlAttributeName("Context")]
-        public GridContext Context { get; set; }
+        public NccGridContext Context { get; set; }
 
         [HtmlAttributeName("DataKeys")]
         public string DataKeys { get; set; }
@@ -50,7 +50,7 @@ namespace ByteNuts.NetCoreControls.Controls.Grid
         [HtmlAttributeName("PagerNavSize")]
         public int PagerNavSize { get; set; }
         
-        private GridNccTagContext _nccTagContext;
+        private NccGridTagContext _nccTagContext;
         private IDataProtector _protector;
         protected IHtmlGenerator Generator { get; }
 
@@ -62,8 +62,8 @@ namespace ByteNuts.NetCoreControls.Controls.Grid
 
         public override void Init(TagHelperContext tagContext)
         {
-            _nccTagContext = new GridNccTagContext();
-            tagContext.Items.Add(typeof(GridNccTagContext), _nccTagContext);
+            _nccTagContext = new NccGridTagContext();
+            tagContext.Items.Add(typeof(NccGridTagContext), _nccTagContext);
         }
 
         public override async Task ProcessAsync(TagHelperContext tagContext, TagHelperOutput output)
@@ -110,7 +110,7 @@ namespace ByteNuts.NetCoreControls.Controls.Grid
 
             if (Context.Visible)
             {
-                tagContext.Items.Add(typeof(GridContext), Context);
+                tagContext.Items.Add(typeof(NccGridContext), Context);
 
                 if (RenderForm)
                 {

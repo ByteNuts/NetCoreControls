@@ -20,12 +20,12 @@ namespace ByteNuts.NetCoreControls.Controls.Grid
         public GridViewHtmlContentType ContentType { get; set; }
 
 
-        private GridNccTagContext _nccTagContext;
+        private NccGridTagContext _nccTagContext;
 
         public override void Init(TagHelperContext tagContext)
         {
-            if (tagContext.Items.ContainsKey(typeof(GridNccTagContext)))
-                _nccTagContext = (GridNccTagContext)tagContext.Items[typeof(GridNccTagContext)];
+            if (tagContext.Items.ContainsKey(typeof(NccGridTagContext)))
+                _nccTagContext = (NccGridTagContext)tagContext.Items[typeof(NccGridTagContext)];
             else
                 throw new Exception("GridViewNccTagContext was lost between tags...");
         }
@@ -33,7 +33,7 @@ namespace ByteNuts.NetCoreControls.Controls.Grid
         public override async Task ProcessAsync(TagHelperContext tagContext, TagHelperOutput output)
         {
             output.TagName = null;
-            if (!tagContext.Items.ContainsKey(typeof(GridContext)))
+            if (!tagContext.Items.ContainsKey(typeof(NccGridContext)))
             {
                 output.SuppressOutput();
                 return;

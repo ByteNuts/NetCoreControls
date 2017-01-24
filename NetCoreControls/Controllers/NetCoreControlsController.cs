@@ -180,7 +180,7 @@ namespace ByteNuts.NetCoreControls.Controllers
                     case "gridaction":
                         if (!parametersList.ContainsKey($"{DefaultParameters.EventName.ToString().NccAddPrefix()}"))
                             throw new Exception("No EventName specified for the GridView action!");
-                        if (!(controlCtx is GridContext))
+                        if (!(controlCtx is NccGridContext))
                             throw new Exception("A GridAction was specified but the context is not of type GridViewContext!");
                         switch (parametersList[$"{DefaultParameters.EventName.ToString().NccAddPrefix()}"].ToLower())
                         {

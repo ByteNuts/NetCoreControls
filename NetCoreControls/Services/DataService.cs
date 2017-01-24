@@ -88,13 +88,13 @@ namespace ByteNuts.NetCoreControls.Services
 
         private static IDictionary<string, object> AddExtraToParameters(IDictionary<string, object> callParams, object context)
         {
-            if (context is GridContext)
+            if (context is NccGridContext)
             {
-                return GridService.GetExtraParameters(callParams, context as GridContext);
+                return GridService.GetExtraParameters(callParams, context as NccGridContext);
             }
-            else if (context is HtmlRenderContext)
+            else if (context is NccHtmlRenderContext)
             {
-                return HtmlRenderService.GetExtraParameters(callParams, context as HtmlRenderContext);
+                return HtmlRenderService.GetExtraParameters(callParams, context as NccHtmlRenderContext);
             }
 
             return null;
@@ -103,13 +103,13 @@ namespace ByteNuts.NetCoreControls.Services
 
         private static T ProcessControlDataResult<T>(T context, object result)
         {
-            if (context is GridContext)
+            if (context is NccGridContext)
             {
-                return (T)Convert.ChangeType(GridService.SetDataResult(context as GridContext, result), typeof(T));
+                return (T)Convert.ChangeType(GridService.SetDataResult(context as NccGridContext, result), typeof(T));
             }
-            else if (context is HtmlRenderContext)
+            else if (context is NccHtmlRenderContext)
             {
-                return (T)Convert.ChangeType(HtmlRenderService.SetDataResult(context as HtmlRenderContext, result), typeof(T));
+                return (T)Convert.ChangeType(HtmlRenderService.SetDataResult(context as NccHtmlRenderContext, result), typeof(T));
             }
 
             return default(T);
