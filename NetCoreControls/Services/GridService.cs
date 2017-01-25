@@ -41,8 +41,8 @@ namespace ByteNuts.NetCoreControls.Services
         public static TagBuilder BuildTableHtml(NccGridTagContext context, NccGridContext gridContext)
         {
             var table = new TagBuilder("table");
-            if (!string.IsNullOrEmpty(context.CssClassGrid)) table.Attributes.Add("class", context.CssClassGrid);
-            
+            table.Attributes.Add("class", !string.IsNullOrEmpty(context.CssClassGrid) ? context.CssClassGrid : "table");
+
             table.InnerHtml.AppendHtml(BuildTableHeader(context));
 
             table.InnerHtml.AppendHtml(BuildTableBody(context));
