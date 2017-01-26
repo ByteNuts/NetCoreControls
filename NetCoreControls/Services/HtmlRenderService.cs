@@ -7,7 +7,6 @@ namespace ByteNuts.NetCoreControls.Services
     {
         public static IDictionary<string, object> GetExtraParameters(IDictionary<string, object> callParams, NccHtmlRenderContext context)
         {
-
             return callParams;
         }
 

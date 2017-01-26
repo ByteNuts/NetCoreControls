@@ -83,7 +83,7 @@ namespace ByteNuts.NetCoreControls.Controls.Grid
                         _context.DataKeysValues.Add(dataKeysRow);
                     }
 
-                    service?.NccInvokeMethod(GridViewEvents.RowDataBound, new object[] { new NccEventArgs { NccTagContext = _nccTagContext, NccControlContext = _context, DataObjects = data}, row });
+                    service?.NccInvokeMethod(GridViewEvents.RowDataBound, new object[] { new NccEventArgs { NccTagContext = _nccTagContext, NccControlContext = _context, DataObjects = data }, row });
 
                     _nccTagContext.GridRows.Add(new GridRow { Cells = new List<GridCell>(), RowNumber = _nccTagContext.RowNumber });
 
@@ -93,6 +93,7 @@ namespace ByteNuts.NetCoreControls.Controls.Grid
                     ViewContext.ViewData.Model = rowData.ExtToExpandoObject();
 
                     await output.GetChildContentAsync(false);
+
                     //ViewContext.ViewBag.RowCount
                     _nccTagContext.RowNumber++;
                     _nccTagContext.ColCountComplete = true;

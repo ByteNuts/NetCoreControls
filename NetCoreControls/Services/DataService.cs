@@ -4,9 +4,7 @@ using Microsoft.AspNetCore.Http;
 using System.Reflection;
 using System;
 using System.Collections;
-using System.Collections.Concurrent;
 using System.Linq;
-using System.Security.Cryptography.X509Certificates;
 using ByteNuts.NetCoreControls.Models.Grid;
 using ByteNuts.NetCoreControls.Models.HtmlRender;
 

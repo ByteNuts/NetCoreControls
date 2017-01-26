@@ -51,5 +51,9 @@ namespace ByteNuts.NetCoreControls.Models
         /// Additional data to store in control context
         /// </summary>
         public Dictionary<string, object> AdditionalData { get; set; } = new Dictionary<string, object>();
+
+        public string Error { get; set; }
+
+        internal bool FirstRun { get; set; } = true;
     }
 }

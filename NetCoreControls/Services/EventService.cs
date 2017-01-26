@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Text.Encodings.Web;
 using ByteNuts.NetCoreControls.Extensions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using ByteNuts.NetCoreControls.Models.Enums;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace ByteNuts.NetCoreControls.Services
 {
@@ -58,6 +60,29 @@ namespace ByteNuts.NetCoreControls.Services
 
                 methodInfo.Invoke(service, parametersArray.ToArray());
             }
+        }
+
+        public static string ProcessError(Exception e)
+        {
+            var content = new TagBuilder("div")
+            {
+                Attributes = { { "class", "alert alert-danger" }, { "style", "text-align:center;" } }
+            };
+            var h4 = new TagBuilder("h4");
+            var p = new TagBuilder("p");
+            var strong = new TagBuilder("strong");
+            strong.InnerHtml.Append("Ocorreu um erro!");
+            var span = new TagBuilder("span");
+            span.InnerHtml.Append(!string.IsNullOrEmpty(e.Message) ? e.Message : e.InnerException.Message);
+
+            h4.InnerHtml.AppendHtml(strong);
+            p.InnerHtml.AppendHtml(span);
+            content.InnerHtml.AppendHtml(h4);
+            content.InnerHtml.AppendHtml(p);
+
+            var writer = new System.IO.StringWriter();
+            content.WriteTo(writer, HtmlEncoder.Default);
+            return writer.ToString();
         }
     }
 }

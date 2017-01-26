@@ -49,7 +49,6 @@ namespace ByteNuts.NetCoreControls.Controls.Actions
                     existingJsEvent = output.Attributes[jsEvent.ToLower()].Value.ToString();
 
                 output.Attributes.SetAttribute(jsEvent.ToLower(), $"{existingJsEvent} nccAction(null, " + (string.IsNullOrEmpty(NccFilterIds) ? "$(this)" : $"{JsonConvert.SerializeObject(NccFilterIds.Split(','))}") + $", '{JsonConvert.SerializeObject(model)}', '{Constants.AttributePrefix}');");
-                //output.Attributes.SetAttribute(jsEvent.ToLower(), $"{existingJsEvent} nccAction(null, " + (string.IsNullOrEmpty(NccFilterId) ? "$(this)" : $"$('#{NccFilterId}')") + $", '{JsonConvert.SerializeObject(model)}', '{Constants.AttributePrefix}');");
             }
 
         }

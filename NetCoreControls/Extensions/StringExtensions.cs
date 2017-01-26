@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace ByteNuts.NetCoreControls.Extensions
+﻿namespace ByteNuts.NetCoreControls.Extensions
 {
     public static class StringExtensions
     {

@@ -1,5 +1,4 @@
-﻿using System.Threading.Tasks;
-using ByteNuts.NetCoreControls.Extensions;
+﻿using ByteNuts.NetCoreControls.Extensions;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 using ByteNuts.NetCoreControls.Models;
 using ByteNuts.NetCoreControls.Models.Enums;

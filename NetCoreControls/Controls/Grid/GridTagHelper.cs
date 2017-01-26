@@ -81,7 +81,8 @@ namespace ByteNuts.NetCoreControls.Controls.Grid
             Context.AllowPaging = AllowPaging;
             if (AllowPaging)
             {
-                Context.PagerNavSize = PagerNavSize;
+
+                Context.PagerNavSize = PagerNavSize > 0 ? PagerNavSize : 5;
                 if (PageSize > 0)
                     Context.PageSize = PageSize;
                 if (Context.PageSize == 0 || Context.PageSize == int.MaxValue)
@@ -102,8 +103,6 @@ namespace ByteNuts.NetCoreControls.Controls.Grid
             //Get grid id and share it with siblings parents
             if (string.IsNullOrEmpty(Context.Id))
                 Context.Id = Guid.NewGuid().ToString();
-
-            //_nccTagContext.GridId = Context.Id;
 
             output.TagName = "div";
             output.Attributes.SetAttribute("id", Context.Id);
