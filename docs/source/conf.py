@@ -47,8 +47,8 @@ master_doc = 'index'
 
 # General information about the project.
 project = 'NetCoreControls'
-copyright = '2017, João Pereira'
-author = 'João Pereira'
+copyright = '2017, Joao Pereira'
+author = 'Joao Pereira'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
