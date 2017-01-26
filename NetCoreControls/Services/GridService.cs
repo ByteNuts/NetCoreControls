@@ -176,7 +176,7 @@ namespace ByteNuts.NetCoreControls.Services
                     linksBefore--;
                 else
                     linksAfter--;
-            else
+            else if(navSize < linksBefore + linksAfter + 1)
                 linksAfter--;
 
             for (var i = 0; i < linksBefore; i++)

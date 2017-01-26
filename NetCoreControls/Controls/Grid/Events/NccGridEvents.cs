@@ -3,7 +3,7 @@ using ByteNuts.NetCoreControls.Models.Grid;
 
 namespace ByteNuts.NetCoreControls.Controls.Grid.Events
 {
-    public class GridEvents : NccEvents
+    public class NccGridEvents : NccEvents
     {
         public virtual void RowDataBound(NccEventArgs eventArgs, object rowData)
         {
@@ -13,18 +13,15 @@ namespace ByteNuts.NetCoreControls.Controls.Grid.Events
         {
         }
 
-        /// <summary>
-        /// Properties available:
-        /// - Controller;
-        /// - NccControlContext;
-        /// - FormCollection
-        /// </summary>
-        /// <param name="eventArgs"></param>
-        public virtual void Update(NccEventArgs eventArgs)
+        public virtual void UpdateRow(NccEventArgs eventArgs, int rowPos)
         {
         }
 
         public virtual void DeleteRow(NccEventArgs eventArgs, int rowPos)
+        {
+        }
+
+        public virtual void Update(NccEventArgs eventArgs)
         {
         }
     }

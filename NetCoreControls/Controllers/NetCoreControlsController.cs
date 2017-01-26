@@ -113,15 +113,22 @@ namespace ByteNuts.NetCoreControls.Controllers
                                     service.NccInvokeMethod(GridViewEvents.Update, new object[] { new NccEventArgs { Controller = this, NccControlContext = controlCtx, FormCollection = formCollection } });
                                     break;
                                 case "updaterow":
+                                    if (!parametersList.ContainsKey($"{GridViewParameters.RowNumber.ToString().NccAddPrefix()}"))
+                                        throw new Exception("The row number wasn't received... Something wrong has happened...");
+
+                                    var updateRowPos = Convert.ToInt32(parametersList[$"{GridViewParameters.RowNumber.ToString().NccAddPrefix()}"]);
+
+                                    if (service == null) throw new Exception("EventHandler must be registered and must exist to process events");
+                                    service.NccInvokeMethod(GridViewEvents.UpdateRow, new object[] { new NccEventArgs { Controller = this, NccControlContext = controlCtx, FormCollection = formCollection }, updateRowPos });
                                     break;
                                 case "deleterow":
                                     if (!parametersList.ContainsKey($"{GridViewParameters.RowNumber.ToString().NccAddPrefix()}"))
                                         throw new Exception("The row number wasn't received... Something wrong has happened...");
 
-                                    var rowPos = Convert.ToInt32(parametersList[$"{GridViewParameters.RowNumber.ToString().NccAddPrefix()}"]);
+                                    var deleteRowPos = Convert.ToInt32(parametersList[$"{GridViewParameters.RowNumber.ToString().NccAddPrefix()}"]);
 
                                     if (service == null) throw new Exception("EventHandler must be registered and must exist to process events");
-                                    service.NccInvokeMethod(GridViewEvents.DeleteRow, new object[] { new NccEventArgs { Controller = this, NccControlContext = controlCtx, FormCollection = formCollection }, rowPos });
+                                    service.NccInvokeMethod(GridViewEvents.DeleteRow, new object[] { new NccEventArgs { Controller = this, NccControlContext = controlCtx, FormCollection = formCollection }, deleteRowPos });
 
                                     break;
                                 default:

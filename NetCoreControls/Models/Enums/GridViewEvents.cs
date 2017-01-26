@@ -5,6 +5,7 @@
         RowDataBound,
         RowCreated,
         Update,
+        UpdateRow,
         DeleteRow
     }
 }
