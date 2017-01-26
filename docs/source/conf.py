@@ -47,8 +47,8 @@ master_doc = 'index'
 
 # General information about the project.
 project = 'NetCoreControls'
-copyright = '2017, Joao Pereira'
-author = 'Joao Pereira'
+copyright = '2017, João Pereira'
+author = 'João Pereira'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -128,7 +128,7 @@ latex_elements = {
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
     (master_doc, 'NetCoreControls.tex', 'NetCoreControls Documentation',
-     'Joao Pereira', 'manual'),
+     'João Pereira', 'manual'),
 ]
 
 
