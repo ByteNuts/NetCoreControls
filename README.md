@@ -14,6 +14,15 @@ A set of UI controls for ASP.NET Core.
 **- Subscribe control events or create custom ones** - all controls share the same base events. They also offer some other events related to the control itself. But hey!, if that isn’t enough, you can create your one custom events!
 
 
+## Available controls
+
+* Grid
+* HtmlRender
+* ...
+
+Other controls will be available in a near future...
+
+
 ## Setup and usage
 You can download and install this control package using NuGet.
 

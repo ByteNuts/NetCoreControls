@@ -18,6 +18,12 @@ The controls also use some styles from Bootstrap, but it's not a mandatory requi
 Basic setup
 -----------
 
+**Beta Only:** Please add the following MyGet repo to download latest binaries::
+
+    https://www.myget.org/F/netcorecontrols/api/v3/index.json
+
+
+
 **1. Install the NetCoreControls NuGet package**
 
 Add to ``project.json`` the following dependency::
