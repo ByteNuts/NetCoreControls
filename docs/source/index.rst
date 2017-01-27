@@ -9,21 +9,30 @@ A set of UI controls for ASP.NET Core.
 Features
 --------
 
-**Independent from data source**
+**- Independent from data source**
+
 You can use any data source you prefer. Just set up a method that returns the data you want to display.
 
-**Dynamic models allowed**
+
+**- Dynamic models allowed**
+
 There is no need to create a model to render data to a control. Just return ``dynamic`` from your data method.
 
-**AJAX Enabled**
+
+**- AJAX Enabled**
+
 All controls use AJAX to communicate with the server and perform their actions.
 
-**Controls are connected**
+
+**- Controls are connected**
+
 You can easily associate a submit button or a filter with more than one control, even with different controls.
 
-**Subscribe control events or create custom ones**
+
+**- Subscribe control events or create custom ones**
+
 All controls share the same base events. They also offer some other events related to the control itself.
-Hey! but if that isn't enough, you can create your one custom events!
+But hey!, if that isn't enough, you can create your one custom events!
 
 .. toctree::
    :maxdepth: 2

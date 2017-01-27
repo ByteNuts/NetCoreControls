@@ -10,18 +10,42 @@ All controls were built natively for .NET Core and use Tag Helpers to perform al
 Dependencies
 ------------
 
-You must use the jQuery javascript library starting from v2.
+You must use the **jQuery javascript** library starting from v2.x.
+
 The controls also use some styles from Bootstrap, but it's not a mandatory requirement since you can link your own styles classes.
 
 
 Basic setup
 -----------
 
-#. Install the NetCoreControls NuGet package
-Add to ``project.json`` the following dependency:
+**1. Install the NetCoreControls NuGet package**
+
+Add to ``project.json`` the following dependency::
 
     "NetCoreControls" : "0.1.0-beta-\*"
 
-**OR** use the Nuget package manager
+Or you can use the Package Manager Console::
 
     Install-Package ByteNuts.NetCoreControls
+
+
+
+**2. Add references to CSS and Script files**
+
+Inside your ``<head></head>`` tag, insert the following::
+
+    <link href="@Url.Action("GetNccCssFile", "NetCoreControls")" rel="stylesheet">
+
+On the bottom of your page, just above the ``</body>`` tag, insert the following::
+
+    <script type="text/javascript" src="@Url.Action("GetNccJsFile", "NetCoreControls")"></script>
+
+.. note:: Although the tag that links to the stylesheet is optional, the script is mandatory and should be placed after the jQuery link.
+
+
+
+**3. Reference the assembly to enable usage as TagHelpers**
+
+In your ``_ViewImports.cshtml`` file inside your ``Views`` folder, add the following line::
+
+    @addTagHelper "*, NetCoreControls"
