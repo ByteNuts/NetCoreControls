@@ -10,6 +10,8 @@ using ByteNuts.NetCoreControls.Models;
 using ByteNuts.NetCoreControls.Models.Enums;
 using ByteNuts.NetCoreControls.Models.Grid;
 using ByteNuts.NetCoreControls.Services;
+using ByteNuts.NetCoreControls.Extensions;
+using Newtonsoft.Json;
 
 namespace ByteNuts.NetCoreControls.Controls.Grid
 {
@@ -94,6 +96,73 @@ namespace ByteNuts.NetCoreControls.Controls.Grid
 
                     await output.GetChildContentAsync(false);
 
+                    if (_context.AutoGenerateEditButton)
+                    {
+                        var rowModel = _nccTagContext.GridRows.LastOrDefault();
+
+                        if (_context.AdditionalData.ContainsKey("EditRowNumber") && _context.AdditionalData["EditRowNumber"].ToString() == _nccTagContext.RowNumber.ToString())
+                        {
+                            var model = new NccActionModel
+                            {
+                                TargetIds = new[] { _context.Id }
+                            };
+                            model.Parameters.Add($"{DefaultParameters.ActionType.ToString().NccAddPrefix()}", "GridAction");
+                            model.Parameters.Add($"{DefaultParameters.EventName.ToString().NccAddPrefix()}", "CancelEditRow");
+                            model.Parameters.Add($"{GridViewParameters.RowNumber.ToString().NccAddPrefix()}", _nccTagContext.RowNumber.ToString());
+                            var link = new TagBuilder("a")
+                            {
+                                Attributes =
+                                    {
+                                        {"href", "#"},
+                                        {"onclick", $"nccAction(null, $(this), '{JsonConvert.SerializeObject(model)}', '{Constants.AttributePrefix}');" }
+                                    }
+                            };
+                            link.InnerHtml.AppendHtml("Cancel");
+
+                            model.Parameters[$"{DefaultParameters.EventName.ToString().NccAddPrefix()}"] = "UpdateRow";
+                            var link2 = new TagBuilder("a")
+                            {
+                                Attributes =
+                                    {
+                                        {"href", "#"},
+                                        {"onclick", $"nccAction(null, $(this), '{JsonConvert.SerializeObject(model)}', '{Constants.AttributePrefix}');" }
+                                    }
+                            };
+                            link2.InnerHtml.AppendHtml("Save");
+
+                            var cell = new GridCell();
+                            cell.Value.AppendHtml(link);
+                            rowModel?.Cells.Add(cell);
+                            var cell2 = new GridCell();
+                            cell2.Value.SetHtmlContent(link2);
+                            rowModel?.Cells.Add(cell2);
+
+                        }
+                        else
+                        {
+                            var model = new NccActionModel
+                            {
+                                TargetIds = new[] {_context.Id}
+                            };
+                            model.Parameters.Add($"{DefaultParameters.ActionType.ToString().NccAddPrefix()}", "GridAction");
+                            model.Parameters.Add($"{DefaultParameters.EventName.ToString().NccAddPrefix()}", "EditRow");
+                            model.Parameters.Add($"{GridViewParameters.RowNumber.ToString().NccAddPrefix()}", _nccTagContext.RowNumber.ToString());
+
+                            var link = new TagBuilder("a")
+                            {
+                                Attributes =
+                                    {
+                                        {"href", "#"},
+                                        {"onclick", $"nccAction(null, $(this), '{JsonConvert.SerializeObject(model)}', '{Constants.AttributePrefix}');" }
+                                    }
+                            };
+                            link.InnerHtml.AppendHtml("Edit");
+
+                            var cell = new GridCell();
+                            cell.Value.AppendHtml(link);
+                            rowModel?.Cells.Add(cell);
+                        }
+                    }
                     //ViewContext.ViewBag.RowCount
                     _nccTagContext.RowNumber++;
                     _nccTagContext.ColCountComplete = true;

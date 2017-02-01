@@ -8,6 +8,8 @@ using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Razor.TagHelpers;
+using Microsoft.Extensions.Options;
+using Microsoft.AspNetCore.Http;
 
 namespace ByteNuts.NetCoreControls.Controls.HtmlRender
 {
@@ -29,10 +31,14 @@ namespace ByteNuts.NetCoreControls.Controls.HtmlRender
         public string EventHandler { get; set; }
 
         private IDataProtector _protector;
+        private readonly NccSettings _nccSettings;
 
-        public HtmlRenderTagHelper(IDataProtectionProvider protector)
+        public HtmlRenderTagHelper(IDataProtectionProvider protector, IHttpContextAccessor contextAccessor)
         {
-            _protector = protector.CreateProtector(Constants.DataProtectionKey);
+            var options = ReflectionService.NccGetClassInstanceWithDi(contextAccessor.HttpContext, Constants.OptionsAssemblyName);
+            _nccSettings = options != null ? ((IOptions<NccSettings>)options).Value : new NccSettings();
+
+            _protector = protector.CreateProtector(_nccSettings.DataProtectionKey);
         }
 
         public override void Init(TagHelperContext tagContext)

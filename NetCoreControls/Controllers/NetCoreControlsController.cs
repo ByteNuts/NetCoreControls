@@ -16,6 +16,8 @@ using System.IO;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.Razor;
 using System.Text.Encodings.Web;
+using ByteNuts.NetCoreControls.Controls.Grid.Events;
+using Microsoft.Extensions.Options;
 
 namespace ByteNuts.NetCoreControls.Controllers
 {
@@ -23,10 +25,14 @@ namespace ByteNuts.NetCoreControls.Controllers
     {
         private readonly IDataProtector _protector;
         private readonly IRazorViewEngine _razorViewEngine;
+        private readonly NccSettings _nccSettings;
 
-        public NetCoreControlsController(IDataProtectionProvider protector, IRazorViewEngine razorViewEngine)
+        public NetCoreControlsController(IDataProtectionProvider protector, IRazorViewEngine razorViewEngine, IHttpContextAccessor contextAccessor)
         {
-            _protector = protector.CreateProtector(Constants.DataProtectionKey);
+            var options = ReflectionService.NccGetClassInstanceWithDi(contextAccessor.HttpContext, Constants.OptionsAssemblyName);
+            _nccSettings = options != null ? ((IOptions<NccSettings>) options).Value : new NccSettings();
+
+            _protector = protector.CreateProtector(_nccSettings.DataProtectionKey);
             _razorViewEngine = razorViewEngine;
         }
 
@@ -106,10 +112,11 @@ namespace ByteNuts.NetCoreControls.Controllers
                                 throw new Exception("No EventName specified for the GridView action!");
                             if (!(controlCtx is NccGridContext))
                                 throw new Exception("A GridAction was specified but the context is not of type GridViewContext!");
+                            if (service == null) service = ReflectionService.NccGetClassInstance(typeof(NccGridEvents).AssemblyQualifiedName, null);
+
                             switch (parametersList[$"{DefaultParameters.EventName.ToString().NccAddPrefix()}"].ToLower())
                             {
                                 case "update":
-                                    if (service == null) throw new Exception("EventHandler must be registered and must exist to process events");
                                     service.NccInvokeMethod(GridViewEvents.Update, new object[] { new NccEventArgs { Controller = this, NccControlContext = controlCtx, FormCollection = formCollection } });
                                     break;
                                 case "updaterow":
@@ -118,8 +125,27 @@ namespace ByteNuts.NetCoreControls.Controllers
 
                                     var updateRowPos = Convert.ToInt32(parametersList[$"{GridViewParameters.RowNumber.ToString().NccAddPrefix()}"]);
 
-                                    if (service == null) throw new Exception("EventHandler must be registered and must exist to process events");
                                     service.NccInvokeMethod(GridViewEvents.UpdateRow, new object[] { new NccEventArgs { Controller = this, NccControlContext = controlCtx, FormCollection = formCollection }, updateRowPos });
+                                    break;
+                                case "editrow":
+                                    if (!parametersList.ContainsKey($"{GridViewParameters.RowNumber.ToString().NccAddPrefix()}"))
+                                        throw new Exception("The row number wasn't received... Something wrong has happened...");
+
+                                    var editRowPos = Convert.ToInt32(parametersList[$"{GridViewParameters.RowNumber.ToString().NccAddPrefix()}"]);
+
+                                    var additionalData = controlCtx.NccGetPropertyValue<Dictionary<string, object>>("AdditionalData");
+                                    additionalData["EditRowNumber"] = editRowPos;
+                                    controlCtx.NccSetPropertyValue("AdditionalData", additionalData);
+
+                                    break;
+                                case "canceleditrow":
+                                    if (!parametersList.ContainsKey($"{GridViewParameters.RowNumber.ToString().NccAddPrefix()}"))
+                                        throw new Exception("The row number wasn't received... Something wrong has happened...");
+
+                                    var additionalData2 = controlCtx.NccGetPropertyValue<Dictionary<string, object>>("AdditionalData");
+                                    additionalData2.Remove("EditRowNumber");
+                                    controlCtx.NccSetPropertyValue("AdditionalData", additionalData2);
+
                                     break;
                                 case "deleterow":
                                     if (!parametersList.ContainsKey($"{GridViewParameters.RowNumber.ToString().NccAddPrefix()}"))
@@ -127,7 +153,6 @@ namespace ByteNuts.NetCoreControls.Controllers
 
                                     var deleteRowPos = Convert.ToInt32(parametersList[$"{GridViewParameters.RowNumber.ToString().NccAddPrefix()}"]);
 
-                                    if (service == null) throw new Exception("EventHandler must be registered and must exist to process events");
                                     service.NccInvokeMethod(GridViewEvents.DeleteRow, new object[] { new NccEventArgs { Controller = this, NccControlContext = controlCtx, FormCollection = formCollection }, deleteRowPos });
 
                                     break;

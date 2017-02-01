@@ -6,7 +6,7 @@ using ByteNuts.NetCoreControls.Models.Grid;
 namespace ByteNuts.NetCoreControls.Controls.Grid
 {
     [HtmlTargetElement("ncc:grid-columntemplate", ParentTag = "ncc:grid-columns")]
-    [RestrictChildren("ncc:grid-headertemplate", "ncc:grid-itemtemplate")]
+    [RestrictChildren("ncc:grid-headertemplate", "ncc:grid-itemtemplate", "ncc:grid-edittemplate")]
     public class GridColumntemplateTagHelper : TagHelper
     {
         [HtmlAttributeName("ShowHeader")]

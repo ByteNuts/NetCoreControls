@@ -51,7 +51,7 @@ namespace ByteNuts.NetCoreControls.Controls.Grid
                 {
                     new GridCell
                     {
-                        Value = childContent.GetContent(),
+                        Value = childContent,
                         CssClass = CellCssClass,
                         Aggregate = false
                     }

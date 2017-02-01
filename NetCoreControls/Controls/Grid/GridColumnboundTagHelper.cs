@@ -21,6 +21,9 @@ namespace ByteNuts.NetCoreControls.Controls.Grid
         [HtmlAttributeName("DataValue")]
         public string DataValue { get; set; }
 
+        [HtmlAttributeName("DataField")]
+        public string DataField { get; set; }
+
         [HtmlAttributeName("CssClass")]
         public string CssClass { get; set; }
 
@@ -66,29 +69,56 @@ namespace ByteNuts.NetCoreControls.Controls.Grid
                 {
                     if (_nccTagContext.RowNumber == 0)
                     {
-                        _nccTagContext.GridHeader.Cells.Add(string.IsNullOrEmpty(HeaderText)
-                            ? new GridCell { Value = DataValue }
-                            : new GridCell { Value = HeaderText });
+                        var cell = new GridCell();
+                        cell.Value.AppendHtml(string.IsNullOrEmpty(HeaderText) ? DataValue : HeaderText);
+                        _nccTagContext.GridHeader.Cells.Add(cell);
                     }
                 }
                 else
-                    _nccTagContext.GridHeader.Cells.Add(new GridCell { Value = "" });
+                {
+                    var cell = new GridCell();
+                    cell.Value.AppendHtml("");
+                    _nccTagContext.GridHeader.Cells.Add(cell);
+                }
 
                 if (!ViewContext.ViewBag.EmptyData)
                 {
-                    var cell = new GridCell
+                    if (!string.IsNullOrEmpty(DataField) && _context.AdditionalData.ContainsKey("EditRowNumber") && _context.AdditionalData["EditRowNumber"].ToString() == _nccTagContext.RowNumber.ToString())
                     {
-                        Value = DataValue,
-                        CssClass = CssClass,
-                        Aggregate = Aggregate
-                    };
+                        var cell = new GridCell
+                        {
+                            CssClass = CssClass
+                        };
+                        var input = new TagBuilder("input")
+                        {
+                            Attributes =
+                            {
+                                { "name", DataField },
+                                { "value", DataValue }
+                            }
+                        };
+                        cell.Value.AppendHtml(input);
 
-                    var row = _nccTagContext.GridRows.LastOrDefault();
+                        var row = _nccTagContext.GridRows.LastOrDefault();
 
-                    if (row != null)
+                        row?.Cells.Add(cell);
+                    }
+                    else
                     {
-                        row.Cells.Add(cell);
-                        row.CssClass = CssClass;
+                        var cell = new GridCell
+                        {
+                            CssClass = CssClass,
+                            Aggregate = Aggregate
+                        };
+                        cell.Value.AppendHtml(DataValue);
+
+                        var row = _nccTagContext.GridRows.LastOrDefault();
+
+                        if (row != null)
+                        {
+                            row.Cells.Add(cell);
+                            row.CssClass = CssClass;
+                        }
                     }
                 }
             }

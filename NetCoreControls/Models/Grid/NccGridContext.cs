@@ -9,7 +9,8 @@ namespace ByteNuts.NetCoreControls.Models.Grid
         public int PageNumber { get; set; } = 1;
         public int PageSize { get; set; } = 0;
         public int TotalItems { get; set; }
-        public bool AllowPaging { get; set; } = false;
+        public bool AllowPaging { get; set; }
         public int PagerNavSize { get; set; } = 10;
+        public bool AutoGenerateEditButton { get; set; }
     }
 }

@@ -9,6 +9,8 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 using ByteNuts.NetCoreControls.Helpers;
 using ByteNuts.NetCoreControls.Models;
 using ByteNuts.NetCoreControls.Models.Grid;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Options;
 
 namespace ByteNuts.NetCoreControls.Controls.Grid
 {
@@ -49,14 +51,22 @@ namespace ByteNuts.NetCoreControls.Controls.Grid
 
         [HtmlAttributeName("PagerNavSize")]
         public int PagerNavSize { get; set; }
-        
+
+        [HtmlAttributeName("AutoGenerateEditButton")]
+        public bool AutoGenerateEditButton { get; set; }
+
+
         private NccGridTagContext _nccTagContext;
         private IDataProtector _protector;
+        private readonly NccSettings _nccSettings;
         protected IHtmlGenerator Generator { get; }
 
-        public GridTagHelper(IDataProtectionProvider protector, IHtmlGenerator generator)
+        public GridTagHelper(IDataProtectionProvider protector, IHtmlGenerator generator, IHttpContextAccessor contextAccessor)
         {
-            _protector = protector.CreateProtector(Constants.DataProtectionKey);
+            var options = ReflectionService.NccGetClassInstanceWithDi(contextAccessor.HttpContext, Constants.OptionsAssemblyName);
+            _nccSettings = options != null ? ((IOptions<NccSettings>)options).Value : new NccSettings();
+
+            _protector = protector.CreateProtector(_nccSettings.DataProtectionKey);
             Generator = generator;
         }
 
@@ -78,6 +88,7 @@ namespace ByteNuts.NetCoreControls.Controls.Grid
             if (!string.IsNullOrEmpty(DataKeys) && DataKeys != Context.DataKeys)
                 Context.DataKeys = DataKeys;
 
+            Context.AutoGenerateEditButton = AutoGenerateEditButton ? AutoGenerateEditButton : Context.AutoGenerateEditButton;
             Context.AllowPaging = AllowPaging;
             if (AllowPaging)
             {

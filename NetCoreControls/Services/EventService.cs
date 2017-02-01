@@ -7,6 +7,9 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using ByteNuts.NetCoreControls.Models.Enums;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using System.Threading.Tasks;
+using ByteNuts.NetCoreControls.Controllers;
+using System.Collections;
 
 namespace ByteNuts.NetCoreControls.Services
 {
@@ -84,5 +87,34 @@ namespace ByteNuts.NetCoreControls.Services
             content.WriteTo(writer, HtmlEncoder.Default);
             return writer.ToString();
         }
+
+
+        public static async Task<bool> NccBindModel<T>(NetCoreControlsController controller, T model, List<Dictionary<string, object>> dataKeys, string prefix = "") where T : class
+        {
+            var ok = await controller.TryUpdateModelAsync(model, prefix);
+
+            if (!ok) return false;
+
+            var list = model as IList;
+            if (list?.Count != dataKeys.Count) return false;
+
+            for (var i = 0; i < list.Count; i++)
+            {
+                MapDataKeysToRow(list[i], dataKeys[i]);
+            }
+
+            return true;
+        }
+
+
+        private static void MapDataKeysToRow<T>(T row, Dictionary<string, object> dataKeysRow)
+        {
+            foreach (var dataKey in dataKeysRow)
+            {
+                var dkType = row.NccGetPropertyValue<object>(dataKey.Key).GetType();
+                row.NccSetPropertyValue(dataKey.Key, Convert.ChangeType(dataKey.Value, dkType));
+            }
+        }
+
     }
 }

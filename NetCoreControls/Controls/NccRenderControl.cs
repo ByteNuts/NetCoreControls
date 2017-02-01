@@ -9,6 +9,8 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 using ByteNuts.NetCoreControls.Services;
 using ByteNuts.NetCoreControls.Models;
 using ByteNuts.NetCoreControls.Extensions;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Options;
 
 namespace ByteNuts.NetCoreControls.Controls
 {
@@ -22,16 +24,23 @@ namespace ByteNuts.NetCoreControls.Controls
         [HtmlAttributeName("Context")]
         public object Context { get; set; }
 
-        private IDataProtector _protector;
-        private IRazorViewEngine _razorViewEngine;
+        private readonly IDataProtector _protector;
+        private readonly IRazorViewEngine _razorViewEngine;
+        private readonly NccSettings _nccSettings;
+
+        public NccRenderControl(IDataProtectionProvider protector, IRazorViewEngine razorViewEngine, IHttpContextAccessor contextAccessor)
+        {
+            var options = ReflectionService.NccGetClassInstanceWithDi(contextAccessor.HttpContext, Constants.OptionsAssemblyName);
+            _nccSettings = options != null ? ((IOptions<NccSettings>)options).Value : new NccSettings();
+
+            _protector = protector.CreateProtector(_nccSettings.DataProtectionKey);
+            _razorViewEngine = razorViewEngine;
+        }
 
         public override async Task ProcessAsync(TagHelperContext tagContext, TagHelperOutput output)
         {
             try
             {
-                _protector = ((IDataProtectionProvider)ViewContext.HttpContext.RequestServices.GetService(typeof(IDataProtectionProvider))).CreateProtector(Constants.DataProtectionKey);
-                _razorViewEngine = (IRazorViewEngine)ViewContext.HttpContext.RequestServices.GetService(typeof(IRazorViewEngine));
-
                 var controlViewPath = Context.NccGetPropertyValue<ViewsPathsModel>("ViewPaths").ViewPath;
 
                 output.TagName = null;

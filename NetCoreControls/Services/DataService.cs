@@ -7,6 +7,8 @@ using System.Collections;
 using System.Linq;
 using ByteNuts.NetCoreControls.Models.Grid;
 using ByteNuts.NetCoreControls.Models.HtmlRender;
+using Microsoft.Extensions.Options;
+using ByteNuts.NetCoreControls.Models;
 
 namespace ByteNuts.NetCoreControls.Services
 {
@@ -16,34 +18,35 @@ namespace ByteNuts.NetCoreControls.Services
         {
             if (context == null || httpContext == null) return context;
 
+            var options = ReflectionService.NccGetClassInstanceWithDi(httpContext, Constants.OptionsAssemblyName);
+            var nccSettings = options != null ? ((IOptions<NccSettings>)options).Value : new NccSettings();
+
             var assemblyName = context.NccGetPropertyValue<string>("DataAccessClass");
             var autoBind = context.NccGetPropertyValue<bool>("AutoBind");
-            var useDi = context.NccGetPropertyValue<bool>("UseDependencyInjection");
             var constructorParams = context.NccGetPropertyValue<object[]>("DataAccessParameters");
 
-            if (autoBind)
+            if (!autoBind) return context;
+
+            var dbService = nccSettings.UseDependencyInjection ? ReflectionService.NccGetClassInstanceWithDi(httpContext, assemblyName) : ReflectionService.NccGetClassInstance(assemblyName, constructorParams);
+
+            if (dbService == null) return context;
+
+            var methodName = context.NccGetPropertyValue<string>("SelectMethod");
+
+
+            var methodParams = context.NccGetPropertyValue<ExpandoObject>("SelectParameters") as IDictionary<string, object>;
+            var callParameters = methodParams.ToDictionary(x => x.Key, x => x.Value).NccToExpando() as IDictionary<string, object>;
+
+            var filters = context.NccGetPropertyValue<Dictionary<string, string>>("Filters") ?? new Dictionary<string, string>();
+
+            callParameters = AddFiltersToParameters(callParameters, filters);
+            callParameters = AddExtraToParameters(callParameters, context);
+
+            var result = dbService.NccInvokeMethod(methodName, (ExpandoObject)callParameters);
+
+            if (result != null)
             {
-                var dbService = useDi ? ReflectionService.NccGetClassInstanceWithDi(httpContext, assemblyName) : ReflectionService.NccGetClassInstance(assemblyName, constructorParams);
-
-                if (dbService == null) return context;
-
-                var methodName = context.NccGetPropertyValue<string>("SelectMethod");
-
-
-                var methodParams = context.NccGetPropertyValue<ExpandoObject>("SelectParameters") as IDictionary<string, object>;
-                var callParameters = methodParams.ToDictionary(x => x.Key, x => x.Value).NccToExpando() as IDictionary<string, object>;
-
-                var filters = context.NccGetPropertyValue<Dictionary<string, string>>("Filters") ?? new Dictionary<string, string>();
-
-                callParameters = AddFiltersToParameters(callParameters, filters);
-                callParameters = AddExtraToParameters(callParameters, context);
-
-                var result = dbService.NccInvokeMethod(methodName, (ExpandoObject)callParameters);
-
-                if (result != null)
-                {
-                    context = ProcessDataResult(context, result);
-                }
+                context = ProcessDataResult(context, result);
             }
 
             return context;

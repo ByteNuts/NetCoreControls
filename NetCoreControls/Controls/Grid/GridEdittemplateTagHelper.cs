@@ -8,8 +8,8 @@ using ByteNuts.NetCoreControls.Models.Grid;
 
 namespace ByteNuts.NetCoreControls.Controls.Grid
 {
-    [HtmlTargetElement("ncc:grid-itemtemplate", ParentTag = "ncc:grid-columntemplate")]
-    public class GridItemtemplateTagHelper : TagHelper
+    [HtmlTargetElement("ncc:grid-edittemplate", ParentTag = "ncc:grid-columntemplate")]
+    public class GridEdittemplateTagHelper : TagHelper
     {
         [HtmlAttributeNotBound]
         [ViewContext]
@@ -44,7 +44,7 @@ namespace ByteNuts.NetCoreControls.Controls.Grid
             else
                 return;
 
-            if (!_context.AdditionalData.ContainsKey("EditRowNumber") || _context.AdditionalData["EditRowNumber"].ToString() != _nccTagContext.RowNumber.ToString())
+            if (_context.AdditionalData.ContainsKey("EditRowNumber") && _context.AdditionalData["EditRowNumber"].ToString() == _nccTagContext.RowNumber.ToString())
             {
                 var data = _context.DataObjects as IList;
                 if (data == null || data.Count == 0)

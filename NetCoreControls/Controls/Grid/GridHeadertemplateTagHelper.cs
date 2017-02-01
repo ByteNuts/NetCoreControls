@@ -49,13 +49,16 @@ namespace ByteNuts.NetCoreControls.Controls.Grid
             {
                 var childContent = await output.GetChildContentAsync();
 
-                _nccTagContext.GridHeader.Cells.Add(new GridCell { Value = childContent.GetContent(), CssClass = CssClass });
+                _nccTagContext.GridHeader.Cells.Add(new GridCell { Value = childContent, CssClass = CssClass });
 
                 tagContext.Items.Remove("ShowHeader");
             }
             else
             {
-                _nccTagContext.GridHeader.Cells.Add(new GridCell { Value = "", CssClass = CssClass });
+                var cell = new GridCell();
+                cell.Value.AppendHtml("");
+                cell.CssClass = CssClass;
+                _nccTagContext.GridHeader.Cells.Add(cell);
             }
 
         }

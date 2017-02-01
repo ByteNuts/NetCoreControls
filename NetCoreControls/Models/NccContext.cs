@@ -7,7 +7,6 @@ namespace ByteNuts.NetCoreControls.Models
     public abstract class NccContext
     {
         public string Id { get; set; }
-        public bool UseDependencyInjection { get; set; }
         public bool RenderForm { get; set; } = true;
         public bool AutoBind { get; set; } = true;
 
@@ -34,6 +33,11 @@ namespace ByteNuts.NetCoreControls.Models
 
         public string SelectMethod { get; set; }
 
+        public string UpdateMethod { get; set; }
+
+        public ExpandoObject UpdateParameters { get; set; } = new ExpandoObject();
+
+        public string DatabaseModelType { get; set; }
         /// <summary>
         /// USED ONLY WHEN UseDependencyInjection is set to FALSE.
         /// Parameters required to instantiate the class which contains the method.

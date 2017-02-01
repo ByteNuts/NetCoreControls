@@ -93,10 +93,10 @@ namespace ByteNuts.NetCoreControls.Services
                         }
                         else
                         {
-                            if (i == 0 || !(i > 0 && gridContent[i - 1].Cells[j].Value == cell.Value))
+                            if (i == 0 || !(i > 0 && gridContent[i - 1].Cells[j].Value.GetContent() == cell.Value.GetContent()))
                             {
                                 var sameCount = 1;
-                                while (i + sameCount < gridContent.Count && gridContent[i + sameCount].Cells[j].Value == cell.Value)
+                                while (i + sameCount < gridContent.Count && gridContent[i + sameCount].Cells[j].Value.GetContent() == cell.Value.GetContent())
                                 {
                                     sameCount++;
                                 }
