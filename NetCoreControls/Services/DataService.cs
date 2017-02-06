@@ -61,14 +61,28 @@ namespace ByteNuts.NetCoreControls.Services
             {
                 var item1 = result.GetType().GetProperty("Item1").GetValue(result);
 
-                var list = item1 as IList;
-                context.NccSetPropertyValue("DataObjects", list != null ? new List<object>(list.Cast<object>()) : item1);
+                if (result.GetType().ToString().Contains("System.Linq.IQueryable"))
+                    context.NccSetPropertyValue("DataObjects", ((IQueryable<object>)item1).ToList());
+                else
+                {
+                    var list = item1 as IList;
+                    context.NccSetPropertyValue("DataObjects", list != null ? new List<object>(list.Cast<object>()) : item1);
+                }
             }
             else
             {
-                var list = result as IList;
-                context.NccSetPropertyValue("DataObjects", list != null ? new List<object>(list.Cast<object>()) : result);
+                context.NccSetPropertyValue("DataObjects", result);
             }
+
+            //else if (result.GetType().ToString().Contains("Microsoft.EntityFrameworkCore.Internal.InternalDbSet"))
+            //{
+            //    context.NccSetPropertyValue("DataObjects", result);
+            //}
+            //else
+            //{
+            //    var list = result as IList;
+            //    context.NccSetPropertyValue("DataObjects", list != null ? new List<object>(list.Cast<object>()) : result);
+            //}
 
             context = ProcessControlDataResult(context, result);
 

@@ -50,7 +50,9 @@ namespace ByteNuts.NetCoreControls.Controls.Grid
             var global = ViewContext.ViewData.Model;
 
             output.TagName = null;
-            var data = gridViewContext.DataObjects as IList;
+            var data = gridViewContext.DataObjects.GetType().ToString().Contains("Microsoft.EntityFrameworkCore.Internal.InternalDbSet") ||
+                gridViewContext.DataObjects.GetType().ToString().Contains("Microsoft.EntityFrameworkCore.Query.Internal.EntityQueryable") ?
+                ((IQueryable<object>)gridViewContext.DataObjects).ToList() : gridViewContext.DataObjects as IList;
 
             _nccTagContext.RowNumber = 0;
             ViewContext.ViewBag.EmptyData = false;

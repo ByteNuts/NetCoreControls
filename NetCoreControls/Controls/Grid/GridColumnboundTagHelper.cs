@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using ByteNuts.NetCoreControls.Models.Grid;
+using ByteNuts.NetCoreControls.Services;
 
 namespace ByteNuts.NetCoreControls.Controls.Grid
 {
@@ -89,12 +90,14 @@ namespace ByteNuts.NetCoreControls.Controls.Grid
                         {
                             CssClass = CssClass
                         };
+                        var val = ViewContext.ViewData.Model.NccGetPropertyValue<string>(DataField);
                         var input = new TagBuilder("input")
                         {
                             Attributes =
                             {
+                                { "class", "form-control" },
                                 { "name", DataField },
-                                { "value", DataValue }
+                                { "value", val }
                             }
                         };
                         cell.Value.AppendHtml(input);

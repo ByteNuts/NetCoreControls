@@ -33,7 +33,13 @@ namespace ByteNuts.NetCoreControls.Controls.Grid.Events
             if (model == null)
                 throw new Exception("The DatabaseModelType specified could not be instantiated. Is it public?");
 
-            await EventService.NccBindModel(eventArgs.Controller, model, gridContext.DataKeysValues, gridContext.Id);
+            var ok = await eventArgs.Controller.TryUpdateModelAsync(model, gridContext.Id);
+
+            if (!ok) throw new Exception("Error binding model to object or list");
+
+            ok = EventService.NccBindDataKeys(model, gridContext.DataKeysValues, rowPos);
+
+            if (!ok) throw new Exception("DataKeys list is bigger than submited list. No match possible!!");
 
             if (model == null)
                 throw new Exception("It was not possible to bind the forms value to model.");

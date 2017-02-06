@@ -26,6 +26,10 @@ namespace ByteNuts.NetCoreControls.Services
         {
             if (result.GetType().ToString().Contains(typeof(Tuple).ToString()))
                 context.TotalItems = Convert.ToInt32(result.GetType().GetProperty("Item2").GetValue(result));
+            else if (result.GetType().ToString().Contains("Microsoft.EntityFrameworkCore.Internal.InternalDbSet") ||
+                result.GetType().ToString().Contains("Microsoft.EntityFrameworkCore.Query.Internal.EntityQueryable") ||
+                result.GetType().ToString().Contains("System.Linq.IQueryable"))
+                context.TotalItems = ((IQueryable<object>)result).Count();
             else
             {
                 var list = result as IList;

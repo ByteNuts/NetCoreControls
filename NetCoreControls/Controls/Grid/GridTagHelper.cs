@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using ByteNuts.NetCoreControls.Services;
 using Microsoft.AspNetCore.DataProtection;
@@ -136,7 +138,15 @@ namespace ByteNuts.NetCoreControls.Controls.Grid
                     service?.NccInvokeMethod(Models.Enums.NccEvents.DataBound, new object[] { new NccEventArgs { NccTagContext = _nccTagContext, NccControlContext = Context, ViewContext = ViewContext, DataObjects = Context.DataObjects } });
                 }
                 else
-                    Context.DataObjects = Context.DataSource;
+                {
+                    Context.DataObjects = Context.DataSource.GetType().ToString().Contains("Microsoft.EntityFrameworkCore.Internal.InternalDbSet") ||
+                        Context.DataSource.GetType().ToString().Contains("Microsoft.EntityFrameworkCore.Query.Internal.EntityQueryable") ||
+                        Context.DataSource.GetType().ToString().Contains("System.Linq.IQueryable") ?
+                        ((IQueryable<object>)Context.DataSource).ToList() : Context.DataSource;
+
+                    var data = Context.DataObjects as IList;
+                    Context.TotalItems = data?.Count ?? 0;
+                }
 
                 _nccTagContext.GridHeader = new GridRow { Cells = new List<GridCell>(), CssClass = HeaderCssClass };
 

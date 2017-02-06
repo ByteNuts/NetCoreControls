@@ -89,18 +89,36 @@ namespace ByteNuts.NetCoreControls.Services
         }
 
 
-        public static async Task<bool> NccBindModel<T>(NetCoreControlsController controller, T model, List<Dictionary<string, object>> dataKeys, string prefix = "") where T : class
+        //public static async Task<bool> NccBindModel<T>(NetCoreControlsController controller, T model, List<Dictionary<string, object>> dataKeys, string prefix = "") where T : class
+        //{
+        //    var ok = await controller.TryUpdateModelAsync(model, prefix);
+
+        //    if (!ok) return false;
+
+        //    var list = model as IList;
+        //    if (list?.Count != dataKeys.Count) return false;
+
+        //    for (var i = 0; i < list.Count; i++)
+        //    {
+        //        MapDataKeysToRow(list[i], dataKeys[i]);
+        //    }
+
+        //    return true;
+        //}
+
+        public static bool NccBindDataKeys<T>(T model, List<Dictionary<string, object>> dataKeys, int rowPos = -1) where T : class
         {
-            var ok = await controller.TryUpdateModelAsync(model, prefix);
-
-            if (!ok) return false;
-
-            var list = model as IList;
-            if (list?.Count != dataKeys.Count) return false;
-
-            for (var i = 0; i < list.Count; i++)
+            if (rowPos >= 0)
+                MapDataKeysToRow(model, dataKeys[rowPos]);
+            else
             {
-                MapDataKeysToRow(list[i], dataKeys[i]);
+                var list = model as IList;
+                if (list?.Count != dataKeys.Count) return false;
+
+                for (var i = 0; i < list.Count; i++)
+                {
+                    MapDataKeysToRow(list[i], dataKeys[i]);
+                }
             }
 
             return true;

@@ -99,6 +99,10 @@ namespace ByteNuts.NetCoreControls.Controllers
                             if (resetPaging)
                                 filters["pageNumber"] = "1";
 
+                            var additionalData = controlCtx.NccGetPropertyValue<Dictionary<string, object>>("AdditionalData");
+                            additionalData.Remove("EditRowNumber");
+                            controlCtx.NccSetPropertyValue("AdditionalData", additionalData);
+
                             controlCtx.NccSetPropertyValue("Filters", filters);
 
                             break;
@@ -133,18 +137,18 @@ namespace ByteNuts.NetCoreControls.Controllers
 
                                     var editRowPos = Convert.ToInt32(parametersList[$"{GridViewParameters.RowNumber.ToString().NccAddPrefix()}"]);
 
-                                    var additionalData = controlCtx.NccGetPropertyValue<Dictionary<string, object>>("AdditionalData");
-                                    additionalData["EditRowNumber"] = editRowPos;
-                                    controlCtx.NccSetPropertyValue("AdditionalData", additionalData);
+                                    var additionalData2 = controlCtx.NccGetPropertyValue<Dictionary<string, object>>("AdditionalData");
+                                    additionalData2["EditRowNumber"] = editRowPos;
+                                    controlCtx.NccSetPropertyValue("AdditionalData", additionalData2);
 
                                     break;
                                 case "canceleditrow":
                                     if (!parametersList.ContainsKey($"{GridViewParameters.RowNumber.ToString().NccAddPrefix()}"))
                                         throw new Exception("The row number wasn't received... Something wrong has happened...");
 
-                                    var additionalData2 = controlCtx.NccGetPropertyValue<Dictionary<string, object>>("AdditionalData");
-                                    additionalData2.Remove("EditRowNumber");
-                                    controlCtx.NccSetPropertyValue("AdditionalData", additionalData2);
+                                    var additionalData3 = controlCtx.NccGetPropertyValue<Dictionary<string, object>>("AdditionalData");
+                                    additionalData3.Remove("EditRowNumber");
+                                    controlCtx.NccSetPropertyValue("AdditionalData", additionalData3);
 
                                     break;
                                 case "deleterow":
