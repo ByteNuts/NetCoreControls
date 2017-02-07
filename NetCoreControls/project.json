@@ -1,6 +1,6 @@
 {
-  "version": "0.1.0-beta-*",
-  "authors": [ "Duarte Camacho", "Jo&atilde;o Pereira", "Justino Mendes" ],
+  "version": "0.1.0-beta1-*",
+  "authors": [ "Jo&atilde;o Pereira", "Justino Mendes", "Duarte Camacho" ],
   "packOptions": {
     "licenseUrl": "https://github.com/ByteNuts/NetCoreControls/blob/master/LICENSE",
     "repository": {
@@ -36,6 +36,11 @@
     }
   },
   "buildOptions": {
-    "embed": [ "Scripts/**" , "Styles/**"]
+    "embed": [ "Scripts/**", "Styles/**" ]
+  },
+  "scripts": {
+    "postcompile": [
+      "dotnet pack --no-build --configuration %compile:Configuration%"
+    ]
   }
 }

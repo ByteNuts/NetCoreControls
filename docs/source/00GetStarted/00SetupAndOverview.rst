@@ -18,21 +18,16 @@ The controls also use some styles from Bootstrap, but it's not a mandatory requi
 Basic setup
 -----------
 
-**Beta Only:** Please add the following MyGet repo to download latest binaries::
-
-    https://www.myget.org/F/netcorecontrols/api/v3/index.json
-
-
 
 **1. Install the NetCoreControls NuGet package**
 
 Add to ``project.json`` the following dependency::
 
-    "NetCoreControls" : "0.1.0-beta-\*"
+    "NetCoreControls" : "0.1.0-beta1"
 
 Or you can use the Package Manager Console::
 
-    Install-Package ByteNuts.NetCoreControls
+    Install-Package NetCoreControls -Pre
 
 
 
@@ -55,3 +50,15 @@ On the bottom of your page, just above the ``</body>`` tag, insert the following
 In your ``_ViewImports.cshtml`` file inside your ``Views`` folder, add the following line::
 
     @addTagHelper "*, NetCoreControls"
+
+
+
+**Daily builds**
+
+To use the latest daily builds of the controls, please add the following MyGet repo to download latest binaries::
+
+    https://www.myget.org/F/netcorecontrols/api/v3/index.json
+
+Add to ``project.json`` the following dependency::
+
+    "NetCoreControls" : "0.1.0-beta-*"

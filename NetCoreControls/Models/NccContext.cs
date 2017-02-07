@@ -23,26 +23,27 @@ namespace ByteNuts.NetCoreControls.Models
         public string DataAccessClass { get; set; }
 
         /// <summary>
-        /// Assembly Qualified Name
-        /// Usage: 'InstanceOfClass.GetType().AssemblyQualifiedName'
+        /// USED ONLY WHEN UseDependencyInjection is set to FALSE.
+        /// Parameters required to instantiate the class which contains the method.
         /// </summary>
-        public string EventHandlerClass { get; set; }
+        public object[] DataAccessParameters { get; set; }
+
+        public string SelectMethod { get; set; }
 
         public ExpandoObject SelectParameters { get; set; } = new ExpandoObject();
 
-
-        public string SelectMethod { get; set; }
 
         public string UpdateMethod { get; set; }
 
         public ExpandoObject UpdateParameters { get; set; } = new ExpandoObject();
 
         public string DatabaseModelType { get; set; }
+
         /// <summary>
-        /// USED ONLY WHEN UseDependencyInjection is set to FALSE.
-        /// Parameters required to instantiate the class which contains the method.
+        /// Assembly Qualified Name
+        /// Usage: 'InstanceOfClass.GetType().AssemblyQualifiedName'
         /// </summary>
-        public object[] DataAccessParameters { get; set; }
+        public string EventHandlerClass { get; set; }
 
         /// <summary>
         /// Overrides select parameters used on Control Context

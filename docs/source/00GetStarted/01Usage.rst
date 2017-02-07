@@ -3,7 +3,7 @@
 
 Just use any of the available controls using the corresponding taghelper tag.
 
-All tags are prefixed with ``ncc:controlName``.
+All tags are prefixed with ``ncc:``.
 
 All taghelpers that are attributes are prefixed with ``ncc-``.
 
