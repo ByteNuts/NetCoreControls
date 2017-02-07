@@ -31,7 +31,25 @@ Or you can use the Package Manager Console::
 
 
 
-**2. Add references to CSS and Script files**
+**2. Register NetCoreControls**
+
+In your ``Startup.cs`` class, inside the ``ConfigureServices`` method, add the following line after Mvc registration::
+
+	services.AddMvc();
+	(...)
+	services.AddNetCoreControls(Configuration);
+
+
+
+**3. Reference the assembly to enable usage as TagHelpers**
+
+In your ``_ViewImports.cshtml`` file inside your ``Views`` folder, add the following line::
+
+    @addTagHelper "*, NetCoreControls"
+
+
+
+**4. Add references to CSS and Script files**
 
 Inside your ``<head></head>`` tag, insert the following::
 
@@ -45,11 +63,6 @@ On the bottom of your page, just above the ``</body>`` tag, insert the following
 
 
 
-**3. Reference the assembly to enable usage as TagHelpers**
-
-In your ``_ViewImports.cshtml`` file inside your ``Views`` folder, add the following line::
-
-    @addTagHelper "*, NetCoreControls"
 
 
 

@@ -1,6 +1,31 @@
 # NetCoreControls
 A set of UI controls for ASP.NET Core.
 
+[Controls demo](http://netcorecontrols.bytenuts.com)
+
+
+## Documentation
+You can download and install this control package using NuGet.
+
+[Full documentation](http://netcorecontrols.readthedocs.io/en/latest/index.html)
+
+
+## Setup and usage
+You can download and install this control package using NuGet.
+
+[How to setup controls](http://netcorecontrols.readthedocs.io/en/latest/00GetStarted/00SetupAndOverview.html)
+
+[How to use the controls](http://netcorecontrols.readthedocs.io/en/latest/00GetStarted/01Usage.html)
+
+```
+Please not that the controls are still in beta and documentation is still under development.
+Feel free to contribute if you like!
+```
+
+Refer to the samples repository for examples of usage of the controls.
+
+[Samples repository](https://github.com/ByteNuts/NetCoreControls.Samples)
+
 
 ## Features
 **- Independent from data source** - you can use any data source you prefer. Just set up a method that returns the data you want to display.
@@ -23,20 +48,3 @@ A set of UI controls for ASP.NET Core.
 Other controls will be available in a near future...
 
 
-## Setup and usage
-You can download and install this control package using NuGet.
-
-[Full documentation](http://netcorecontrols.readthedocs.io/en/latest/index.html)
-
-[How to setup controls](http://netcorecontrols.readthedocs.io/en/latest/00GetStarted/00SetupAndOverview.html)
-
-[How to use the controls](http://netcorecontrols.readthedocs.io/en/latest/00GetStarted/01Usage.html)
-
-```
-Please not that the controls are still in beta and documentation is still under development.
-Feel free to contribute if you like!
-```
-
-Refer to the samples repository for examples of usage of the controls.
-
-[Samples repository](https://github.com/ByteNuts/NetCoreControls.Samples)
