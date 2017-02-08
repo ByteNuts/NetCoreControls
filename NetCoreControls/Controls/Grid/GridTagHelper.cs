@@ -119,6 +119,7 @@ namespace ByteNuts.NetCoreControls.Controls.Grid
 
             output.TagName = "div";
             output.Attributes.SetAttribute("id", Context.Id);
+            output.Attributes.SetAttribute("style", "position:relative");
 
             if (Context.Visible)
             {
@@ -178,6 +179,23 @@ namespace ByteNuts.NetCoreControls.Controls.Grid
             encContext.Attributes.Add("type", "hidden");
             encContext.Attributes.Add("value", _protector.Protect(NccJson.SetObjectAsJson(Context)));
             output.PostContent.AppendHtml(encContext);
+
+            var overlayAjaxLoader = new TagBuilder("div")
+            {
+                Attributes = { {"class", "overlayAjaxLoader" } }
+            };
+            output.PostContent.AppendHtml(overlayAjaxLoader);
+
+            var ajaxLoader = new TagBuilder("img")
+            {
+                Attributes =
+                {
+                    {"class", "ajaxLoader"},
+                    {"alt", "Loading..." },
+                    {"src", $"data:image/png;base64,{Constants.AjaxLoaderImg}" }
+                }
+            };
+            output.PostContent.AppendHtml(ajaxLoader);
         }
     }
 }

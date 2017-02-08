@@ -6,6 +6,12 @@ function nccAction(event, elem, params, prefix) {
     var nncActionModel = JSON.parse(params);
     var postData = [];
     var posId = 0;
+
+    postData.push({
+        name: "target_ids",
+        value: nncActionModel.TargetIds
+    });
+
     $.each(nncActionModel.Parameters,
         function (key, value) {
             postData.push({
@@ -45,11 +51,11 @@ function nccAction(event, elem, params, prefix) {
             });
         }
     });
-    nccPost(nncActionModel.TargetIds, postData);
+    nccPost(nncActionModel.TargetIds, postData, elem);
 }
 
 
-function nccPost(controlIds, postData) {
+function nccPost(controlIds, postData, elem) {
     if (postData != null && controlIds != null) {
         var options = {
             type: "POST",
@@ -60,7 +66,9 @@ function nccPost(controlIds, postData) {
                     var update = $("#" + controlIds[i]);
                     $(update).replaceWith(data[i]);
                 }
-            }
+            },
+            beforeSend: function() { showAjaxLoader(controlIds, elem) },
+            complete: function() { hideAjaxLoader(controlIds, elem) }
         }
         $.ajax(options);
     }
@@ -102,4 +110,39 @@ function appendDataToPostArray(postData, key, value, posId) {
         name: "parameters[" + posId + "].value",
         value: value
     });
+}
+
+
+
+function showAjaxLoader(targetIds, elem) {
+    $.each(targetIds,
+        function () {
+            var controlId = this;
+            var div = $("#" + controlId);
+            div.find(".ajaxLoader, .overlayAjaxLoader").fadeIn(500);
+        });
+    if (elem instanceof jQuery) {
+        elem.prop( "disabled", true );
+    } else {
+        $.each(elem, function () {
+            var ctrl = $("#" + this);
+            ctrl.prop("disabled", true);
+        });
+    }
+}
+function hideAjaxLoader(targetIds, elem) {
+    $.each(targetIds,
+        function () {
+            var controlId = this;
+            var div = $("#" + controlId);
+            div.find(".ajaxLoader, .overlayAjaxLoader").fadeOut(500);
+        });
+    if (elem instanceof jQuery) {
+        elem.prop("disabled", false);
+    } else {
+        $.each(elem, function () {
+            var ctrl = $("#" + this);
+            ctrl.prop("disabled", false);
+        });
+    }
 }
