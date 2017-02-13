@@ -16,8 +16,10 @@ using System.IO;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.Razor;
 using System.Text.Encodings.Web;
-using ByteNuts.NetCoreControls.Controls.Grid.Events;
+using ByteNuts.NetCoreControls.Models.Select;
 using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Primitives;
+using NccGridEvents = ByteNuts.NetCoreControls.Controls.Grid.Events.NccGridEvents;
 
 namespace ByteNuts.NetCoreControls.Controllers
 {
@@ -61,6 +63,7 @@ namespace ByteNuts.NetCoreControls.Controllers
 
             foreach (var controlCtx in controlCtxs)
             {
+                var renderControl = true;
                 try
                 {
                     if (controlCtx == null)
@@ -78,7 +81,7 @@ namespace ByteNuts.NetCoreControls.Controllers
                     var eventHandler = controlCtx.NccGetPropertyValue<string>("EventHandlerClass");
                     var service = ReflectionService.NccGetClassInstance(eventHandler, null);
 
-                    service?.NccInvokeMethod(NccEvents.PostBack, new object[] { new NccEventArgs { Controller = this, NccControlContext = controlCtx, FormCollection = formCollection } });
+                    service?.NccInvokeMethod(NccEventsEnum.PostBack, new object[] { new NccEventArgs { Controller = this, NccControlContext = controlCtx, FormCollection = formCollection } });
 
                     switch (parametersList[$"{DefaultParameters.ActionType.ToString().NccAddPrefix()}"].ToLower())
                     {
@@ -115,27 +118,27 @@ namespace ByteNuts.NetCoreControls.Controllers
                             if (!parametersList.ContainsKey($"{DefaultParameters.EventName.ToString().NccAddPrefix()}"))
                                 throw new Exception("No EventName specified for the GridView action!");
                             if (!(controlCtx is NccGridContext))
-                                throw new Exception("A GridAction was specified but the context is not of type GridViewContext!");
+                                throw new Exception("A GridAction was specified but the context is not of type NccGridContext!");
                             if (service == null) service = ReflectionService.NccGetClassInstance(typeof(NccGridEvents).AssemblyQualifiedName, null);
 
                             switch (parametersList[$"{DefaultParameters.EventName.ToString().NccAddPrefix()}"].ToLower())
                             {
                                 case "update":
-                                    service.NccInvokeMethod(GridViewEvents.Update, new object[] { new NccEventArgs { Controller = this, NccControlContext = controlCtx, FormCollection = formCollection } });
+                                    service.NccInvokeMethod(NccGridEventsEnum.Update, new object[] { new NccEventArgs { Controller = this, NccControlContext = controlCtx, FormCollection = formCollection } });
                                     break;
                                 case "updaterow":
-                                    if (!parametersList.ContainsKey($"{GridViewParameters.RowNumber.ToString().NccAddPrefix()}"))
+                                    if (!parametersList.ContainsKey($"{NccGridParametersEnum.RowNumber.ToString().NccAddPrefix()}"))
                                         throw new Exception("The row number wasn't received... Something wrong has happened...");
 
-                                    var updateRowPos = Convert.ToInt32(parametersList[$"{GridViewParameters.RowNumber.ToString().NccAddPrefix()}"]);
+                                    var updateRowPos = Convert.ToInt32(parametersList[$"{NccGridParametersEnum.RowNumber.ToString().NccAddPrefix()}"]);
 
-                                    service.NccInvokeMethod(GridViewEvents.UpdateRow, new object[] { new NccEventArgs { Controller = this, NccControlContext = controlCtx, FormCollection = formCollection }, updateRowPos });
+                                    service.NccInvokeMethod(NccGridEventsEnum.UpdateRow, new object[] { new NccEventArgs { Controller = this, NccControlContext = controlCtx, FormCollection = formCollection }, updateRowPos });
                                     break;
                                 case "editrow":
-                                    if (!parametersList.ContainsKey($"{GridViewParameters.RowNumber.ToString().NccAddPrefix()}"))
+                                    if (!parametersList.ContainsKey($"{NccGridParametersEnum.RowNumber.ToString().NccAddPrefix()}"))
                                         throw new Exception("The row number wasn't received... Something wrong has happened...");
 
-                                    var editRowPos = Convert.ToInt32(parametersList[$"{GridViewParameters.RowNumber.ToString().NccAddPrefix()}"]);
+                                    var editRowPos = Convert.ToInt32(parametersList[$"{NccGridParametersEnum.RowNumber.ToString().NccAddPrefix()}"]);
 
                                     var additionalData2 = controlCtx.NccGetPropertyValue<Dictionary<string, object>>("AdditionalData");
                                     additionalData2["EditRowNumber"] = editRowPos;
@@ -143,7 +146,7 @@ namespace ByteNuts.NetCoreControls.Controllers
 
                                     break;
                                 case "canceleditrow":
-                                    if (!parametersList.ContainsKey($"{GridViewParameters.RowNumber.ToString().NccAddPrefix()}"))
+                                    if (!parametersList.ContainsKey($"{NccGridParametersEnum.RowNumber.ToString().NccAddPrefix()}"))
                                         throw new Exception("The row number wasn't received... Something wrong has happened...");
 
                                     var additionalData3 = controlCtx.NccGetPropertyValue<Dictionary<string, object>>("AdditionalData");
@@ -152,16 +155,63 @@ namespace ByteNuts.NetCoreControls.Controllers
 
                                     break;
                                 case "deleterow":
-                                    if (!parametersList.ContainsKey($"{GridViewParameters.RowNumber.ToString().NccAddPrefix()}"))
+                                    if (!parametersList.ContainsKey($"{NccGridParametersEnum.RowNumber.ToString().NccAddPrefix()}"))
                                         throw new Exception("The row number wasn't received... Something wrong has happened...");
 
-                                    var deleteRowPos = Convert.ToInt32(parametersList[$"{GridViewParameters.RowNumber.ToString().NccAddPrefix()}"]);
+                                    var deleteRowPos = Convert.ToInt32(parametersList[$"{NccGridParametersEnum.RowNumber.ToString().NccAddPrefix()}"]);
 
-                                    service.NccInvokeMethod(GridViewEvents.DeleteRow, new object[] { new NccEventArgs { Controller = this, NccControlContext = controlCtx, FormCollection = formCollection }, deleteRowPos });
+                                    service.NccInvokeMethod(NccGridEventsEnum.DeleteRow, new object[] { new NccEventArgs { Controller = this, NccControlContext = controlCtx, FormCollection = formCollection }, deleteRowPos });
 
                                     break;
                                 default:
-                                    throw new Exception("The specified EventName it's not supported on the GridView Component!");
+                                    throw new Exception("The specified EventName it's not supported on the NccGrid Component!");
+                            }
+                            break;
+                        case "selectaction":
+                            if (!(controlCtx is NccSelectContext))
+                                throw new Exception("A SelectAction was specified but the context is not of type NccSelectContext!");
+                            if (service == null) service = ReflectionService.NccGetClassInstance(typeof(NccGridEvents).AssemblyQualifiedName, null);
+
+                            switch (parametersList[$"{DefaultParameters.EventName.ToString().NccAddPrefix()}"].ToLower())
+                            {
+                                case "onchange":
+                                    if (!(parametersList.Keys.Any(k => k.StartsWith($"{DefaultParameters.ElemName.ToString().NccAddPrefix()}")) && parametersList.Keys.Any(k => k.StartsWith($"{DefaultParameters.ElemValue.ToString().NccAddPrefix()}"))))
+                                        throw new Exception("The submitted data doesn't contain the necessary name and value pair.");
+
+                                    var selectContext = (NccSelectContext) controlCtx;
+
+                                    var inputFilters = parametersList.FirstOrDefault(x => x.Key.StartsWith($"{DefaultParameters.ElemName.ToString().NccAddPrefix()}"));
+                                    var filterId = inputFilters.Key.Replace($"{DefaultParameters.ElemName.ToString().NccAddPrefix()}", "");
+
+                                    if(inputFilters.Value != null)
+                                        selectContext.Filters[inputFilters.Value] = parametersList[$"{DefaultParameters.ElemValue.ToString().NccAddPrefix()}{filterId}"];
+
+                                    var submitElem = parametersList.FirstOrDefault(x => x.Key.StartsWith($"{DefaultParameters.ElemId.ToString().NccAddPrefix()}"));
+
+                                    var value = formCollection["target_ids"].FirstOrDefault();
+                                    var targetIds = value.Split(',');
+                                    var posCurrent = Array.IndexOf(targetIds, selectContext.Id);
+                                    var posCaller = Array.IndexOf(targetIds, submitElem.Value);
+                                    if (posCurrent - posCaller == 1)
+                                    {
+                                        selectContext.RenderDefault = false;
+                                    }
+                                    else if (posCurrent - posCaller > 1)
+                                    {
+                                        selectContext.RenderDefault = true;
+                                        selectContext.SelectedValue = "";
+                                    }
+                                    else
+                                        renderControl = false;
+
+                                    if (posCurrent == posCaller)
+                                        selectContext.SelectedValue = inputFilters.Value;
+
+                                    controlCtx.NccSetPropertyValue("Filters", selectContext.Filters);
+
+                                    break;
+                                default:
+                                    throw new Exception("The specified SelectName it's not supported on the NccSelect Component!");
                             }
                             break;
                         default:
@@ -173,7 +223,10 @@ namespace ByteNuts.NetCoreControls.Controllers
                     var controlViewPath = controlCtx.NccGetPropertyValue<ViewsPathsModel>("ViewPaths").ViewPath;
                     ViewData[id] = controlCtx;
 
-                    viewResult.Add(await this.NccRenderToStringAsync(_razorViewEngine, controlViewPath, null));
+                    if (renderControl)
+                        viewResult.Add(await this.NccRenderToStringAsync(_razorViewEngine, controlViewPath, null));
+                    else
+                        viewResult.Add(string.Empty);
                 }
                 catch (Exception e)
                 {

@@ -54,7 +54,7 @@ namespace ByteNuts.NetCoreControls.Controls.HtmlRender
 
             if (!string.IsNullOrEmpty(Context.EventHandlerClass)) service = ReflectionService.NccGetClassInstance(Context.EventHandlerClass, null);
 
-            service?.NccInvokeMethod(Models.Enums.NccEvents.Load, new object[] { new NccEventArgs { NccControlContext = Context, ViewContext = ViewContext } });
+            service?.NccInvokeMethod(Models.Enums.NccEventsEnum.Load, new object[] { new NccEventArgs { NccControlContext = Context, ViewContext = ViewContext } });
 
 
             //Get grid id and share it with siblings parents
@@ -75,7 +75,7 @@ namespace ByteNuts.NetCoreControls.Controls.HtmlRender
 
                 Context = DataService.GetControlData(Context, ViewContext.HttpContext);
 
-                service?.NccInvokeMethod(Models.Enums.NccEvents.DataBound, new object[] { new NccEventArgs { NccControlContext = Context, ViewContext = ViewContext, DataObjects = Context.DataObjects } });
+                service?.NccInvokeMethod(Models.Enums.NccEventsEnum.DataBound, new object[] { new NccEventArgs { NccControlContext = Context, ViewContext = ViewContext, DataObjects = Context.DataObjects } });
 
                 ViewContext.ViewData.Model = Context.DataObjects;
 
@@ -91,7 +91,7 @@ namespace ByteNuts.NetCoreControls.Controls.HtmlRender
             else
                 output.SuppressOutput();
 
-            service?.NccInvokeMethod(Models.Enums.NccEvents.PreRender, new object[] { new NccEventArgs { NccControlContext = Context, ViewContext = ViewContext } });
+            service?.NccInvokeMethod(Models.Enums.NccEventsEnum.PreRender, new object[] { new NccEventArgs { NccControlContext = Context, ViewContext = ViewContext } });
 
             output.TagName = "div";
             output.Attributes.SetAttribute("id", Context.Id);

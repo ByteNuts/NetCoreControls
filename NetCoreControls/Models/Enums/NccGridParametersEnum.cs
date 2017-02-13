@@ -1,6 +1,6 @@
 ﻿namespace ByteNuts.NetCoreControls.Models.Enums
 {
-    public enum GridViewParameters
+    public enum NccGridParametersEnum
     {
         RowNumber
     }

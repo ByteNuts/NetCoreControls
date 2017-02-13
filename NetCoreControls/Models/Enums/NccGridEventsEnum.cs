@@ -1,6 +1,6 @@
 ﻿namespace ByteNuts.NetCoreControls.Models.Enums
 {
-    public enum GridViewEvents
+    public enum NccGridEventsEnum
     {
         RowDataBound,
         RowCreated,

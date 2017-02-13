@@ -1,6 +1,6 @@
 ﻿namespace ByteNuts.NetCoreControls.Models.Enums
 {
-    public enum NccEvents
+    public enum NccEventsEnum
     {
         Load,
         DataBound,

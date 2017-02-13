@@ -1,6 +1,6 @@
 ﻿namespace ByteNuts.NetCoreControls.Models.Enums
 {
-    public enum GridViewHtmlContentType
+    public enum NccGridContentEnum
     {
         PreContent,
         PostContent

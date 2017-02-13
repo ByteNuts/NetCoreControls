@@ -9,6 +9,7 @@ using ByteNuts.NetCoreControls.Models.Grid;
 using ByteNuts.NetCoreControls.Models.HtmlRender;
 using Microsoft.Extensions.Options;
 using ByteNuts.NetCoreControls.Models;
+using ByteNuts.NetCoreControls.Models.Select;
 
 namespace ByteNuts.NetCoreControls.Services
 {
@@ -39,8 +40,13 @@ namespace ByteNuts.NetCoreControls.Services
 
             var filters = context.NccGetPropertyValue<Dictionary<string, string>>("Filters") ?? new Dictionary<string, string>();
 
-            callParameters = AddFiltersToParameters(callParameters, filters);
-            callParameters = AddExtraToParameters(callParameters, context);
+            var renderDefault = context.NccGetPropertyValue<bool>("RenderDefault");
+
+            if (!renderDefault)
+            {
+                AddFiltersToParameters(callParameters, filters);
+                AddExtraToParameters(callParameters, context);
+            }
 
             var result = dbService.NccInvokeMethod(methodName, (ExpandoObject)callParameters);
 
@@ -90,29 +96,29 @@ namespace ByteNuts.NetCoreControls.Services
         }
 
 
-        private static IDictionary<string, object> AddFiltersToParameters(IDictionary<string, object> methodParams, Dictionary<string, string> filters)
+        private static void AddFiltersToParameters(IDictionary<string, object> methodParams, Dictionary<string, string> filters)
         {
             foreach (var filter in filters)
             {
                 methodParams[filter.Key] = filter.Value;
             }
-
-            return methodParams;
         }
 
 
-        private static IDictionary<string, object> AddExtraToParameters(IDictionary<string, object> callParams, object context)
+        private static void AddExtraToParameters(IDictionary<string, object> callParams, object context)
         {
             if (context is NccGridContext)
             {
-                return GridService.GetExtraParameters(callParams, context as NccGridContext);
+                GridService.GetExtraParameters(callParams, context as NccGridContext);
+            }
+            else if (context is NccSelectContext)
+            {
+                SelectService.GetExtraParameters(callParams, context as NccSelectContext);
             }
             else if (context is NccHtmlRenderContext)
             {
-                return HtmlRenderService.GetExtraParameters(callParams, context as NccHtmlRenderContext);
+                HtmlRenderService.GetExtraParameters(callParams, context as NccHtmlRenderContext);
             }
-
-            return null;
         }
 
 
@@ -122,12 +128,16 @@ namespace ByteNuts.NetCoreControls.Services
             {
                 return (T)Convert.ChangeType(GridService.SetDataResult(context as NccGridContext, result), typeof(T));
             }
+            else if (context is NccSelectContext)
+            {
+                return (T)Convert.ChangeType(SelectService.SetDataResult(context as NccSelectContext, result), typeof(T));
+            }
             else if (context is NccHtmlRenderContext)
             {
                 return (T)Convert.ChangeType(HtmlRenderService.SetDataResult(context as NccHtmlRenderContext, result), typeof(T));
             }
 
-            return default(T);
+            return context;
         }
 
     }

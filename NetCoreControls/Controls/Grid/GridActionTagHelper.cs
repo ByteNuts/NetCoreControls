@@ -27,7 +27,7 @@ namespace ByteNuts.NetCoreControls.Controls.Grid
             };
             model.Parameters.Add($"{DefaultParameters.ActionType.ToString().NccAddPrefix()}", "GridAction");
             model.Parameters.Add($"{DefaultParameters.EventName.ToString().NccAddPrefix()}", GridAction.ToString());
-            model.Parameters.Add($"{GridViewParameters.RowNumber.ToString().NccAddPrefix()}", GridRowPos.ToString());
+            model.Parameters.Add($"{NccGridParametersEnum.RowNumber.ToString().NccAddPrefix()}", GridRowPos.ToString());
 
             if (output.TagName.ToLower() == "select")
             {

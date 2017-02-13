@@ -80,7 +80,7 @@ namespace ByteNuts.NetCoreControls.Controls.Grid
 
         public override async Task ProcessAsync(TagHelperContext tagContext, TagHelperOutput output)
         {
-            if (Context == null) throw new Exception("The GridViewContext is null... Please check the reference.");
+            if (Context == null) throw new Exception("The NccGridContext is null... Please check the reference.");
 
             _nccTagContext.CssClassGrid = CssClass;
             _nccTagContext.CssClassBody = BodyCssClass;
@@ -111,7 +111,7 @@ namespace ByteNuts.NetCoreControls.Controls.Grid
 
             if (!string.IsNullOrEmpty(Context.EventHandlerClass)) service = ReflectionService.NccGetClassInstance(Context.EventHandlerClass, null);
 
-            service?.NccInvokeMethod(Models.Enums.NccEvents.Load, new object[] { new NccEventArgs { NccTagContext = _nccTagContext, NccControlContext = Context, ViewContext = ViewContext } });
+            service?.NccInvokeMethod(Models.Enums.NccEventsEnum.Load, new object[] { new NccEventArgs { NccTagContext = _nccTagContext, NccControlContext = Context, ViewContext = ViewContext } });
 
             //Get grid id and share it with siblings parents
             if (string.IsNullOrEmpty(Context.Id))
@@ -136,7 +136,7 @@ namespace ByteNuts.NetCoreControls.Controls.Grid
                 {
                     Context = DataService.GetControlData(Context, ViewContext.HttpContext);
 
-                    service?.NccInvokeMethod(Models.Enums.NccEvents.DataBound, new object[] { new NccEventArgs { NccTagContext = _nccTagContext, NccControlContext = Context, ViewContext = ViewContext, DataObjects = Context.DataObjects } });
+                    service?.NccInvokeMethod(Models.Enums.NccEventsEnum.DataBound, new object[] { new NccEventArgs { NccTagContext = _nccTagContext, NccControlContext = Context, ViewContext = ViewContext, DataObjects = Context.DataObjects } });
                 }
                 else
                 {
@@ -169,7 +169,7 @@ namespace ByteNuts.NetCoreControls.Controls.Grid
                 }
             }
 
-            service?.NccInvokeMethod(Models.Enums.NccEvents.PreRender, new object[] { new NccEventArgs { NccTagContext = _nccTagContext, NccControlContext = Context, ViewContext = ViewContext } });
+            service?.NccInvokeMethod(Models.Enums.NccEventsEnum.PreRender, new object[] { new NccEventArgs { NccTagContext = _nccTagContext, NccControlContext = Context, ViewContext = ViewContext } });
 
             _nccTagContext.ControlContext = Context;
 

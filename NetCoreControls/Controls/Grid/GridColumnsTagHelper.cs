@@ -87,7 +87,7 @@ namespace ByteNuts.NetCoreControls.Controls.Grid
                         _context.DataKeysValues.Add(dataKeysRow);
                     }
 
-                    service?.NccInvokeMethod(GridViewEvents.RowDataBound, new object[] { new NccEventArgs { NccTagContext = _nccTagContext, NccControlContext = _context, DataObjects = data }, row });
+                    service?.NccInvokeMethod(NccGridEventsEnum.RowDataBound, new object[] { new NccEventArgs { NccTagContext = _nccTagContext, NccControlContext = _context, DataObjects = data }, row });
 
                     _nccTagContext.GridRows.Add(new GridRow { Cells = new List<GridCell>(), RowNumber = _nccTagContext.RowNumber });
 
@@ -110,7 +110,7 @@ namespace ByteNuts.NetCoreControls.Controls.Grid
                             };
                             model.Parameters.Add($"{DefaultParameters.ActionType.ToString().NccAddPrefix()}", "GridAction");
                             model.Parameters.Add($"{DefaultParameters.EventName.ToString().NccAddPrefix()}", "CancelEditRow");
-                            model.Parameters.Add($"{GridViewParameters.RowNumber.ToString().NccAddPrefix()}", _nccTagContext.RowNumber.ToString());
+                            model.Parameters.Add($"{NccGridParametersEnum.RowNumber.ToString().NccAddPrefix()}", _nccTagContext.RowNumber.ToString());
                             var link = new TagBuilder("a")
                             {
                                 Attributes =
@@ -148,7 +148,7 @@ namespace ByteNuts.NetCoreControls.Controls.Grid
                             };
                             model.Parameters.Add($"{DefaultParameters.ActionType.ToString().NccAddPrefix()}", "GridAction");
                             model.Parameters.Add($"{DefaultParameters.EventName.ToString().NccAddPrefix()}", "EditRow");
-                            model.Parameters.Add($"{GridViewParameters.RowNumber.ToString().NccAddPrefix()}", _nccTagContext.RowNumber.ToString());
+                            model.Parameters.Add($"{NccGridParametersEnum.RowNumber.ToString().NccAddPrefix()}", _nccTagContext.RowNumber.ToString());
 
                             var link = new TagBuilder("a")
                             {
@@ -169,7 +169,7 @@ namespace ByteNuts.NetCoreControls.Controls.Grid
                     _nccTagContext.RowNumber++;
                     _nccTagContext.ColCountComplete = true;
 
-                    service?.NccInvokeMethod(GridViewEvents.RowCreated, new object[] { new NccEventArgs { NccTagContext = _nccTagContext, NccControlContext = _context, DataObjects = data }, _nccTagContext.GridRows.LastOrDefault() });
+                    service?.NccInvokeMethod(NccGridEventsEnum.RowCreated, new object[] { new NccEventArgs { NccTagContext = _nccTagContext, NccControlContext = _context, DataObjects = data }, _nccTagContext.GridRows.LastOrDefault() });
                 }
             }
         }

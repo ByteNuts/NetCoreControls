@@ -76,11 +76,15 @@ namespace ByteNuts.NetCoreControls.Services
             return methodInfo?.Invoke(classInstance, parameters.Length == 0 ? null : methodParams);
         }
 
-        public static object NccInvokeMethod(this object classInstance, NccEvents eventName, object[] methodParams)
+        public static object NccInvokeMethod(this object classInstance, NccEventsEnum eventName, object[] methodParams)
         {
             return classInstance.NccInvokeMethod(eventName.ToString(), methodParams);
         }
-        public static object NccInvokeMethod(this object classInstance, GridViewEvents eventName, object[] methodParams)
+        public static object NccInvokeMethod(this object classInstance, NccGridEventsEnum eventName, object[] methodParams)
+        {
+            return classInstance.NccInvokeMethod(eventName.ToString(), methodParams);
+        }
+        public static object NccInvokeMethod(this object classInstance, NccSelectEventsEnum eventName, object[] methodParams)
         {
             return classInstance.NccInvokeMethod(eventName.ToString(), methodParams);
         }

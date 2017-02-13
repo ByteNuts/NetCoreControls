@@ -7,6 +7,7 @@ namespace ByteNuts.NetCoreControls.Models
     public abstract class NccContext
     {
         public string Id { get; set; }
+        public bool RenderDefault { get; set; }
         public bool RenderForm { get; set; } = true;
         public bool AutoBind { get; set; } = true;
 

@@ -63,8 +63,10 @@ function nccPost(controlIds, postData, elem) {
             data: postData,
             success: function (data) {
                 for (var i = 0; i < data.length; i++) {
-                    var update = $("#" + controlIds[i]);
-                    $(update).replaceWith(data[i]);
+                    if (data[i] != "") {
+                        var update = $("#" + controlIds[i]);
+                        $(update).replaceWith(data[i]);
+                    }
                 }
             },
             beforeSend: function() { showAjaxLoader(controlIds, elem) },

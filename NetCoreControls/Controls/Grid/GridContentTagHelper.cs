@@ -17,7 +17,7 @@ namespace ByteNuts.NetCoreControls.Controls.Grid
 
 
         [HtmlAttributeName("ContentType")]
-        public GridViewHtmlContentType ContentType { get; set; }
+        public NccGridContentEnum ContentType { get; set; }
 
 
         private NccGridTagContext _nccTagContext;
@@ -41,10 +41,10 @@ namespace ByteNuts.NetCoreControls.Controls.Grid
 
             switch (ContentType)
             {
-                case GridViewHtmlContentType.PreContent:
+                case NccGridContentEnum.PreContent:
                     _nccTagContext.PreContent += (await output.GetChildContentAsync()).GetContent();
                     break;
-                case GridViewHtmlContentType.PostContent:
+                case NccGridContentEnum.PostContent:
                     _nccTagContext.PostContent += (await output.GetChildContentAsync()).GetContent();
                     break;
                 default:
