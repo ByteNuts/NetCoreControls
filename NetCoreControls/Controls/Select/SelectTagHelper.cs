@@ -116,7 +116,9 @@ namespace ByteNuts.NetCoreControls.Controls.Select
                 }
 
 
-                var data = Context.DataObjects as IList;
+                var data = Context.DataObjects.GetType().ToString().Contains("Microsoft.EntityFrameworkCore.Internal.InternalDbSet") ||
+                    Context.DataObjects.GetType().ToString().Contains("Microsoft.EntityFrameworkCore.Query.Internal.EntityQueryable") ?
+                    ((IQueryable<object>)Context.DataObjects).ToList() : Context.DataObjects as IList;
 
                 if (data?.Count > 0)
                 {

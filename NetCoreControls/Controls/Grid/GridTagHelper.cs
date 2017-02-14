@@ -140,10 +140,13 @@ namespace ByteNuts.NetCoreControls.Controls.Grid
                 }
                 else
                 {
-                    Context.DataObjects = Context.DataSource.GetType().ToString().Contains("Microsoft.EntityFrameworkCore.Internal.InternalDbSet") ||
+                    if (Context.DataSource.GetType().ToString().Contains("Microsoft.EntityFrameworkCore.Internal.InternalDbSet") ||
                         Context.DataSource.GetType().ToString().Contains("Microsoft.EntityFrameworkCore.Query.Internal.EntityQueryable") ||
-                        Context.DataSource.GetType().ToString().Contains("System.Linq.IQueryable") ?
-                        ((IQueryable<object>)Context.DataSource).ToList() : Context.DataSource;
+                        Context.DataSource.GetType().ToString().Contains("System.Linq.IQueryable")
+                        )
+                        Context.DataSource = ((IQueryable<object>) Context.DataSource).ToList();
+
+                    Context.DataObjects = Context.DataSource;
 
                     var data = Context.DataObjects as IList;
                     Context.TotalItems = data?.Count ?? 0;

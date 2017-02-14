@@ -117,26 +117,26 @@ function appendDataToPostArray(postData, key, value, posId) {
 
 
 function showAjaxLoader(targetIds, elem) {
-    var change = false;
+    //var change = false;
     $.each(targetIds,
         function () {
             var controlId = this;
             var div = $("#" + controlId);
-            if (elem instanceof jQuery) {
-                if (div.attr("id") == elem.attr("id")) {
-                    change = true; };
-            } else {
-                $.each(elem, function () {
-                    var ctrl = $("#" + this);
-                    if (div.attr("id") == ctrl.attr("id")) {
-                        change = true;
-                    };
-                });
-            }
-            if (change) {
+            //if (elem instanceof jQuery) {
+            //    if (div.attr("id") == elem.attr("id")) {
+            //        change = true; };
+            //} else {
+            //    $.each(elem, function () {
+            //        var ctrl = $("#" + this);
+            //        if (div.attr("id") == ctrl.attr("id")) {
+            //            change = true;
+            //        };
+            //    });
+            //}
+            //if (change) {
                 div.find(".ajaxLoader, .overlayAjaxLoader").fadeIn(500);
                 div.prop("disabled", true);
-            }
+            //}
         });
     if (elem instanceof jQuery) {
         elem.prop( "disabled", true );
