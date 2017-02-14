@@ -16,6 +16,7 @@ using System.IO;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.Razor;
 using System.Text.Encodings.Web;
+using ByteNuts.NetCoreControls.Controls.Select.Events;
 using ByteNuts.NetCoreControls.Models.Select;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
@@ -68,8 +69,8 @@ namespace ByteNuts.NetCoreControls.Controllers
                 {
                     if (controlCtx == null)
                         throw new Exception("The control context is invalid! Please, refresh the page to get a new valid context.");
-                    if (controlCtx.NccGetPropertyValue<string>("Error") != null)
-                        continue;
+                    //if (controlCtx.NccGetPropertyValue<string>("Error") != null)
+                    //    continue;
 
                     var parametersList = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
                     if (parameters != null && parameters.Count > 0)
@@ -167,52 +168,48 @@ namespace ByteNuts.NetCoreControls.Controllers
                                     throw new Exception("The specified EventName it's not supported on the NccGrid Component!");
                             }
                             break;
-                        case "selectaction":
-                            if (!(controlCtx is NccSelectContext))
-                                throw new Exception("A SelectAction was specified but the context is not of type NccSelectContext!");
-                            if (service == null) service = ReflectionService.NccGetClassInstance(typeof(NccGridEvents).AssemblyQualifiedName, null);
+                        case "linkaction":
+                            //if (!(controlCtx is NccSelectContext))
+                            //    throw new Exception("A SelectAction was specified but the context is not of type NccSelectContext!");
+                            if (service == null) service = ReflectionService.NccGetClassInstance(typeof(NccSelectEvents).AssemblyQualifiedName, null);
 
-                            switch (parametersList[$"{DefaultParameters.EventName.ToString().NccAddPrefix()}"].ToLower())
+
+                            if (!(parametersList.Keys.Any(k => k.StartsWith($"{DefaultParameters.ElemName.ToString().NccAddPrefix()}")) && parametersList.Keys.Any(k => k.StartsWith($"{DefaultParameters.ElemValue.ToString().NccAddPrefix()}"))))
+                                throw new Exception("The submitted data doesn't contain the necessary name and value pair.");
+
+                            //var selectContext = (NccSelectContext) controlCtx;
+
+                            var controlFilters = controlCtx.NccGetPropertyValue<Dictionary<string, string>>("Filters") ?? new Dictionary<string, string>();
+                            var linkFilters = parametersList.FirstOrDefault(x => x.Key.StartsWith($"{DefaultParameters.ElemName.ToString().NccAddPrefix()}"));
+                            var filterName = linkFilters.Key.Replace($"{DefaultParameters.ElemName.ToString().NccAddPrefix()}", "");
+
+                            if(linkFilters.Value != null)
+                                controlFilters[linkFilters.Value] = parametersList[$"{DefaultParameters.ElemValue.ToString().NccAddPrefix()}{filterName}"];
+
+                            var submitElem = parametersList.FirstOrDefault(x => x.Key.StartsWith($"{DefaultParameters.ElemId.ToString().NccAddPrefix()}"));
+
+                            var value = formCollection["target_ids"].FirstOrDefault();
+                            var targetIds = value.Split(',');
+                            var posCurrent = Array.IndexOf(targetIds, controlCtx.NccGetPropertyValue<string>("Id"));
+                            var posCaller = Array.IndexOf(targetIds, submitElem.Value);
+                            if (posCurrent - posCaller == 1)
                             {
-                                case "onchange":
-                                    if (!(parametersList.Keys.Any(k => k.StartsWith($"{DefaultParameters.ElemName.ToString().NccAddPrefix()}")) && parametersList.Keys.Any(k => k.StartsWith($"{DefaultParameters.ElemValue.ToString().NccAddPrefix()}"))))
-                                        throw new Exception("The submitted data doesn't contain the necessary name and value pair.");
-
-                                    var selectContext = (NccSelectContext) controlCtx;
-
-                                    var inputFilters = parametersList.FirstOrDefault(x => x.Key.StartsWith($"{DefaultParameters.ElemName.ToString().NccAddPrefix()}"));
-                                    var filterId = inputFilters.Key.Replace($"{DefaultParameters.ElemName.ToString().NccAddPrefix()}", "");
-
-                                    if(inputFilters.Value != null)
-                                        selectContext.Filters[inputFilters.Value] = parametersList[$"{DefaultParameters.ElemValue.ToString().NccAddPrefix()}{filterId}"];
-
-                                    var submitElem = parametersList.FirstOrDefault(x => x.Key.StartsWith($"{DefaultParameters.ElemId.ToString().NccAddPrefix()}"));
-
-                                    var value = formCollection["target_ids"].FirstOrDefault();
-                                    var targetIds = value.Split(',');
-                                    var posCurrent = Array.IndexOf(targetIds, selectContext.Id);
-                                    var posCaller = Array.IndexOf(targetIds, submitElem.Value);
-                                    if (posCurrent - posCaller == 1)
-                                    {
-                                        selectContext.RenderDefault = false;
-                                    }
-                                    else if (posCurrent - posCaller > 1)
-                                    {
-                                        selectContext.RenderDefault = true;
-                                        selectContext.SelectedValue = "";
-                                    }
-                                    else
-                                        renderControl = false;
-
-                                    if (posCurrent == posCaller)
-                                        selectContext.SelectedValue = inputFilters.Value;
-
-                                    controlCtx.NccSetPropertyValue("Filters", selectContext.Filters);
-
-                                    break;
-                                default:
-                                    throw new Exception("The specified SelectName it's not supported on the NccSelect Component!");
+                                controlCtx.NccSetPropertyValue("RenderDefault", false);
                             }
+                            else if (posCurrent - posCaller > 1)
+                            {
+                                controlCtx.NccSetPropertyValue("RenderDefault", true);
+                                controlCtx.NccSetPropertyValue("SelectedValue", "");
+                            }
+                            else
+                                renderControl = false;
+
+                            if (posCurrent == posCaller)
+                                controlCtx.NccSetPropertyValue("SelectedValue", linkFilters.Value);
+
+                            controlCtx.NccSetPropertyValue("Filters", controlFilters);
+
+
                             break;
                         default:
                             throw new Exception("The specified ActionType it's not supported on the NetCoreControls!");

@@ -109,7 +109,7 @@ namespace ByteNuts.NetCoreControls.Services
 
         public static void NccSetPropertyValue(this object obj, string propertyName, object propertyValue)
         {
-            obj.GetType().GetProperty(propertyName).SetValue(obj, propertyValue);
+            obj.GetType().GetProperty(propertyName)?.SetValue(obj, propertyValue);
         }
 
         public static ExpandoObject ExtToExpandoObject(this object anonymousObject)

@@ -72,7 +72,6 @@ namespace ByteNuts.NetCoreControls.Controls.Select
 
             output.TagName = "select";
             output.Attributes.SetAttribute("id", Context.Id);
-            output.Attributes.SetAttribute("style", "position:relative");
 
             if (!string.IsNullOrEmpty(DataValue))
                 Context.DataValue = DataValue;
@@ -168,6 +167,21 @@ namespace ByteNuts.NetCoreControls.Controls.Select
                 }
                 };
                 output.PostContent.AppendHtml(ajaxLoader);
+
+
+                var divContainer = new TagBuilder("div")
+                {
+                    Attributes = { { "id", Context.Id }, { "style", "position:relative" } },
+                    TagRenderMode = TagRenderMode.StartTag
+                };
+                output.PreElement.AppendHtml(divContainer);
+
+                var endDivContainer = new TagBuilder("div")
+                {
+                    TagRenderMode = TagRenderMode.EndTag
+                };
+                output.PostElement.AppendHtml(endDivContainer);
+
             }
         }
     }

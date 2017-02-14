@@ -55,7 +55,7 @@ namespace ByteNuts.NetCoreControls.Controls
                     output.TagName = "div";
                     output.Attributes.SetAttribute("id", id);
 
-                    Context.NccSetPropertyValue("Error", error);
+                    //Context.NccSetPropertyValue("Error", error);
                     ViewContext.ViewData[id] = Context;
 
                     var encContext = new TagBuilder("input");
