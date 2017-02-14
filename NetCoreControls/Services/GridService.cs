@@ -214,7 +214,7 @@ namespace ByteNuts.NetCoreControls.Services
             {
                 Attributes =
                     {
-                        {"href", "#"},
+                        {"style", "cursor:pointer;" },
                         {"name", "pageNumber" },
                         {"value", pageNumber.ToString() },
                         {"onclick", $"nccAction(null, $(this), '{JsonConvert.SerializeObject(model)}', '{Constants.AttributePrefix}');" }
