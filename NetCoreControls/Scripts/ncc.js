@@ -57,10 +57,14 @@ function nccAction(event, elem, params, prefix) {
 
 function nccPost(controlIds, postData, elem) {
     if (postData != null && controlIds != null) {
-        var basePath = document.getElementsByTagName('base')[0].href;
+        var basePath = document.getElementsByTagName('base')[0];
+        var basePathUrl = "";
+        if (basePath != null) {
+            basePathUrl = basePath.href;
+        }
         var options = {
             type: "POST",
-            url: basePath + "/NetCoreControls/ControlAction",
+            url: basePathUrl + "/NetCoreControls/ControlAction",
             data: postData,
             success: function (data) {
                 for (var i = 0; i < data.length; i++) {

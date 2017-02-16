@@ -115,7 +115,7 @@ namespace ByteNuts.NetCoreControls.Controls.Grid
                             {
                                 Attributes =
                                     {
-                                        {"href", "#"},
+                                        {"style", "cursor:pointer;" },
                                         {"onclick", $"nccAction(null, $(this), '{JsonConvert.SerializeObject(model)}', '{Constants.AttributePrefix}');" }
                                     }
                             };
@@ -126,7 +126,7 @@ namespace ByteNuts.NetCoreControls.Controls.Grid
                             {
                                 Attributes =
                                     {
-                                        {"href", "#"},
+                                        {"style", "cursor:pointer;" },
                                         {"onclick", $"nccAction(null, $(this), '{JsonConvert.SerializeObject(model)}', '{Constants.AttributePrefix}');" }
                                     }
                             };
@@ -154,7 +154,7 @@ namespace ByteNuts.NetCoreControls.Controls.Grid
                             {
                                 Attributes =
                                     {
-                                        {"href", "#"},
+                                        {"style", "cursor:pointer;" },
                                         {"onclick", $"nccAction(null, $(this), '{JsonConvert.SerializeObject(model)}', '{Constants.AttributePrefix}');" }
                                     }
                             };
