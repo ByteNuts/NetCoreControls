@@ -39,9 +39,6 @@ namespace ByteNuts.NetCoreControls.Controls.Select
         [HtmlAttributeName("ncc-first-item")]
         public string FirstItem { get; set; }
 
-        [HtmlAttributeName("ncc-control-target")]
-        public string ControlTarget { get; set; }
-
         private IDataProtector _protector;
         private readonly NccSettings _nccSettings;
 
