@@ -1,7 +1,7 @@
 # NetCoreControls
-A set of UI controls for ASP.NET Core.
+A set of UI controls for ASP.NET MVC Core.
 
-[Controls demo](http://netcorecontrols.bytenuts.com)
+[Controls website](http://netcorecontrols.bytenuts.com)
 
 
 ## Documentation
@@ -41,9 +41,8 @@ Refer to the samples repository for examples of usage of the controls.
 
 ## Available controls
 
-* Grid
-* HtmlRender
-* ...
+* NccGrid
+* NccSelect
 
 Other controls will be available in a near future...
 
