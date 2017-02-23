@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace ByteNuts.NetCoreControls.Models
+namespace ByteNuts.NetCoreControls.Core.Models
 {
     public class NccActionModel
     {

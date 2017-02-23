@@ -1,12 +1,12 @@
-﻿using ByteNuts.NetCoreControls.Controllers;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
-namespace ByteNuts.NetCoreControls.Models
+namespace ByteNuts.NetCoreControls.Core.Models
 {
     public class NccEventArgs
     {
-        public NetCoreControlsController Controller { get; set; }
+        public Controller Controller { get; set; }
 
         public ViewContext ViewContext { get; set; }
 

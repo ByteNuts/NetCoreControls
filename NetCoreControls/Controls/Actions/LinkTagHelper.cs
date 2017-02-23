@@ -1,6 +1,7 @@
-﻿using ByteNuts.NetCoreControls.Extensions;
-using ByteNuts.NetCoreControls.Models;
-using ByteNuts.NetCoreControls.Models.Enums;
+﻿using ByteNuts.NetCoreControls.Core;
+using ByteNuts.NetCoreControls.Core.Extensions;
+using ByteNuts.NetCoreControls.Core.Models;
+using ByteNuts.NetCoreControls.Core.Models.Enums;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 using Newtonsoft.Json;
 
@@ -26,7 +27,7 @@ namespace ByteNuts.NetCoreControls.Controls.Actions
             if (output.Attributes.ContainsName("onchange"))
                 onchange = output.Attributes["onchange"].Value.ToString();
 
-            output.Attributes.SetAttribute("onchange", $"{onchange} nccAction(event, $(this), '{JsonConvert.SerializeObject(model)}', '{Constants.AttributePrefix}');");
+            output.Attributes.SetAttribute("onchange", $"{onchange} nccAction(event, $(this), '{JsonConvert.SerializeObject(model)}', '{NccConstants.AttributePrefix}');");
         }
     }
 }

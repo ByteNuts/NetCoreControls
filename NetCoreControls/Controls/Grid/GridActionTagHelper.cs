@@ -1,5 +1,7 @@
-﻿using ByteNuts.NetCoreControls.Extensions;
-using ByteNuts.NetCoreControls.Models;
+﻿using ByteNuts.NetCoreControls.Core;
+using ByteNuts.NetCoreControls.Core.Extensions;
+using ByteNuts.NetCoreControls.Core.Models;
+using ByteNuts.NetCoreControls.Core.Models.Enums;
 using ByteNuts.NetCoreControls.Models.Enums;
 using ByteNuts.NetCoreControls.Models.Grid;
 using Microsoft.AspNetCore.Razor.TagHelpers;
@@ -35,7 +37,7 @@ namespace ByteNuts.NetCoreControls.Controls.Grid
                 if (output.Attributes.ContainsName("onchange"))
                     onchange = output.Attributes["onchange"].Value.ToString();
 
-                output.Attributes.SetAttribute("onchange", $"{onchange} nccAction(event, $(this), '{JsonConvert.SerializeObject(model)}', '{Constants.AttributePrefix}');");
+                output.Attributes.SetAttribute("onchange", $"{onchange} nccAction(event, $(this), '{JsonConvert.SerializeObject(model)}', '{NccConstants.AttributePrefix}');");
             }
             else
             {
@@ -43,7 +45,7 @@ namespace ByteNuts.NetCoreControls.Controls.Grid
                 if (output.Attributes.ContainsName("onclick"))
                     onclick = output.Attributes["onclick"].Value.ToString();
 
-                output.Attributes.SetAttribute("onclick", $"{onclick} nccAction(event, $(this), '{JsonConvert.SerializeObject(model)}', '{Constants.AttributePrefix}');");
+                output.Attributes.SetAttribute("onclick", $"{onclick} nccAction(event, $(this), '{JsonConvert.SerializeObject(model)}', '{NccConstants.AttributePrefix}');");
             }
         }
     }

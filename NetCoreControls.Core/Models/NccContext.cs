@@ -2,7 +2,7 @@
 using System.Dynamic;
 using Newtonsoft.Json;
 
-namespace ByteNuts.NetCoreControls.Models
+namespace ByteNuts.NetCoreControls.Core.Models
 {
     public abstract class NccContext
     {
@@ -16,7 +16,7 @@ namespace ByteNuts.NetCoreControls.Models
         public bool Visible { get; set; } = true;
 
         [JsonIgnore]
-        public object DataObjects { get; internal set; }
+        public object DataObjects { get; set; }
         /// <summary>
         /// Assembly Qualified Name
         /// Usage: 'InstanceOfClass.GetType().AssemblyQualifiedName'

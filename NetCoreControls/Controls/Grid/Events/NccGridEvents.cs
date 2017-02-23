@@ -1,16 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Dynamic;
-using ByteNuts.NetCoreControls.Models;
 using ByteNuts.NetCoreControls.Models.Grid;
-using ByteNuts.NetCoreControls.Extensions;
 using ByteNuts.NetCoreControls.Services;
 using Microsoft.Extensions.Options;
 using System.Linq;
+using ByteNuts.NetCoreControls.Core;
+using ByteNuts.NetCoreControls.Core.Controls;
+using ByteNuts.NetCoreControls.Core.Extensions;
+using ByteNuts.NetCoreControls.Core.Models;
+using ByteNuts.NetCoreControls.Core.Services;
 
 namespace ByteNuts.NetCoreControls.Controls.Grid.Events
 {
-    public class NccGridEvents : NccEvents
+    public class NccGridEvents : NccControlEvents
     {
         public virtual void RowDataBound(NccEventArgs eventArgs, object rowData)
         {
@@ -37,7 +40,7 @@ namespace ByteNuts.NetCoreControls.Controls.Grid.Events
 
             if (!ok) throw new Exception("Error binding model to object or list");
 
-            ok = EventService.NccBindDataKeys(model, gridContext.DataKeysValues, rowPos);
+            ok = NccEventService.NccBindDataKeys(model, gridContext.DataKeysValues, rowPos);
 
             if (!ok) throw new Exception("DataKeys list is bigger than submited list. No match possible!!");
 
@@ -45,10 +48,10 @@ namespace ByteNuts.NetCoreControls.Controls.Grid.Events
                 throw new Exception("It was not possible to bind the forms value to model.");
 
 
-            var options = ReflectionService.NccGetClassInstanceWithDi(eventArgs.Controller.HttpContext, Constants.OptionsAssemblyName);
+            var options = NccReflectionService.NccGetClassInstanceWithDi(eventArgs.Controller.HttpContext, NccConstants.OptionsAssemblyName);
             var nccSettings = options != null ? ((IOptions<NccSettings>)options).Value : new NccSettings();
 
-            var dbService = nccSettings.UseDependencyInjection ? ReflectionService.NccGetClassInstanceWithDi(eventArgs.Controller.HttpContext, gridContext.DataAccessClass) : ReflectionService.NccGetClassInstance(gridContext.DataAccessClass, gridContext.DataAccessParameters);
+            var dbService = nccSettings.UseDependencyInjection ? NccReflectionService.NccGetClassInstanceWithDi(eventArgs.Controller.HttpContext, gridContext.DataAccessClass) : NccReflectionService.NccGetClassInstance(gridContext.DataAccessClass, gridContext.DataAccessParameters);
 
             if (dbService == null)
                 throw new Exception("Could not get an instance of DataAccessClass. Wrong assembly full name?");

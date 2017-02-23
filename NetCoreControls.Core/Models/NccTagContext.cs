@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 
-namespace ByteNuts.NetCoreControls.Models
+namespace ByteNuts.NetCoreControls.Core.Models
 {
     public class NccTagContext
     {

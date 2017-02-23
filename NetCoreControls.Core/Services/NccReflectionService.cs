@@ -2,13 +2,13 @@
 using System.Collections.Generic;
 using System.Dynamic;
 using System.Reflection;
-using ByteNuts.NetCoreControls.Models.Enums;
+using ByteNuts.NetCoreControls.Core.Models.Enums;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 
-namespace ByteNuts.NetCoreControls.Services
+namespace ByteNuts.NetCoreControls.Core.Services
 {
-    public static class ReflectionService
+    public static class NccReflectionService
     {
         public static object NccGetClassInstance(string assemblyName, object[] constructorParameters)
         {
@@ -80,14 +80,18 @@ namespace ByteNuts.NetCoreControls.Services
         {
             return classInstance.NccInvokeMethod(eventName.ToString(), methodParams);
         }
-        public static object NccInvokeMethod(this object classInstance, NccGridEventsEnum eventName, object[] methodParams)
-        {
-            return classInstance.NccInvokeMethod(eventName.ToString(), methodParams);
-        }
-        public static object NccInvokeMethod(this object classInstance, NccSelectEventsEnum eventName, object[] methodParams)
-        {
-            return classInstance.NccInvokeMethod(eventName.ToString(), methodParams);
-        }
+        //public static object NccInvokeMethod(this object classInstance, NccGridEventsEnum eventName, object[] methodParams)
+        //{
+        //    return classInstance.NccInvokeMethod(eventName.ToString(), methodParams);
+        //}
+        //public static object NccInvokeMethod(this object classInstance, NccSelectEventsEnum eventName, object[] methodParams)
+        //{
+        //    return classInstance.NccInvokeMethod(eventName.ToString(), methodParams);
+        //}
+        //public static object NccInvokeMethod(this object classInstance, NccRepeaterEventsEnum eventName, object[] methodParams)
+        //{
+        //    return classInstance.NccInvokeMethod(eventName.ToString(), methodParams);
+        //}
 
 
         public static T NccGetPropertyValue<T>(this object obj, string propertyName)
@@ -110,6 +114,11 @@ namespace ByteNuts.NetCoreControls.Services
         public static void NccSetPropertyValue(this object obj, string propertyName, object propertyValue)
         {
             obj.GetType().GetProperty(propertyName)?.SetValue(obj, propertyValue);
+        }
+
+        public static bool NccPropertyExists(this object obj, string propertyName)
+        {
+            return obj.GetType().GetProperty(propertyName) != null;
         }
 
         public static ExpandoObject ExtToExpandoObject(this object anonymousObject)

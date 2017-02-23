@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Threading.Tasks;
-using ByteNuts.NetCoreControls.Helpers;
-using ByteNuts.NetCoreControls.Models;
+using ByteNuts.NetCoreControls.Core;
+using ByteNuts.NetCoreControls.Core.Models;
+using ByteNuts.NetCoreControls.Core.Models.Enums;
+using ByteNuts.NetCoreControls.Core.Services;
 using ByteNuts.NetCoreControls.Models.HtmlRender;
-using ByteNuts.NetCoreControls.Services;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
@@ -35,7 +36,7 @@ namespace ByteNuts.NetCoreControls.Controls.HtmlRender
 
         public HtmlRenderTagHelper(IDataProtectionProvider protector, IHttpContextAccessor contextAccessor)
         {
-            var options = ReflectionService.NccGetClassInstanceWithDi(contextAccessor.HttpContext, Constants.OptionsAssemblyName);
+            var options = NccReflectionService.NccGetClassInstanceWithDi(contextAccessor.HttpContext, NccConstants.OptionsAssemblyName);
             _nccSettings = options != null ? ((IOptions<NccSettings>)options).Value : new NccSettings();
 
             _protector = protector.CreateProtector(_nccSettings.DataProtectionKey);
@@ -52,9 +53,9 @@ namespace ByteNuts.NetCoreControls.Controls.HtmlRender
 
             object service = null;
 
-            if (!string.IsNullOrEmpty(Context.EventHandlerClass)) service = ReflectionService.NccGetClassInstance(Context.EventHandlerClass, null);
+            if (!string.IsNullOrEmpty(Context.EventHandlerClass)) service = NccReflectionService.NccGetClassInstance(Context.EventHandlerClass, null);
 
-            service?.NccInvokeMethod(Models.Enums.NccEventsEnum.Load, new object[] { new NccEventArgs { NccControlContext = Context, ViewContext = ViewContext } });
+            service?.NccInvokeMethod(NccEventsEnum.Load.ToString(), new object[] { new NccEventArgs { NccControlContext = Context, ViewContext = ViewContext } });
 
 
             //Get grid id and share it with siblings parents
@@ -73,9 +74,9 @@ namespace ByteNuts.NetCoreControls.Controls.HtmlRender
 
                 //Get data from datasource
 
-                Context = DataService.GetControlData(Context, ViewContext.HttpContext);
+                //DataService.GetControlData(Context, ViewContext.HttpContext);
 
-                service?.NccInvokeMethod(Models.Enums.NccEventsEnum.DataBound, new object[] { new NccEventArgs { NccControlContext = Context, ViewContext = ViewContext, DataObjects = Context.DataObjects } });
+                service?.NccInvokeMethod(NccEventsEnum.DataBound.ToString(), new object[] { new NccEventArgs { NccControlContext = Context, ViewContext = ViewContext, DataObjects = Context.DataObjects } });
 
                 ViewContext.ViewData.Model = Context.DataObjects;
 
@@ -91,7 +92,7 @@ namespace ByteNuts.NetCoreControls.Controls.HtmlRender
             else
                 output.SuppressOutput();
 
-            service?.NccInvokeMethod(Models.Enums.NccEventsEnum.PreRender, new object[] { new NccEventArgs { NccControlContext = Context, ViewContext = ViewContext } });
+            service?.NccInvokeMethod(NccEventsEnum.PreRender.ToString(), new object[] { new NccEventArgs { NccControlContext = Context, ViewContext = ViewContext } });
 
             output.TagName = "div";
             output.Attributes.SetAttribute("id", Context.Id);
@@ -100,7 +101,7 @@ namespace ByteNuts.NetCoreControls.Controls.HtmlRender
             encContext.Attributes.Add("name", "encContext");
             encContext.Attributes.Add("id", $"{Context.Id}_context");
             encContext.Attributes.Add("type", "hidden");
-            encContext.Attributes.Add("value", _protector.Protect(NccJson.SetObjectAsJson(Context)));
+            encContext.Attributes.Add("value", _protector.Protect(NccJsonService.SetObjectAsJson(Context)));
             output.PostContent.AppendHtml(encContext);
 
         }

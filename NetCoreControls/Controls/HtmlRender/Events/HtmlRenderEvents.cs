@@ -1,6 +1,8 @@
-﻿namespace ByteNuts.NetCoreControls.Controls.HtmlRender.Events
+﻿using ByteNuts.NetCoreControls.Core.Controls;
+
+namespace ByteNuts.NetCoreControls.Controls.HtmlRender.Events
 {
-    public class HtmlRenderEvents : NccEvents
+    public class HtmlRenderEvents : NccControlEvents
     {
     }
 }

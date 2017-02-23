@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using ByteNuts.NetCoreControls.Core.Models;
+using Microsoft.Extensions.DependencyInjection;
 using ByteNuts.NetCoreControls.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;

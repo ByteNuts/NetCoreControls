@@ -1,8 +1,9 @@
-﻿using ByteNuts.NetCoreControls.Extensions;
+﻿using ByteNuts.NetCoreControls.Core;
 using Microsoft.AspNetCore.Razor.TagHelpers;
-using ByteNuts.NetCoreControls.Models;
-using ByteNuts.NetCoreControls.Models.Enums;
 using Newtonsoft.Json;
+using ByteNuts.NetCoreControls.Core.Models;
+using ByteNuts.NetCoreControls.Core.Models.Enums;
+using ByteNuts.NetCoreControls.Core.Extensions;
 
 namespace ByteNuts.NetCoreControls.Controls.Actions
 {
@@ -32,7 +33,7 @@ namespace ByteNuts.NetCoreControls.Controls.Actions
                 if (output.Attributes.ContainsName("onchange"))
                     onchange = output.Attributes["onchange"].Value.ToString();
 
-                output.Attributes.SetAttribute("onchange", $"{onchange} nccAction(null, $(this), '{JsonConvert.SerializeObject(model)}', '{Constants.AttributePrefix}');");
+                output.Attributes.SetAttribute("onchange", $"{onchange} nccAction(null, $(this), '{JsonConvert.SerializeObject(model)}', '{NccConstants.AttributePrefix}');");
             }
             else
             {
@@ -40,7 +41,7 @@ namespace ByteNuts.NetCoreControls.Controls.Actions
                 if (output.Attributes.ContainsName("onclick"))
                     onclick = output.Attributes["onclick"].Value.ToString();
 
-                output.Attributes.SetAttribute("onclick", $"{onclick} nccAction(null, $(this), '{JsonConvert.SerializeObject(model)}', '{Constants.AttributePrefix}');");
+                output.Attributes.SetAttribute("onclick", $"{onclick} nccAction(null, $(this), '{JsonConvert.SerializeObject(model)}', '{NccConstants.AttributePrefix}');");
             }
         }
     }

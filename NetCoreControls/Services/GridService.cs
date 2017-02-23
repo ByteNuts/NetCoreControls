@@ -3,9 +3,10 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using ByteNuts.NetCoreControls.Extensions;
-using ByteNuts.NetCoreControls.Models;
-using ByteNuts.NetCoreControls.Models.Enums;
+using ByteNuts.NetCoreControls.Core;
+using ByteNuts.NetCoreControls.Core.Extensions;
+using ByteNuts.NetCoreControls.Core.Models;
+using ByteNuts.NetCoreControls.Core.Models.Enums;
 using ByteNuts.NetCoreControls.Models.Grid;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Newtonsoft.Json;
@@ -14,15 +15,13 @@ namespace ByteNuts.NetCoreControls.Services
 {
     public static class GridService
     {
-        public static IDictionary<string, object> GetExtraParameters(IDictionary<string, object> methodParams, NccGridContext context)
+        public static void GetExtraParameters(IDictionary<string, object> methodParams, NccGridContext context)
         {
             methodParams["pageNumber"] = context.PageNumber;
             methodParams["pageSize"] = context.PageSize;
-
-            return methodParams;
         }
 
-        public static NccGridContext SetDataResult(NccGridContext context, object result)
+        public static void SetDataResult(NccGridContext context, object result)
         {
             if (result.GetType().ToString().Contains(typeof(Tuple).ToString()))
                 context.TotalItems = Convert.ToInt32(result.GetType().GetProperty("Item2").GetValue(result));
@@ -36,7 +35,7 @@ namespace ByteNuts.NetCoreControls.Services
                 context.TotalItems = list != null ? new List<object>(list.Cast<object>()).Count : 1;
             }
 
-            return context;
+            //return context;
         }
 
 
@@ -217,7 +216,7 @@ namespace ByteNuts.NetCoreControls.Services
                         {"style", "cursor:pointer;" },
                         {"name", "pageNumber" },
                         {"value", pageNumber.ToString() },
-                        {"onclick", $"nccAction(null, $(this), '{JsonConvert.SerializeObject(model)}', '{Constants.AttributePrefix}');" }
+                        {"onclick", $"nccAction(null, $(this), '{JsonConvert.SerializeObject(model)}', '{NccConstants.AttributePrefix}');" }
                     }
             };
             link.InnerHtml.Append(string.IsNullOrEmpty(htmlContent) ? pageNumber.ToString() : htmlContent);

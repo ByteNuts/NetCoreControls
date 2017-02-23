@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using ByteNuts.NetCoreControls.Core.Models;
 
 namespace ByteNuts.NetCoreControls.Models.Select
 {

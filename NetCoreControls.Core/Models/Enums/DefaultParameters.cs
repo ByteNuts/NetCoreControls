@@ -1,4 +1,4 @@
-﻿namespace ByteNuts.NetCoreControls.Models.Enums
+﻿namespace ByteNuts.NetCoreControls.Core.Models.Enums
 {
     public enum DefaultParameters
     {

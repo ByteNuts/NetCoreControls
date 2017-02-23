@@ -1,8 +1,8 @@
 ﻿using Newtonsoft.Json;
 
-namespace ByteNuts.NetCoreControls.Helpers
+namespace ByteNuts.NetCoreControls.Core.Services
 {
-    public static class NccJson
+    public static class NccJsonService
     {
         private static readonly JsonSerializerSettings JsonSerializerSettings = new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.All, PreserveReferencesHandling = PreserveReferencesHandling.Objects};
         public static string SetObjectAsJson(object value, bool includeType = true)

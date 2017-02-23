@@ -2,25 +2,24 @@
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using ByteNuts.NetCoreControls.Services;
-using ByteNuts.NetCoreControls.Models.Grid;
+using ByteNuts.NetCoreControls.Core.Services;
 using System;
 using System.Linq;
 using System.Reflection;
-using ByteNuts.NetCoreControls.Models.Enums;
-using ByteNuts.NetCoreControls.Extensions;
-using ByteNuts.NetCoreControls.Models;
-using ByteNuts.NetCoreControls.Helpers;
+using ByteNuts.NetCoreControls.Core.Models.Enums;
+using ByteNuts.NetCoreControls.Core.Extensions;
+using ByteNuts.NetCoreControls.Core.Models;
 using System.Threading.Tasks;
 using System.IO;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.Razor;
 using System.Text.Encodings.Web;
+using ByteNuts.NetCoreControls.Controls.Grid.Events;
 using ByteNuts.NetCoreControls.Controls.Select.Events;
-using ByteNuts.NetCoreControls.Models.Select;
+using ByteNuts.NetCoreControls.Core;
+using ByteNuts.NetCoreControls.Models.Enums;
+using ByteNuts.NetCoreControls.Models.Grid;
 using Microsoft.Extensions.Options;
-using Microsoft.Extensions.Primitives;
-using NccGridEvents = ByteNuts.NetCoreControls.Controls.Grid.Events.NccGridEvents;
 
 namespace ByteNuts.NetCoreControls.Controllers
 {
@@ -32,7 +31,7 @@ namespace ByteNuts.NetCoreControls.Controllers
 
         public NetCoreControlsController(IDataProtectionProvider protector, IRazorViewEngine razorViewEngine, IHttpContextAccessor contextAccessor)
         {
-            var options = ReflectionService.NccGetClassInstanceWithDi(contextAccessor.HttpContext, Constants.OptionsAssemblyName);
+            var options = NccReflectionService.NccGetClassInstanceWithDi(contextAccessor.HttpContext, NccConstants.OptionsAssemblyName);
             _nccSettings = options != null ? ((IOptions<NccSettings>) options).Value : new NccSettings();
 
             _protector = protector.CreateProtector(_nccSettings.DataProtectionKey);
@@ -54,11 +53,11 @@ namespace ByteNuts.NetCoreControls.Controllers
                     if (context.Length == 0)
                         throw new Exception("An error as occured when processing the controls context. Please, verify that all target id's are correct.");
 
-                    controlCtxs.Add(NccJson.GetObjectFromJson<object>(_protector.Unprotect(ctx)));
+                    controlCtxs.Add(NccJsonService.GetObjectFromJson<object>(_protector.Unprotect(ctx)));
                 }
                 catch (Exception e)
                 {
-                    viewResult.Add(EventService.ProcessError(e));
+                    viewResult.Add(NccEventService.ProcessError(e));
                 }
             }
 
@@ -80,7 +79,7 @@ namespace ByteNuts.NetCoreControls.Controllers
                         throw new Exception("No action type was specified!");
 
                     var eventHandler = controlCtx.NccGetPropertyValue<string>("EventHandlerClass");
-                    var service = ReflectionService.NccGetClassInstance(eventHandler, null);
+                    var service = NccReflectionService.NccGetClassInstance(eventHandler, null);
 
                     service?.NccInvokeMethod(NccEventsEnum.PostBack, new object[] { new NccEventArgs { Controller = this, NccControlContext = controlCtx, FormCollection = formCollection } });
 
@@ -112,7 +111,7 @@ namespace ByteNuts.NetCoreControls.Controllers
                             break;
                         case "event":
                             if (service == null) throw new Exception("EventHandler must be registered and must exist to process events");
-                            EventService.ProcessEvent(service, ControllerContext, controlCtx, formCollection, parametersList);
+                            NccEventService.ProcessEvent(service, ControllerContext, controlCtx, formCollection, parametersList);
                             break;
                         //Events from Controls are mapped here
                         case "gridaction":
@@ -120,12 +119,12 @@ namespace ByteNuts.NetCoreControls.Controllers
                                 throw new Exception("No EventName specified for the GridView action!");
                             if (!(controlCtx is NccGridContext))
                                 throw new Exception("A GridAction was specified but the context is not of type NccGridContext!");
-                            if (service == null) service = ReflectionService.NccGetClassInstance(typeof(NccGridEvents).AssemblyQualifiedName, null);
+                            if (service == null) service = NccReflectionService.NccGetClassInstance(typeof(NccGridEvents).AssemblyQualifiedName, null);
 
                             switch (parametersList[$"{DefaultParameters.EventName.ToString().NccAddPrefix()}"].ToLower())
                             {
                                 case "update":
-                                    service.NccInvokeMethod(NccGridEventsEnum.Update, new object[] { new NccEventArgs { Controller = this, NccControlContext = controlCtx, FormCollection = formCollection } });
+                                    service.NccInvokeMethod(NccGridEventsEnum.Update.ToString(), new object[] { new NccEventArgs { Controller = this, NccControlContext = controlCtx, FormCollection = formCollection } });
                                     break;
                                 case "updaterow":
                                     if (!parametersList.ContainsKey($"{NccGridParametersEnum.RowNumber.ToString().NccAddPrefix()}"))
@@ -133,7 +132,7 @@ namespace ByteNuts.NetCoreControls.Controllers
 
                                     var updateRowPos = Convert.ToInt32(parametersList[$"{NccGridParametersEnum.RowNumber.ToString().NccAddPrefix()}"]);
 
-                                    service.NccInvokeMethod(NccGridEventsEnum.UpdateRow, new object[] { new NccEventArgs { Controller = this, NccControlContext = controlCtx, FormCollection = formCollection }, updateRowPos });
+                                    service.NccInvokeMethod(NccGridEventsEnum.UpdateRow.ToString(), new object[] { new NccEventArgs { Controller = this, NccControlContext = controlCtx, FormCollection = formCollection }, updateRowPos });
                                     break;
                                 case "editrow":
                                     if (!parametersList.ContainsKey($"{NccGridParametersEnum.RowNumber.ToString().NccAddPrefix()}"))
@@ -161,7 +160,7 @@ namespace ByteNuts.NetCoreControls.Controllers
 
                                     var deleteRowPos = Convert.ToInt32(parametersList[$"{NccGridParametersEnum.RowNumber.ToString().NccAddPrefix()}"]);
 
-                                    service.NccInvokeMethod(NccGridEventsEnum.DeleteRow, new object[] { new NccEventArgs { Controller = this, NccControlContext = controlCtx, FormCollection = formCollection }, deleteRowPos });
+                                    service.NccInvokeMethod(NccGridEventsEnum.DeleteRow.ToString(), new object[] { new NccEventArgs { Controller = this, NccControlContext = controlCtx, FormCollection = formCollection }, deleteRowPos });
 
                                     break;
                                 default:
@@ -169,15 +168,12 @@ namespace ByteNuts.NetCoreControls.Controllers
                             }
                             break;
                         case "linkaction":
-                            //if (!(controlCtx is NccSelectContext))
-                            //    throw new Exception("A SelectAction was specified but the context is not of type NccSelectContext!");
-                            if (service == null) service = ReflectionService.NccGetClassInstance(typeof(NccSelectEvents).AssemblyQualifiedName, null);
+                            if (service == null) service = NccReflectionService.NccGetClassInstance(typeof(NccSelectEvents).AssemblyQualifiedName, null);
 
 
                             if (!(parametersList.Keys.Any(k => k.StartsWith($"{DefaultParameters.ElemName.ToString().NccAddPrefix()}")) && parametersList.Keys.Any(k => k.StartsWith($"{DefaultParameters.ElemValue.ToString().NccAddPrefix()}"))))
                                 throw new Exception("The submitted data doesn't contain the necessary name and value pair.");
 
-                            //var selectContext = (NccSelectContext) controlCtx;
 
                             var controlFilters = controlCtx.NccGetPropertyValue<Dictionary<string, string>>("Filters") ?? new Dictionary<string, string>();
                             var linkFilters = parametersList.FirstOrDefault(x => x.Key.StartsWith($"{DefaultParameters.ElemName.ToString().NccAddPrefix()}"));
@@ -229,7 +225,7 @@ namespace ByteNuts.NetCoreControls.Controllers
                 {
                     var div = new TagBuilder("div");
                     var encContext = new TagBuilder("input");
-                    var error = EventService.ProcessError(e);
+                    var error = NccEventService.ProcessError(e);
                     var id = controlCtx.NccGetPropertyValue<string>("Id");
                     if (!string.IsNullOrEmpty(id))
                     {
@@ -239,7 +235,7 @@ namespace ByteNuts.NetCoreControls.Controllers
                         encContext.Attributes.Add("name", "encContext");
                         encContext.Attributes.Add("id", $"{id}_context");
                         encContext.Attributes.Add("type", "hidden");
-                        encContext.Attributes.Add("value", _protector.Protect(NccJson.SetObjectAsJson(controlCtx)));
+                        encContext.Attributes.Add("value", _protector.Protect(NccJsonService.SetObjectAsJson(controlCtx)));
                     }
                     div.InnerHtml.AppendHtml(error);
                     div.InnerHtml.AppendHtml(encContext);

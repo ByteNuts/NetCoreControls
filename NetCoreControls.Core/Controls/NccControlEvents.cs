@@ -1,9 +1,9 @@
-﻿using ByteNuts.NetCoreControls.Models;
-using ByteNuts.NetCoreControls.Services;
+﻿using ByteNuts.NetCoreControls.Core.Models;
+using ByteNuts.NetCoreControls.Core.Services;
 
-namespace ByteNuts.NetCoreControls.Controls
+namespace ByteNuts.NetCoreControls.Core.Controls
 {
-    public class NccEvents
+    public class NccControlEvents
     {
         /// <summary>
         /// Properties available:

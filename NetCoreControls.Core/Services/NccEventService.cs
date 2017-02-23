@@ -2,18 +2,16 @@
 using System.Collections.Generic;
 using System.Reflection;
 using System.Text.Encodings.Web;
-using ByteNuts.NetCoreControls.Extensions;
+using ByteNuts.NetCoreControls.Core.Extensions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using ByteNuts.NetCoreControls.Models.Enums;
+using ByteNuts.NetCoreControls.Core.Models.Enums;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using System.Threading.Tasks;
-using ByteNuts.NetCoreControls.Controllers;
 using System.Collections;
 
-namespace ByteNuts.NetCoreControls.Services
+namespace ByteNuts.NetCoreControls.Core.Services
 {
-    public static  class EventService
+    public static  class NccEventService
     {
         public static void ProcessEvent<T>(object service, ControllerContext controllerContext, T controlCtx, IFormCollection formCollection, Dictionary<string, string> parameters)
         {

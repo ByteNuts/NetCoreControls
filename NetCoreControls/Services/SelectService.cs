@@ -1,18 +1,18 @@
 ﻿using System.Collections.Generic;
-using ByteNuts.NetCoreControls.Models.HtmlRender;
+using ByteNuts.NetCoreControls.Models.Select;
 
 namespace ByteNuts.NetCoreControls.Services
 {
-    public static class HtmlRenderService
+    public static class SelectService
     {
-        public static IDictionary<string, object> GetExtraParameters(IDictionary<string, object> callParams, NccHtmlRenderContext context)
+        public static void GetExtraParameters(IDictionary<string, object> callParams, NccSelectContext context)
         {
-            return callParams;
+            ;
         }
 
-        public static NccHtmlRenderContext SetDataResult(NccHtmlRenderContext context, object result)
+        public static void SetDataResult(NccSelectContext context, object result)
         {
-            return context;
+            ;
         }
     }
 }

@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using ByteNuts.NetCoreControls.Models.Grid;
-using ByteNuts.NetCoreControls.Services;
+using ByteNuts.NetCoreControls.Core.Services;
 
 namespace ByteNuts.NetCoreControls.Controls.Grid
 {

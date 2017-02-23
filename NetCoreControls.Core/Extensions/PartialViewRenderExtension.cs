@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using System.IO;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 
-namespace ByteNuts.NetCoreControls.Extensions
+namespace ByteNuts.NetCoreControls.Core.Extensions
 {
     public static class PartialViewRenderExtension
     {

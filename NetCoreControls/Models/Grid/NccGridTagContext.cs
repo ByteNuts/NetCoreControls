@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using ByteNuts.NetCoreControls.Core.Models;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 
 namespace ByteNuts.NetCoreControls.Models.Grid

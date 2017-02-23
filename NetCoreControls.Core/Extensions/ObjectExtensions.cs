@@ -2,9 +2,9 @@
 using System.Dynamic;
 using Microsoft.AspNetCore.Routing;
 
-namespace ByteNuts.NetCoreControls.Services
+namespace ByteNuts.NetCoreControls.Core.Extensions
 {
-    public static class Extensions
+    public static class ObjectExtensions
     {
         public static ExpandoObject NccToExpando(this object anonymousObject)
         {

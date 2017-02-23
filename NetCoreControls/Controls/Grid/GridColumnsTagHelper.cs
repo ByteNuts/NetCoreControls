@@ -6,11 +6,13 @@ using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Collections;
 using System.Threading.Tasks;
-using ByteNuts.NetCoreControls.Models;
+using ByteNuts.NetCoreControls.Core;
+using ByteNuts.NetCoreControls.Core.Extensions;
+using ByteNuts.NetCoreControls.Core.Models;
+using ByteNuts.NetCoreControls.Core.Models.Enums;
+using ByteNuts.NetCoreControls.Core.Services;
 using ByteNuts.NetCoreControls.Models.Enums;
 using ByteNuts.NetCoreControls.Models.Grid;
-using ByteNuts.NetCoreControls.Services;
-using ByteNuts.NetCoreControls.Extensions;
 using Newtonsoft.Json;
 
 namespace ByteNuts.NetCoreControls.Controls.Grid
@@ -50,9 +52,8 @@ namespace ByteNuts.NetCoreControls.Controls.Grid
             var global = ViewContext.ViewData.Model;
 
             output.TagName = null;
-            var data = gridViewContext.DataObjects.GetType().ToString().Contains("Microsoft.EntityFrameworkCore.Internal.InternalDbSet") ||
-                gridViewContext.DataObjects.GetType().ToString().Contains("Microsoft.EntityFrameworkCore.Query.Internal.EntityQueryable") ?
-                ((IQueryable<object>)gridViewContext.DataObjects).ToList() : gridViewContext.DataObjects as IList;
+
+            var data = gridViewContext.DataObjects as IList;
 
             _nccTagContext.RowNumber = 0;
             ViewContext.ViewBag.EmptyData = false;
@@ -61,7 +62,7 @@ namespace ByteNuts.NetCoreControls.Controls.Grid
             {
                 object service = null;
                 if (!string.IsNullOrEmpty(_context.EventHandlerClass))
-                    service = ReflectionService.NccGetClassInstance(_context.EventHandlerClass, null);
+                    service = NccReflectionService.NccGetClassInstance(_context.EventHandlerClass, null);
 
                 _nccTagContext.GridRows = new List<GridRow>();
 
@@ -87,7 +88,7 @@ namespace ByteNuts.NetCoreControls.Controls.Grid
                         _context.DataKeysValues.Add(dataKeysRow);
                     }
 
-                    service?.NccInvokeMethod(NccGridEventsEnum.RowDataBound, new object[] { new NccEventArgs { NccTagContext = _nccTagContext, NccControlContext = _context, DataObjects = data }, row });
+                    service?.NccInvokeMethod(NccGridEventsEnum.RowDataBound.ToString(), new object[] { new NccEventArgs { NccTagContext = _nccTagContext, NccControlContext = _context, DataObjects = data }, row });
 
                     _nccTagContext.GridRows.Add(new GridRow { Cells = new List<GridCell>(), RowNumber = _nccTagContext.RowNumber });
 
@@ -116,7 +117,7 @@ namespace ByteNuts.NetCoreControls.Controls.Grid
                                 Attributes =
                                     {
                                         {"style", "cursor:pointer;" },
-                                        {"onclick", $"nccAction(null, $(this), '{JsonConvert.SerializeObject(model)}', '{Constants.AttributePrefix}');" }
+                                        {"onclick", $"nccAction(null, $(this), '{JsonConvert.SerializeObject(model)}', '{NccConstants.AttributePrefix}');" }
                                     }
                             };
                             link.InnerHtml.AppendHtml("Cancel");
@@ -127,7 +128,7 @@ namespace ByteNuts.NetCoreControls.Controls.Grid
                                 Attributes =
                                     {
                                         {"style", "cursor:pointer;" },
-                                        {"onclick", $"nccAction(null, $(this), '{JsonConvert.SerializeObject(model)}', '{Constants.AttributePrefix}');" }
+                                        {"onclick", $"nccAction(null, $(this), '{JsonConvert.SerializeObject(model)}', '{NccConstants.AttributePrefix}');" }
                                     }
                             };
                             link2.InnerHtml.AppendHtml("Save");
@@ -155,7 +156,7 @@ namespace ByteNuts.NetCoreControls.Controls.Grid
                                 Attributes =
                                     {
                                         {"style", "cursor:pointer;" },
-                                        {"onclick", $"nccAction(null, $(this), '{JsonConvert.SerializeObject(model)}', '{Constants.AttributePrefix}');" }
+                                        {"onclick", $"nccAction(null, $(this), '{JsonConvert.SerializeObject(model)}', '{NccConstants.AttributePrefix}');" }
                                     }
                             };
                             link.InnerHtml.AppendHtml("Edit");
@@ -169,7 +170,7 @@ namespace ByteNuts.NetCoreControls.Controls.Grid
                     _nccTagContext.RowNumber++;
                     _nccTagContext.ColCountComplete = true;
 
-                    service?.NccInvokeMethod(NccGridEventsEnum.RowCreated, new object[] { new NccEventArgs { NccTagContext = _nccTagContext, NccControlContext = _context, DataObjects = data }, _nccTagContext.GridRows.LastOrDefault() });
+                    service?.NccInvokeMethod(NccGridEventsEnum.RowCreated.ToString(), new object[] { new NccEventArgs { NccTagContext = _nccTagContext, NccControlContext = _context, DataObjects = data }, _nccTagContext.GridRows.LastOrDefault() });
                 }
             }
         }

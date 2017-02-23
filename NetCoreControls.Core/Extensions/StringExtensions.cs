@@ -1,10 +1,10 @@
-﻿namespace ByteNuts.NetCoreControls.Extensions
+﻿namespace ByteNuts.NetCoreControls.Core.Extensions
 {
     public static class StringExtensions
     {
         public static string NccAddPrefix(this string str)
         {
-            return $"{Constants.AttributePrefix}-{str}";
+            return $"{NccConstants.AttributePrefix}-{str}";
         }
     }
 }
