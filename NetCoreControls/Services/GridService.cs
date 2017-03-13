@@ -28,12 +28,17 @@ namespace ByteNuts.NetCoreControls.Services
             else if (result.GetType().ToString().Contains("Microsoft.EntityFrameworkCore.Internal.InternalDbSet") ||
                 result.GetType().ToString().Contains("Microsoft.EntityFrameworkCore.Query.Internal.EntityQueryable") ||
                 result.GetType().ToString().Contains("System.Linq.IQueryable"))
+            {
                 context.TotalItems = ((IQueryable<object>)result).Count();
+                if (context.TotalItems > context.PageSize)
+                    context.DataObjects = ((IQueryable<object>)result).Skip(context.PageSize * (context.PageNumber - 1)).Take(context.PageSize).ToList();
+            }
             else
             {
                 var list = result as IList;
                 context.TotalItems = list != null ? new List<object>(list.Cast<object>()).Count : 1;
             }
+
 
             //return context;
         }

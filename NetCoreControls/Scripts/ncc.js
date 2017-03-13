@@ -1,3 +1,5 @@
+var posId = 0;
+var pref = "";
 
 function nccAction(event, elem, params, prefix) {
     if (event != null) {
@@ -5,7 +7,8 @@ function nccAction(event, elem, params, prefix) {
     }
     var nncActionModel = JSON.parse(params);
     var postData = [];
-    var posId = 0;
+    posId = 0;
+    pref = prefix;
 
     postData.push({
         name: "target_ids",
@@ -25,7 +28,7 @@ function nccAction(event, elem, params, prefix) {
             posId++;
         });
 
-    addElementParameters(postData, elem, posId, prefix);
+    addElementParameters(postData, elem);
 
     $.each(nncActionModel.TargetIds, function () {
         var controlId = this;
@@ -81,34 +84,34 @@ function nccPost(controlIds, postData, elem) {
     }
 }
 
-function addElementParameters(postData, elem, posId, prefix) {
+function addElementParameters(postData, elem) {
     if (elem instanceof jQuery) {
-        processElementData(postData, elem, posId, prefix, "");
+        processElementData(postData, elem, "");
     } else {
         var elemCount = 0;
         $.each(elem, function () {
             var ctrl = $("#" + this);
-            processElementData(postData, ctrl, posId, prefix, elemCount);
+            processElementData(postData, ctrl, elemCount);
             elemCount++;
         });
     }
 }
-function processElementData(postData, elem, posId, prefix, elemCount) {
-    appendDataToPostArray(postData, prefix + "-ElemId" + elemCount, elem.prop("id"), posId);
+function processElementData(postData, elem, elemCount) {
+    appendDataToPostArray(postData, pref + "-ElemId" + elemCount, elem.prop("id"));
     posId++;
 
-    appendDataToPostArray(postData, prefix + "-ElemName" + elemCount, elem.prop("name"), posId);
+    appendDataToPostArray(postData, pref + "-ElemName" + elemCount, elem.prop("name"));
     posId++;
 
     if (elem.attr("value")) {
-        appendDataToPostArray(postData, prefix + "-ElemValue" + elemCount, elem.attr("value"), posId);
+        appendDataToPostArray(postData, pref + "-ElemValue" + elemCount, elem.attr("value"));
     } else {
-        appendDataToPostArray(postData, prefix + "-ElemValue" + elemCount, elem.val(), posId);
+        appendDataToPostArray(postData, pref + "-ElemValue" + elemCount, elem.val());
     }
     posId++;
 }
 
-function appendDataToPostArray(postData, key, value, posId) {
+function appendDataToPostArray(postData, key, value) {
     postData.push({
         name: "parameters[" + posId + "].key",
         value: key
