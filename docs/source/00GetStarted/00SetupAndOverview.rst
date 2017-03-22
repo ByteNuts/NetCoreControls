@@ -23,7 +23,7 @@ Basic setup
 
 Add to ``project.json`` the following dependency::
 
-    "NetCoreControls" : "0.1.0-beta1"
+    "NetCoreControls" : "1.0.0-beta1"
 
 Or you can use the Package Manager Console::
 
@@ -74,4 +74,4 @@ To use the latest daily builds of the controls, please add the following MyGet r
 
 Add to ``project.json`` the following dependency::
 
-    "NetCoreControls" : "0.1.0-beta-*"
+    "NetCoreControls" : "1.0.0-beta-*"

@@ -2,8 +2,12 @@ version: 1.0.0-beta1-{build}
 configuration:
   - Release
 platform: Any CPU
+image: Visual Studio 2017
 environment:
-  DOTNET_CLI_TELEMETRY_OPTOUT: 1
+  DOTNET_CLI_TELEMETRY_OPTOUT: true
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+before_build:
+  - cmd: dotnet restore
 pull_requests:  
   do_not_increment_build_number: true
 branches:  
@@ -11,7 +15,7 @@ branches:
   - dev
   - master
 build_script:  
-- ps: .\BuildVS17.ps1
+- ps: .\Build.ps1
 test: off  
 artifacts:  
 - path: artifacts/*.nupkg
