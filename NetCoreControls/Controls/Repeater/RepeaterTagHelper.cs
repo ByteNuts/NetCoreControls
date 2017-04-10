@@ -76,6 +76,8 @@ namespace ByteNuts.NetCoreControls.Controls.Repeater
                 //NccActionsService.DataResult<NccRepeaterContext> setDataResult = RepeaterService.SetDataResult;
                 NccControlsService.BindData(Context, ViewContext.HttpContext, null, null);
 
+                service?.NccInvokeMethod(NccEventsEnum.DataBound.ToString(), new object[] { new NccEventArgs { NccTagContext = _nccTagContext, NccControlContext = Context, ViewContext = ViewContext, DataObjects = Context.DataObjects } });
+
                 await output.GetChildContentAsync();
 
             }

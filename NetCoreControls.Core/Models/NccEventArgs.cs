@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using System.Collections.Generic;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
@@ -11,6 +12,8 @@ namespace ByteNuts.NetCoreControls.Core.Models
         public ViewContext ViewContext { get; set; }
 
         public IFormCollection FormCollection { get; set; }
+
+        public Dictionary<string, string> Parameters { get; set; }
 
         public object NccControlContext { get; set; }
 

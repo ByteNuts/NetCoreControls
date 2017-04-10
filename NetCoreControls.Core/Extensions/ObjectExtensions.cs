@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Dynamic;
+using System.Linq;
+using ByteNuts.NetCoreControls.Core.Models.Enums;
 using Microsoft.AspNetCore.Routing;
 
 namespace ByteNuts.NetCoreControls.Core.Extensions
@@ -14,5 +16,14 @@ namespace ByteNuts.NetCoreControls.Core.Extensions
             return (ExpandoObject)expando;
         }
 
+        public static string NccGetDictionaryValue(this Dictionary<string, string> dictionary, string key)
+        {
+            return dictionary.FirstOrDefault(x => x.Key.StartsWith(key.NccAddPrefix())).Value;
+        }
+
+        public static List<T> NccCreateListByType<T>(T obj)
+        {
+            return new List<T>();
+        }
     }
 }

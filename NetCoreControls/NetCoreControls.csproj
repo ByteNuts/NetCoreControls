@@ -11,7 +11,7 @@
     <VersionPrefix>1.0.0-beta1</VersionPrefix>
     <Authors>Jo&amp;atilde;o Pereira;Justino Mendes;Duarte Camacho</Authors>
     <TargetFramework>netstandard1.6</TargetFramework>
-    <AssemblyName>NetCoreControls</AssemblyName>
+    <AssemblyName>ByteNuts.NetCoreControls</AssemblyName>
     <PackageId>NetCoreControls</PackageId>
     <PackageTags>aspnetcore;.NET Core;MVC Core;ASP.NET;MVC</PackageTags>
     <PackageLicenseUrl>https://github.com/ByteNuts/NetCoreControls/blob/master/LICENSE</PackageLicenseUrl>
@@ -23,6 +23,7 @@
     <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
     <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
     <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
+    <RootNamespace>ByteNuts.NetCoreControls</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>

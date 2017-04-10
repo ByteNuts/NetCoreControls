@@ -41,6 +41,9 @@ function nccAction(event, elem, params, prefix) {
         var div = $("#" + controlId);
 
         var form = div.children("form");
+        if (form.length === 0) {
+            form = div.closest("form");
+        }
         if (form.length !== 0) {
             $.each(form.serializeArray(), function (_, field) {
                 var fieldName = controlId + "." + field.name;

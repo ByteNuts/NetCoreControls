@@ -6,6 +6,7 @@
         EventName,
         ElemId,
         ElemName,
-        ElemValue
+        ElemValue,
+        RowNumber
     }
 }

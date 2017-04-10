@@ -4,6 +4,7 @@ using Newtonsoft.Json;
 using ByteNuts.NetCoreControls.Core.Models;
 using ByteNuts.NetCoreControls.Core.Models.Enums;
 using ByteNuts.NetCoreControls.Core.Extensions;
+using ByteNuts.NetCoreControls.Models.Enums;
 
 namespace ByteNuts.NetCoreControls.Controls.Actions
 {
@@ -16,6 +17,8 @@ namespace ByteNuts.NetCoreControls.Controls.Actions
         [HtmlAttributeName("ncc-event-target")]
         public string NccEventTarget { get; set; }
 
+        [HtmlAttributeName("ncc-row")]
+        public int RowPos { get; set; }
 
         public override void Init(TagHelperContext tagContext)
         {
@@ -26,6 +29,7 @@ namespace ByteNuts.NetCoreControls.Controls.Actions
             var model = new NccActionModel {TargetIds = NccEventTarget.Split(',')};
             model.Parameters.Add($"{DefaultParameters.ActionType.ToString().NccAddPrefix()}", "Event");
             model.Parameters.Add($"{DefaultParameters.EventName.ToString().NccAddPrefix()}", NccEvent);
+            model.Parameters.Add($"{"RowNumber".NccAddPrefix()}", RowPos.ToString());
 
             if (output.TagName.ToLower() == "select")
             {

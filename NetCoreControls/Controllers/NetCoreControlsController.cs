@@ -81,7 +81,7 @@ namespace ByteNuts.NetCoreControls.Controllers
                     var eventHandler = controlCtx.NccGetPropertyValue<string>("EventHandlerClass");
                     var service = NccReflectionService.NccGetClassInstance(eventHandler, null);
 
-                    service?.NccInvokeMethod(NccEventsEnum.PostBack, new object[] { new NccEventArgs { Controller = this, NccControlContext = controlCtx, FormCollection = formCollection } });
+                    service?.NccInvokeMethod(NccEventsEnum.PostBack, new object[] { new NccEventArgs { Controller = this, NccControlContext = controlCtx, FormCollection = formCollection, Parameters = parametersList } });
 
                     switch (parametersList[$"{DefaultParameters.ActionType.ToString().NccAddPrefix()}"].ToLower())
                     {
@@ -111,7 +111,7 @@ namespace ByteNuts.NetCoreControls.Controllers
                             break;
                         case "event":
                             if (service == null) throw new Exception("EventHandler must be registered and must exist to process events");
-                            NccEventService.ProcessEvent(service, ControllerContext, controlCtx, formCollection, parametersList);
+                            NccEventService.ProcessEvent(service, this, controlCtx, formCollection, parametersList);
                             break;
                         //Events from Controls are mapped here
                         case "gridaction":
@@ -124,7 +124,7 @@ namespace ByteNuts.NetCoreControls.Controllers
                             switch (parametersList[$"{DefaultParameters.EventName.ToString().NccAddPrefix()}"].ToLower())
                             {
                                 case "update":
-                                    service.NccInvokeMethod(NccGridEventsEnum.Update.ToString(), new object[] { new NccEventArgs { Controller = this, NccControlContext = controlCtx, FormCollection = formCollection } });
+                                    service.NccInvokeMethod(NccGridEventsEnum.Update.ToString(), new object[] { new NccEventArgs { Controller = this, NccControlContext = controlCtx, FormCollection = formCollection, Parameters = parametersList } });
                                     break;
                                 case "updaterow":
                                     if (!parametersList.ContainsKey($"{NccGridParametersEnum.RowNumber.ToString().NccAddPrefix()}"))
@@ -132,7 +132,7 @@ namespace ByteNuts.NetCoreControls.Controllers
 
                                     var updateRowPos = Convert.ToInt32(parametersList[$"{NccGridParametersEnum.RowNumber.ToString().NccAddPrefix()}"]);
 
-                                    service.NccInvokeMethod(NccGridEventsEnum.UpdateRow.ToString(), new object[] { new NccEventArgs { Controller = this, NccControlContext = controlCtx, FormCollection = formCollection }, updateRowPos });
+                                    service.NccInvokeMethod(NccGridEventsEnum.UpdateRow.ToString(), new object[] { new NccEventArgs { Controller = this, NccControlContext = controlCtx, FormCollection = formCollection, Parameters = parametersList }, updateRowPos });
                                     break;
                                 case "editrow":
                                     if (!parametersList.ContainsKey($"{NccGridParametersEnum.RowNumber.ToString().NccAddPrefix()}"))
@@ -160,7 +160,7 @@ namespace ByteNuts.NetCoreControls.Controllers
 
                                     var deleteRowPos = Convert.ToInt32(parametersList[$"{NccGridParametersEnum.RowNumber.ToString().NccAddPrefix()}"]);
 
-                                    service.NccInvokeMethod(NccGridEventsEnum.DeleteRow.ToString(), new object[] { new NccEventArgs { Controller = this, NccControlContext = controlCtx, FormCollection = formCollection }, deleteRowPos });
+                                    service.NccInvokeMethod(NccGridEventsEnum.DeleteRow.ToString(), new object[] { new NccEventArgs { Controller = this, NccControlContext = controlCtx, FormCollection = formCollection, Parameters = parametersList }, deleteRowPos });
 
                                     break;
                                 default:
@@ -255,7 +255,7 @@ namespace ByteNuts.NetCoreControls.Controllers
         {
             var assembly = this.GetType().GetTypeInfo().Assembly;
 
-            var stream = assembly.GetManifestResourceStream("NetCoreControls.Scripts.ncc.js");
+            var stream = assembly.GetManifestResourceStream("ByteNuts.NetCoreControls.Scripts.ncc.js");
 
 
             return File(stream, "application/javascript");
@@ -265,7 +265,7 @@ namespace ByteNuts.NetCoreControls.Controllers
         {
             var assembly = this.GetType().GetTypeInfo().Assembly;
 
-            var stream = assembly.GetManifestResourceStream("NetCoreControls.Styles.ncc.css");
+            var stream = assembly.GetManifestResourceStream("ByteNuts.NetCoreControls.Styles.ncc.css");
 
 
             return File(stream, "text/css");
