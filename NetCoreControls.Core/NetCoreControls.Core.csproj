@@ -9,7 +9,7 @@
 
   <PropertyGroup>
     <VersionPrefix>1.0.0-beta1</VersionPrefix>
-    <Authors>Jo&amp;atilde;o Pereira;Justino Mendes;Duarte Camacho</Authors>
+    <Authors>Joao Pereira;Justino Mendes;Duarte Camacho</Authors>
     <TargetFramework>netstandard1.6</TargetFramework>
     <AssemblyName>ByteNuts.NetCoreControls.Core</AssemblyName>
     <PackageId>NetCoreControls.Core</PackageId>
@@ -24,6 +24,7 @@
     <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
     <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
     <RootNamespace>ByteNuts.NetCoreControls.Core</RootNamespace>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
   </PropertyGroup>
 
   <ItemGroup>

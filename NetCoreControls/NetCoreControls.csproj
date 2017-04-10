@@ -9,7 +9,7 @@
 
   <PropertyGroup>
     <VersionPrefix>1.0.0-beta1</VersionPrefix>
-    <Authors>Jo&amp;atilde;o Pereira;Justino Mendes;Duarte Camacho</Authors>
+    <Authors>Joao Pereira;Justino Mendes;Duarte Camacho</Authors>
     <TargetFramework>netstandard1.6</TargetFramework>
     <AssemblyName>ByteNuts.NetCoreControls</AssemblyName>
     <PackageId>NetCoreControls</PackageId>
@@ -24,14 +24,11 @@
     <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
     <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
     <RootNamespace>ByteNuts.NetCoreControls</RootNamespace>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
   </PropertyGroup>
 
   <ItemGroup>
     <EmbeddedResource Include="Scripts\**;Styles\**" Exclude="bin\**;obj\**;**\*.xproj;packages\**;@(EmbeddedResource)" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\NetCoreControls.Core\NetCoreControls.Core.csproj" />
   </ItemGroup>
 
   <ItemGroup>
@@ -45,8 +42,8 @@
     <PackageReference Include="System.Runtime.Loader" Version="4.3.0" />
   </ItemGroup>
 
-  <Target Name="PostcompileScript" AfterTargets="Build">
-    <Exec Command="dotnet pack --no-build --configuration $(Configuration)" />
-  </Target>
+  <ItemGroup>
+    <ProjectReference Include="..\NetCoreControls.Core\NetCoreControls.Core.csproj" />
+  </ItemGroup>
 
 </Project>
