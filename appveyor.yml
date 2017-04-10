@@ -17,7 +17,6 @@ build_script:
 test: off  
 artifacts:  
 - path: artifacts/*.nupkg
-  name: ByteNuts.NetCoreControls
 deploy:
 - provider: NuGet
   server: https://www.myget.org/F/netcorecontrols/
