@@ -16,7 +16,7 @@ build_script:
 - ps: .\Build.ps1
 test: off  
 artifacts:  
-- path: NetCoreControls/bin/Release/*.nupkg
+- path: artifacts/*.nupkg
 deploy:
 - provider: NuGet
   server: https://www.myget.org/F/netcorecontrols/
