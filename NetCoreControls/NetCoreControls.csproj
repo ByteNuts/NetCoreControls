@@ -43,7 +43,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\NetCoreControls.Core\NetCoreControls.Core.csproj" />
+    <ProjectReference Include="..\NetCoreControls.Core\NetCoreControls.Core.csproj" Version="1.0.0-beta1-*" />
   </ItemGroup>
 
 </Project>
