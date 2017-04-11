@@ -27,3 +27,10 @@ deploy:
   skip_symbols: true
   on:
     branch: master
+
+#---------------------------------#
+#  Skip builds for doc changes    #
+#---------------------------------#
+skip_commits:
+  # Regex for matching commit message
+  message: /docs.*/
