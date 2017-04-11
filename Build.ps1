@@ -56,7 +56,7 @@ $revision = @{ $true = $env:APPVEYOR_BUILD_NUMBER; $false = 1 }[$env:APPVEYOR_BU
 $revision = "{0:D4}" -f [convert]::ToInt32($revision, 10)
 
 exec { & dotnet restore }
-exec { & dotnet msbuild "/t:Restore" /p:VersionSuffix=<Suffix> /p:Configuration=Release }
+exec { & dotnet msbuild "/t:Restore" /p:VersionSuffix=$revision /p:Configuration=Release }
 
 #Invoke-MSBuild
 
