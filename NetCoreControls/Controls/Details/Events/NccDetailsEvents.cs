@@ -58,7 +58,7 @@ namespace ByteNuts.NetCoreControls.Controls.Details.Events
                 eventArgs.Controller.ViewBag.Message = "Updated successfully!";
                 eventArgs.Controller.ViewBag.MessageType = "success";
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 eventArgs.Controller.ViewBag.Message = "An error occured!";
                 eventArgs.Controller.ViewBag.MessageType = "danger";

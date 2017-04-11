@@ -69,7 +69,7 @@ namespace ByteNuts.NetCoreControls.Controls.Grid.Events
 
                 gridContext.AdditionalData.Remove("EditRowNumber");
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 eventArgs.Controller.ViewBag.Message = "An error occured!";
                 eventArgs.Controller.ViewBag.MessageType = "danger";

@@ -105,7 +105,7 @@ namespace ByteNuts.NetCoreControls.Core.Services
                 var propVal = obj.GetType().GetProperty(propertyName).GetValue(obj, null);
                 return (T)Convert.ChangeType(propVal, typeof(T));
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 return default(T);
             }
