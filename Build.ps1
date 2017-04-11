@@ -53,7 +53,6 @@ if(Test-Path .\artifacts) { Remove-Item .\artifacts -Force -Recurse }
 EnsurePsbuildInstalled
 
 exec { & dotnet restore }
-exec { & dotnet build }
 
 #Invoke-MSBuild
 
@@ -62,5 +61,5 @@ $revision = "{0:D4}" -f [convert]::ToInt32($revision, 10)
 
 #exec { & dotnet test .\test\NetCoreControls -c Release }
 
-exec { & dotnet pack .\NetCoreControls.Core -c Release -o .\artifacts --version-suffix=$revision }  
-exec { & dotnet pack .\NetCoreControls -c Release -o .\artifacts --version-suffix=$revision }  
+exec { & dotnet pack .\NetCoreControls.Core -c Release -o .\..\artifacts --version-suffix=$revision }  
+exec { & dotnet pack .\NetCoreControls -c Release -o .\..\artifacts --version-suffix=$revision }  
