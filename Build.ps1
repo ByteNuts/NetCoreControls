@@ -53,6 +53,7 @@ if(Test-Path .\artifacts) { Remove-Item .\artifacts -Force -Recurse }
 EnsurePsbuildInstalled
 
 exec { & dotnet restore }
+exec { & dotnet msbuild "/t:Restore" /p:VersionSuffix=<Suffix> /p:Configuration=Release }
 
 #Invoke-MSBuild
 
