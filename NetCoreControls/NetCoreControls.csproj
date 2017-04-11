@@ -40,10 +40,11 @@
     <PackageReference Include="System.Linq" Version="4.3.0" />
     <PackageReference Include="System.Linq.Queryable" Version="4.3.0" />
     <PackageReference Include="System.Runtime.Loader" Version="4.3.0" />
+    <PackageReference Include="NetCoreControls.Core" Version="1.0.0-beta1-*" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\NetCoreControls.Core\NetCoreControls.Core.csproj" Version="1.0.0-beta1-*" />
+    <ProjectReference Include="..\NetCoreControls.Core\NetCoreControls.Core.csproj" />
   </ItemGroup>
 
 </Project>
