@@ -15,7 +15,7 @@
     <PackageId>NetCoreControls</PackageId>
     <PackageTags>aspnetcore;.NET Core;MVC Core;ASP.NET;MVC</PackageTags>
     <PackageLicenseUrl>https://github.com/ByteNuts/NetCoreControls/blob/master/LICENSE</PackageLicenseUrl>
-    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+    <PackageRequireLicenseAcceptance>False</PackageRequireLicenseAcceptance>
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/ByteNuts/NetCoreControls</RepositoryUrl>
     <NetStandardImplicitPackageVersion>1.6.0</NetStandardImplicitPackageVersion>
