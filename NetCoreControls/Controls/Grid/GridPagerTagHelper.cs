@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Threading.Tasks;
+using ByteNuts.NetCoreControls.Models.Enums;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -6,6 +8,7 @@ using ByteNuts.NetCoreControls.Models.Grid;
 
 namespace ByteNuts.NetCoreControls.Controls.Grid
 {
+    [RestrictChildren("ncc:grid-pagerrecordstemplate")]
     [HtmlTargetElement("ncc:grid-pager", ParentTag = "ncc:grid", TagStructure = TagStructure.WithoutEndTag)]
     public class GridPagerTagHelper : TagHelper
     {
@@ -14,7 +17,31 @@ namespace ByteNuts.NetCoreControls.Controls.Grid
         public ViewContext ViewContext { get; set; }
 
         [HtmlAttributeName("PagerNavigationSize")]
-        public int PagerNavigationSize { get; set; }
+        public int? PagerNavigationSize { get; set; }
+
+        [HtmlAttributeName("ShowRecordsCount")]
+        public bool? ShowRecordsCount { get; set; }
+
+        [HtmlAttributeName("GridPagerPosition")]
+        public NccGridPagerPositionEnum? GridPagerPosition { get; set; }
+
+        [HtmlAttributeName("CssClassRecordCountDiv")]
+        public string CssClassRecordCountDiv { get; set; }
+
+        [HtmlAttributeName("CssClassFooterDiv")]
+        public string CssClassFooterDiv { get; set; }
+
+        [HtmlAttributeName("CssClassPagerDiv")]
+        public string CssClassPagerDiv { get; set; }
+
+        [HtmlAttributeName("CssClassPagerUl")]
+        public string CssClassPagerUl { get; set; }
+
+        [HtmlAttributeName("CssClassPagerLi")]
+        public string CssClassPagerLi { get; set; }
+
+        [HtmlAttributeName("CssClassPagerA")]
+        public string CssClassPagerA { get; set; }
 
         private NccGridTagContext _nccTagContext;
         private NccGridContext _context;
@@ -28,7 +55,7 @@ namespace ByteNuts.NetCoreControls.Controls.Grid
                 throw new Exception("GridViewNccTagContext was lost between tags...");
         }
 
-        public override void Process(TagHelperContext tagContext, TagHelperOutput output)
+        public override async Task ProcessAsync(TagHelperContext tagContext, TagHelperOutput output)
         {
             output.SuppressOutput();
 
@@ -37,12 +64,25 @@ namespace ByteNuts.NetCoreControls.Controls.Grid
             else
                 return;
 
-
             _context.AllowPaging = true;
             if (_context.PageSize == int.MaxValue)
                 _context.PageSize = 10;
+
+            if (PagerNavigationSize.HasValue)
+                _context.PageSize = PagerNavigationSize.Value;
+            if (ShowRecordsCount.HasValue)
+                _context.ShowRecordsCount = ShowRecordsCount.Value;
+            if (GridPagerPosition.HasValue)
+                _context.GridPagerPosition = GridPagerPosition.Value;
+
+            _nccTagContext.CssClassFooterDiv = CssClassFooterDiv;
+            _nccTagContext.CssClassRecordCountDiv = CssClassRecordCountDiv;
+            _nccTagContext.CssClassPagerDiv = CssClassPagerDiv;
+            _nccTagContext.CssClassPagerUl = CssClassPagerUl;
+            _nccTagContext.CssClassPagerLi = CssClassPagerLi;
+            _nccTagContext.CssClassPagerA = CssClassPagerA;
+
+            await output.GetChildContentAsync();
         }
-
-
     }
 }

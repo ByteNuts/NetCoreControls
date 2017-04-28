@@ -95,7 +95,7 @@ namespace ByteNuts.NetCoreControls.Controls.Grid
                     var rowData = row.NccToExpando() as IDictionary<string, object>;
                     rowData["NccRowNumber"] = _nccTagContext.RowNumber;
 
-                    ViewContext.ViewData.Model = rowData.ExtToExpandoObject();
+                    ViewContext.ViewData.Model = rowData.NccToExpando();
 
                     await output.GetChildContentAsync(false);
 
