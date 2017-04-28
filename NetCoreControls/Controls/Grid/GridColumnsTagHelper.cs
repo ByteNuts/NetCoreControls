@@ -67,7 +67,15 @@ namespace ByteNuts.NetCoreControls.Controls.Grid
                 _nccTagContext.GridRows = new List<GridRow>();
 
                 if (data.Count > _context.PageSize)
-                    data = new List<object>(data.Cast<object>()).Skip(_context.PageSize * (_context.PageNumber - 1)).Take(_context.PageSize).ToList();
+                {
+                    if (_context.Filters.ContainsKey("pageSize"))
+                    {
+                        var pageSize = Convert.ToInt32(_context.Filters["pageSize"]);
+                        data = new List<object>(data.Cast<object>()).Skip(pageSize * (_context.PageNumber - 1)).Take(pageSize).ToList();
+                    }
+                    else
+                        data = new List<object>(data.Cast<object>()).Skip(_context.PageSize * (_context.PageNumber - 1)).Take(_context.PageSize).ToList();
+                }
 
                 _context.DataObjects = data;
 

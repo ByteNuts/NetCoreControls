@@ -243,7 +243,6 @@ namespace ByteNuts.NetCoreControls.Services
             {
                 Attributes =
                     {
-                        {"style", "cursor: pointer;" },
                         {"name", "pageNumber" },
                         {"value", pageNumber.ToString() },
                         {"onclick", $"nccAction(null, $(this), '{JsonConvert.SerializeObject(model)}', '{NccConstants.AttributePrefix}');" }
@@ -252,6 +251,7 @@ namespace ByteNuts.NetCoreControls.Services
             link.InnerHtml.Append(string.IsNullOrEmpty(htmlContent) ? pageNumber.ToString() : htmlContent);
             if (active)
             {
+                link.Attributes.Add("style", "cursor: pointer;");
                 if (li.Attributes.ContainsKey("class"))
                     li.Attributes["class"] = li.Attributes["class"] + " active";
                 else

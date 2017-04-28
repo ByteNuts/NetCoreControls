@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Dynamic;
 using System.Linq;
-using ByteNuts.NetCoreControls.Core.Models.Enums;
 using Microsoft.AspNetCore.Routing;
 
 namespace ByteNuts.NetCoreControls.Core.Extensions
