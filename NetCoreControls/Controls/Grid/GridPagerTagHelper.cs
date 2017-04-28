@@ -9,7 +9,7 @@ using ByteNuts.NetCoreControls.Models.Grid;
 namespace ByteNuts.NetCoreControls.Controls.Grid
 {
     [RestrictChildren("ncc:grid-pagerrecordstemplate")]
-    [HtmlTargetElement("ncc:grid-pager", ParentTag = "ncc:grid", TagStructure = TagStructure.WithoutEndTag)]
+    [HtmlTargetElement("ncc:grid-pager", ParentTag = "ncc:grid")]
     public class GridPagerTagHelper : TagHelper
     {
         [HtmlAttributeNotBound]
