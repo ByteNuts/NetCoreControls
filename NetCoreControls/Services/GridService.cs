@@ -154,19 +154,14 @@ namespace ByteNuts.NetCoreControls.Services
             var model = new NccActionModel { TargetIds = new [] { gridContext.Id } };
             model.Parameters.Add($"{DefaultParameters.ActionType.ToString().NccAddPrefix()}", "Filter");
 
-            //var tableFooter = new TagBuilder("tfoot");
-            //var tr = new TagBuilder("tr");
-            var footerContainerDiv = new TagBuilder("div");
-            if (!string.IsNullOrEmpty(context.CssClassFooterContainer))
-                footerContainerDiv.Attributes.Add("class", context.CssClassFooterContainer);
+            var footerContainerDiv = new TagBuilder("div") { Attributes = { { "class", context.CssClassFooterContainer ?? "row" } } };
 
-            var divFooterDiv = new TagBuilder("div") {Attributes = {{"class", context.CssClassFooterDiv ?? "row" }}};
             var divColLeft = new TagBuilder("div") {Attributes = {{"class", "col-sm12 col-md-6"}}};
             var divColRight = new TagBuilder("div") { Attributes = { { "class", "col-sm12 col-md-6" } } };
             var divRecordCount = new TagBuilder("div");
             if (!string.IsNullOrEmpty(context.CssClassRecordCountDiv))
                 divRecordCount.Attributes.Add("class", context.CssClassRecordCountDiv);
-            //Add RecordCount html
+            //TODO: Add RecordCount html
 
             var div = new TagBuilder("div") { Attributes = { { "class", context.CssClassPagerDiv ?? "nccGridPagerContainer" } } };
             var ul = new TagBuilder("ul") { Attributes = { { "class", context.CssClassPagerUl ?? "nccGridPagerPagination" } } };
@@ -228,12 +223,8 @@ namespace ByteNuts.NetCoreControls.Services
             if (gridContext.ShowRecordsCount && string.IsNullOrEmpty(context.PagerRecordsCountContent))
                 divRecordCount.InnerHtml.AppendHtml($"<span>Showing {gridContext.PageSize * (gridContext.PageNumber-1)+1} to {gridContext.PageSize * (gridContext.PageNumber - 1)+ gridContext.PageSize} of {gridContext.TotalItems} entries</span>");
 
-            divFooterDiv.InnerHtml.AppendHtml(divColLeft);
-            divFooterDiv.InnerHtml.AppendHtml(divColRight);
-
-            footerContainerDiv.InnerHtml.AppendHtml(divFooterDiv);
-            //tr.InnerHtml.AppendHtml(td);
-            //tableFooter.InnerHtml.AppendHtml(tr);
+            footerContainerDiv.InnerHtml.AppendHtml(divColLeft);
+            footerContainerDiv.InnerHtml.AppendHtml(divColRight);
 
             return footerContainerDiv;
         }

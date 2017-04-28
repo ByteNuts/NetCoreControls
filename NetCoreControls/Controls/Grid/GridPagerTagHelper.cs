@@ -28,8 +28,6 @@ namespace ByteNuts.NetCoreControls.Controls.Grid
         [HtmlAttributeName("CssClassRecordCountDiv")]
         public string CssClassRecordCountDiv { get; set; }
 
-        [HtmlAttributeName("CssClassFooterDiv")]
-        public string CssClassFooterDiv { get; set; }
 
         [HtmlAttributeName("CssClassPagerDiv")]
         public string CssClassPagerDiv { get; set; }
@@ -75,7 +73,6 @@ namespace ByteNuts.NetCoreControls.Controls.Grid
             if (GridPagerPosition.HasValue)
                 _context.GridPagerPosition = GridPagerPosition.Value;
 
-            _nccTagContext.CssClassFooterDiv = CssClassFooterDiv;
             _nccTagContext.CssClassRecordCountDiv = CssClassRecordCountDiv;
             _nccTagContext.CssClassPagerDiv = CssClassPagerDiv;
             _nccTagContext.CssClassPagerUl = CssClassPagerUl;
