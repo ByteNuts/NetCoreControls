@@ -247,10 +247,20 @@ namespace ByteNuts.NetCoreControls.Services
                     }
             };
             link.InnerHtml.Append(string.IsNullOrEmpty(htmlContent) ? pageNumber.ToString() : htmlContent);
-            if (active) link.Attributes.Add("class", "active " + context.CssClassPagerA);
+            if (active)
+            {
+                if (li.Attributes.ContainsKey("class"))
+                    li.Attributes["class"] = li.Attributes["class"] + " active";
+                else
+                    li.Attributes.Add("class", "active");
+            }
+            if (!string.IsNullOrEmpty(context.CssClassPagerA)) link.Attributes.Add("class", context.CssClassPagerA);
             if (disabled)
             {
-                link.Attributes.Add("class", "disabled " + context.CssClassPagerA);
+                if (li.Attributes.ContainsKey("class"))
+                    li.Attributes["class"] = li.Attributes["class"] + " disabled";
+                else
+                    li.Attributes.Add("class", "disabled");
                 link.Attributes.Remove("onclick");
             }
 
