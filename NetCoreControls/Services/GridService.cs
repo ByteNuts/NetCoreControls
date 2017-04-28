@@ -175,7 +175,7 @@ namespace ByteNuts.NetCoreControls.Services
             var nextLink = BuilPagerLink(gridContext.PageNumber + 1, model, context, ">", false, gridContext.PageNumber == totalPages);
             var lastLink = BuilPagerLink(totalPages, model, context, ">>", false, gridContext.PageNumber == totalPages);
 
-            var navSize = gridContext.PagerNavSize >= totalPages ? totalPages : gridContext.PagerNavSize;
+            var navSize = gridContext.PagerNavigationSize >= totalPages ? totalPages : gridContext.PagerNavigationSize;
             var linksBefore = navSize / 2 < gridContext.PageNumber
                 ? navSize / 2
                 : gridContext.PageNumber - 1;
@@ -221,7 +221,13 @@ namespace ByteNuts.NetCoreControls.Services
             }
 
             if (gridContext.ShowRecordsCount && string.IsNullOrEmpty(context.PagerRecordsCountContent))
-                divRecordCount.InnerHtml.AppendHtml($"<span>Showing {gridContext.PageSize * (gridContext.PageNumber-1)+1} to {gridContext.PageSize * (gridContext.PageNumber - 1)+ gridContext.PageSize} of {gridContext.TotalItems} entries</span>");
+            {
+                var firstRecord = gridContext.PageSize * (gridContext.PageNumber - 1) + 1;
+                var lastRecord = gridContext.PageSize * (gridContext.PageNumber - 1) + gridContext.PageSize;
+                if (lastRecord > gridContext.TotalItems) lastRecord = gridContext.TotalItems;
+
+                divRecordCount.InnerHtml.AppendHtml($"<span>Showing {firstRecord} to {lastRecord} of {gridContext.TotalItems} entries</span>");
+            }
 
             footerContainerDiv.InnerHtml.AppendHtml(divColLeft);
             footerContainerDiv.InnerHtml.AppendHtml(divColRight);
@@ -237,6 +243,7 @@ namespace ByteNuts.NetCoreControls.Services
             {
                 Attributes =
                     {
+                        {"style", "cursor: pointer;" },
                         {"name", "pageNumber" },
                         {"value", pageNumber.ToString() },
                         {"onclick", $"nccAction(null, $(this), '{JsonConvert.SerializeObject(model)}', '{NccConstants.AttributePrefix}');" }

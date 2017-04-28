@@ -15,7 +15,7 @@ namespace ByteNuts.NetCoreControls.Models.Grid
         public bool AutoGenerateEditButton { get; set; }
 
         //Pager options
-        public int PagerNavSize { get; set; } = 10;
+        public int PagerNavigationSize { get; set; } = 10;
         public bool ShowRecordsCount { get; set; } = true;
         public NccGridPagerPositionEnum GridPagerPosition { get; set; } = NccGridPagerPositionEnum.Right;
     }

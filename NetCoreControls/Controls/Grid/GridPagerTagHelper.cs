@@ -16,8 +16,8 @@ namespace ByteNuts.NetCoreControls.Controls.Grid
         [ViewContext]
         public ViewContext ViewContext { get; set; }
 
-        [HtmlAttributeName("PagerNavigationSize")]
-        public int? PagerNavigationSize { get; set; }
+        //[HtmlAttributeName("PagerNavigationSize")]
+        //public int? PagerNavigationSize { get; set; }
 
         [HtmlAttributeName("ShowRecordsCount")]
         public bool? ShowRecordsCount { get; set; }
@@ -66,8 +66,6 @@ namespace ByteNuts.NetCoreControls.Controls.Grid
             if (_context.PageSize == int.MaxValue)
                 _context.PageSize = 10;
 
-            if (PagerNavigationSize.HasValue)
-                _context.PageSize = PagerNavigationSize.Value;
             if (ShowRecordsCount.HasValue)
                 _context.ShowRecordsCount = ShowRecordsCount.Value;
             if (GridPagerPosition.HasValue)
