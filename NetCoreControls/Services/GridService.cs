@@ -144,9 +144,13 @@ namespace ByteNuts.NetCoreControls.Services
 
         public static TagBuilder BuildTablePager(NccGridTagContext context, NccGridContext gridContext)
         {
-            var totalPages = gridContext.TotalItems % gridContext.PageSize > 0
-                ? gridContext.TotalItems / gridContext.PageSize + 1
-                : gridContext.TotalItems / gridContext.PageSize;
+            var pageSize = gridContext.PageSize;
+            if (gridContext.Filters.ContainsKey("pageSize"))
+                pageSize = Convert.ToInt32(gridContext.Filters["pageSize"]);
+
+            var totalPages = gridContext.TotalItems % pageSize > 0
+                ? gridContext.TotalItems / pageSize + 1
+                : gridContext.TotalItems / pageSize;
 
             if (totalPages <= 1)
                 return null;
@@ -222,8 +226,8 @@ namespace ByteNuts.NetCoreControls.Services
 
             if (gridContext.ShowRecordsCount && string.IsNullOrEmpty(context.PagerRecordsCountContent))
             {
-                var firstRecord = gridContext.PageSize * (gridContext.PageNumber - 1) + 1;
-                var lastRecord = gridContext.PageSize * (gridContext.PageNumber - 1) + gridContext.PageSize;
+                var firstRecord = pageSize * (gridContext.PageNumber - 1) + 1;
+                var lastRecord = pageSize * (gridContext.PageNumber - 1) + pageSize;
                 if (lastRecord > gridContext.TotalItems) lastRecord = gridContext.TotalItems;
 
                 divRecordCount.InnerHtml.AppendHtml($"<span>Showing {firstRecord} to {lastRecord} of {gridContext.TotalItems} entries</span>");
