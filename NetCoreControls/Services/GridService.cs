@@ -7,6 +7,7 @@ using ByteNuts.NetCoreControls.Core;
 using ByteNuts.NetCoreControls.Core.Extensions;
 using ByteNuts.NetCoreControls.Core.Models;
 using ByteNuts.NetCoreControls.Core.Models.Enums;
+using ByteNuts.NetCoreControls.Models.Enums;
 using ByteNuts.NetCoreControls.Models.Grid;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Newtonsoft.Json;
@@ -157,17 +158,25 @@ namespace ByteNuts.NetCoreControls.Services
             var tr = new TagBuilder("tr");
             var td = new TagBuilder("td") { Attributes = { { "colspan", context.ColCount.ToString() } } };
 
-            var div = new TagBuilder("div") { Attributes = { { "class", "nccGridPagerContainer" } } };
-            var ul = new TagBuilder("ul") { Attributes = { { "class", "nccGridPagerPagination" } } };
+            var divFooterDiv = new TagBuilder("div") {Attributes = {{"class", context.CssClassFooterDiv ?? "row" }}};
+            var divColLeft = new TagBuilder("div") {Attributes = {{"class", "col-sm12 col-md-6"}}};
+            var divColRight = new TagBuilder("div") { Attributes = { { "class", "col-sm12 col-md-6" } } };
+            var divRecordCount = new TagBuilder("div");
+            if (!string.IsNullOrEmpty(context.CssClassRecordCountDiv))
+                divRecordCount.Attributes.Add("class", context.CssClassRecordCountDiv);
+            //Add RecordCount html
 
-            var firstLink = BuilPagerLink(1, model, "<<", false, gridContext.PageNumber == 1);
-            var prevLink = BuilPagerLink(gridContext.PageNumber - 1, model, "<", false, gridContext.PageNumber == 1);
+            var div = new TagBuilder("div") { Attributes = { { "class", context.CssClassPagerDiv ?? "nccGridPagerContainer" } } };
+            var ul = new TagBuilder("ul") { Attributes = { { "class", context.CssClassPagerUl ?? "nccGridPagerPagination" } } };
+
+            var firstLink = BuilPagerLink(1, model, context, "<<", false, gridContext.PageNumber == 1);
+            var prevLink = BuilPagerLink(gridContext.PageNumber - 1, model, context, "<", false, gridContext.PageNumber == 1);
 
             ul.InnerHtml.AppendHtml(firstLink);
             ul.InnerHtml.AppendHtml(prevLink);
 
-            var nextLink = BuilPagerLink(gridContext.PageNumber + 1, model, ">", false, gridContext.PageNumber == totalPages);
-            var lastLink = BuilPagerLink(totalPages, model, ">>", false, gridContext.PageNumber == totalPages);
+            var nextLink = BuilPagerLink(gridContext.PageNumber + 1, model, context, ">", false, gridContext.PageNumber == totalPages);
+            var lastLink = BuilPagerLink(totalPages, model, context, ">>", false, gridContext.PageNumber == totalPages);
 
             var navSize = gridContext.PagerNavSize >= totalPages ? totalPages : gridContext.PagerNavSize;
             var linksBefore = navSize / 2 < gridContext.PageNumber
@@ -189,13 +198,13 @@ namespace ByteNuts.NetCoreControls.Services
 
             for (var i = 0; i < linksBefore; i++)
             {
-                var link = BuilPagerLink(gridContext.PageNumber - linksBefore + i, model);
+                var link = BuilPagerLink(gridContext.PageNumber - linksBefore + i, model, context);
                 ul.InnerHtml.AppendHtml(link);
             }
-            ul.InnerHtml.AppendHtml(BuilPagerLink(gridContext.PageNumber, model, null, true));
+            ul.InnerHtml.AppendHtml(BuilPagerLink(gridContext.PageNumber, model, context, null, true));
             for (var i = 0; i < linksAfter; i++)
             {
-                var link = BuilPagerLink(gridContext.PageNumber + i + 1, model);
+                var link = BuilPagerLink(gridContext.PageNumber + i + 1, model, context);
                 ul.InnerHtml.AppendHtml(link);
             }
 
@@ -203,32 +212,45 @@ namespace ByteNuts.NetCoreControls.Services
             ul.InnerHtml.AppendHtml(lastLink);
 
             div.InnerHtml.AppendHtml(ul);
+            if (gridContext.GridPagerPosition == NccGridPagerPositionEnum.Left)
+            {
+                divColLeft.InnerHtml.AppendHtml(div);
+                if (gridContext.ShowRecordsCount) divColRight.InnerHtml.AppendHtml(context.CssClassRecordCountDiv);
+            }
+            else
+            {
+                if (gridContext.ShowRecordsCount) divColLeft.InnerHtml.AppendHtml(context.CssClassRecordCountDiv);
+                divColRight.InnerHtml.AppendHtml(div);
+            }
 
-            td.InnerHtml.AppendHtml(div);
+            divFooterDiv.InnerHtml.AppendHtml(divColLeft);
+            divFooterDiv.InnerHtml.AppendHtml(divColRight);
+
+            td.InnerHtml.AppendHtml(divFooterDiv);
             tr.InnerHtml.AppendHtml(td);
             tableFooter.InnerHtml.AppendHtml(tr);
 
             return tableFooter;
         }
 
-        private static TagBuilder BuilPagerLink(int pageNumber, NccActionModel model, string htmlContent = null, bool active = false, bool disabled = false)
+        private static TagBuilder BuilPagerLink(int pageNumber, NccActionModel model, NccGridTagContext context, string htmlContent = null, bool active = false, bool disabled = false)
         {
             var li = new TagBuilder("li");
+            if (!string.IsNullOrEmpty(context.CssClassPagerLi)) li.Attributes.Add("class", context.CssClassPagerLi);
             var link = new TagBuilder("a")
             {
                 Attributes =
                     {
-                        {"style", "cursor:pointer;" },
                         {"name", "pageNumber" },
                         {"value", pageNumber.ToString() },
                         {"onclick", $"nccAction(null, $(this), '{JsonConvert.SerializeObject(model)}', '{NccConstants.AttributePrefix}');" }
                     }
             };
             link.InnerHtml.Append(string.IsNullOrEmpty(htmlContent) ? pageNumber.ToString() : htmlContent);
-            if (active) link.Attributes.Add("class", "active");
+            if (active) link.Attributes.Add("class", "active " + context.CssClassPagerA);
             if (disabled)
             {
-                link.Attributes.Add("class", "disabled");
+                link.Attributes.Add("class", "disabled " + context.CssClassPagerA);
                 link.Attributes.Remove("onclick");
             }
 
