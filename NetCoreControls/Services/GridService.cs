@@ -215,13 +215,16 @@ namespace ByteNuts.NetCoreControls.Services
             if (gridContext.GridPagerPosition == NccGridPagerPositionEnum.Left)
             {
                 divColLeft.InnerHtml.AppendHtml(div);
-                if (gridContext.ShowRecordsCount) divColRight.InnerHtml.AppendHtml(context.CssClassRecordCountDiv);
+                if (gridContext.ShowRecordsCount) divColRight.InnerHtml.AppendHtml(divRecordCount);
             }
             else
             {
-                if (gridContext.ShowRecordsCount) divColLeft.InnerHtml.AppendHtml(context.CssClassRecordCountDiv);
+                if (gridContext.ShowRecordsCount) divColLeft.InnerHtml.AppendHtml(divRecordCount);
                 divColRight.InnerHtml.AppendHtml(div);
             }
+
+            if (gridContext.ShowRecordsCount && string.IsNullOrEmpty(context.PagerRecordsCountContent))
+                divRecordCount.InnerHtml.AppendHtml($"<span>Showing {gridContext.PageSize * (gridContext.PageNumber-1)+1} to {gridContext.PageSize * (gridContext.PageNumber - 1)+ gridContext.PageSize} of {gridContext.TotalItems} entries</span>");
 
             divFooterDiv.InnerHtml.AppendHtml(divColLeft);
             divFooterDiv.InnerHtml.AppendHtml(divColRight);
