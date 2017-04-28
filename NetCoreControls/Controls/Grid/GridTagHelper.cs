@@ -30,17 +30,26 @@ namespace ByteNuts.NetCoreControls.Controls.Grid
         [HtmlAttributeName("DataKeys")]
         public string DataKeys { get; set; }
 
-        [HtmlAttributeName("CssClass")]
-        public string CssClass { get; set; }
+        [HtmlAttributeName("CssClassTable")]
+        public string CssClassTable { get; set; }
 
-        [HtmlAttributeName("HeaderCssClass")]
-        public string HeaderCssClass { get; set; }
+        [HtmlAttributeName("CssClassHeader")]
+        public string CssClassHeader { get; set; }
 
-        [HtmlAttributeName("BodyCssClass")]
-        public string BodyCssClass { get; set; }
+        [HtmlAttributeName("CssClassBody")]
+        public string CssClassBody { get; set; }
 
-        [HtmlAttributeName("FooterCssClass")]
-        public string FooterCssClass { get; set; }
+        [HtmlAttributeName("CssClassFooter")]
+        public string CssClassFooter { get; set; }
+
+        [HtmlAttributeName("CssClassHeaderContainer")]
+        public string CssClassHeaderContainer { get; set; }
+
+        [HtmlAttributeName("CssClassTableContainer")]
+        public string CssClassTableContainer { get; set; }
+
+        [HtmlAttributeName("CssClassFooterContainer")]
+        public string CssClassFooterContainer { get; set; }
 
         [HtmlAttributeName("RenderForm")]
         public bool RenderForm { get; set; }
@@ -82,10 +91,13 @@ namespace ByteNuts.NetCoreControls.Controls.Grid
         {
             if (Context == null) throw new Exception("The NccGridContext is null... Please check the reference.");
 
-            _nccTagContext.CssClassGrid = CssClass;
-            _nccTagContext.CssClassBody = BodyCssClass;
-            _nccTagContext.CssClassHeader = HeaderCssClass;
-            _nccTagContext.CssClassFooter = FooterCssClass;
+            _nccTagContext.CssClassGrid = CssClassTable;
+            _nccTagContext.CssClassBody = CssClassBody;
+            _nccTagContext.CssClassHeader = CssClassHeader;
+            _nccTagContext.CssClassFooter = CssClassFooter;
+            _nccTagContext.CssClassHeaderContainer = CssClassHeaderContainer;
+            _nccTagContext.CssClassTableContainer = CssClassTableContainer;
+            _nccTagContext.CssClassFooterContainer = CssClassFooterContainer;
 
             if (!string.IsNullOrEmpty(DataKeys) && DataKeys != Context.DataKeys)
                 Context.DataKeys = DataKeys;
@@ -136,11 +148,20 @@ namespace ByteNuts.NetCoreControls.Controls.Grid
                 NccActionsService.DataResult<NccGridContext> setDataResult = GridService.SetDataResult;
                 NccControlsService.BindData(Context, ViewContext.HttpContext, setExtraParameters, setDataResult);
 
-                _nccTagContext.GridHeader = new GridRow { Cells = new List<GridCell>(), CssClass = HeaderCssClass };
+                _nccTagContext.GridHeader = new GridRow { Cells = new List<GridCell>(), CssClass = CssClassHeader };
 
                 await output.GetChildContentAsync();
 
-                output.Content.SetHtmlContent(GridService.BuildTableHtml(_nccTagContext, Context));
+                var tableContainerDiv = new TagBuilder("div");
+                if (!string.IsNullOrEmpty(_nccTagContext.CssClassTableContainer))
+                    tableContainerDiv.Attributes.Add("class", _nccTagContext.CssClassTableContainer);
+
+                tableContainerDiv.InnerHtml.AppendHtml(GridService.BuildTableHtml(_nccTagContext, Context));
+
+                output.Content.SetHtmlContent(tableContainerDiv);
+
+                if (Context.AllowPaging)
+                    output.Content.AppendHtml(GridService.BuildTablePager(_nccTagContext, Context));
 
                 output.PreContent.AppendHtml(_nccTagContext.PreContent);
                 output.PostContent.AppendHtml(_nccTagContext.PostContent);

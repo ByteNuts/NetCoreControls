@@ -25,6 +25,9 @@ namespace ByteNuts.NetCoreControls.Models.Grid
         public string CssClassBody { get; set; }
         public string CssClassHeader { get; set; }
         public string CssClassFooter { get; set; }
+        public string CssClassHeaderContainer { get; set; }
+        public string CssClassTableContainer { get; set; }
+        public string CssClassFooterContainer { get; set; }
 
         //Grid Pager
         public string PagerRecordsCountContent { get; set; }

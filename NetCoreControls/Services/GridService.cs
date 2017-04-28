@@ -56,8 +56,8 @@ namespace ByteNuts.NetCoreControls.Services
 
             table.InnerHtml.AppendHtml(BuildTableBody(context));
 
-            if (gridContext.AllowPaging)
-                table.InnerHtml.AppendHtml(BuildTablePager(context, gridContext));
+            //if (gridContext.AllowPaging)
+            //    table.InnerHtml.AppendHtml(BuildTablePager(context, gridContext));
 
             return table;
         }
@@ -142,21 +142,23 @@ namespace ByteNuts.NetCoreControls.Services
             return tableBody;
         }
 
-        private static TagBuilder BuildTablePager(NccGridTagContext context, NccGridContext gridContext)
+        public static TagBuilder BuildTablePager(NccGridTagContext context, NccGridContext gridContext)
         {
             var totalPages = gridContext.TotalItems % gridContext.PageSize > 0
                 ? gridContext.TotalItems / gridContext.PageSize + 1
                 : gridContext.TotalItems / gridContext.PageSize;
 
-            if (totalPages == 1)
+            if (totalPages <= 1)
                 return null;
 
             var model = new NccActionModel { TargetIds = new [] { gridContext.Id } };
             model.Parameters.Add($"{DefaultParameters.ActionType.ToString().NccAddPrefix()}", "Filter");
 
-            var tableFooter = new TagBuilder("tfoot");
-            var tr = new TagBuilder("tr");
-            var td = new TagBuilder("td") { Attributes = { { "colspan", context.ColCount.ToString() } } };
+            //var tableFooter = new TagBuilder("tfoot");
+            //var tr = new TagBuilder("tr");
+            var footerContainerDiv = new TagBuilder("div");
+            if (!string.IsNullOrEmpty(context.CssClassFooterContainer))
+                footerContainerDiv.Attributes.Add("class", context.CssClassFooterContainer);
 
             var divFooterDiv = new TagBuilder("div") {Attributes = {{"class", context.CssClassFooterDiv ?? "row" }}};
             var divColLeft = new TagBuilder("div") {Attributes = {{"class", "col-sm12 col-md-6"}}};
@@ -229,11 +231,11 @@ namespace ByteNuts.NetCoreControls.Services
             divFooterDiv.InnerHtml.AppendHtml(divColLeft);
             divFooterDiv.InnerHtml.AppendHtml(divColRight);
 
-            td.InnerHtml.AppendHtml(divFooterDiv);
-            tr.InnerHtml.AppendHtml(td);
-            tableFooter.InnerHtml.AppendHtml(tr);
+            footerContainerDiv.InnerHtml.AppendHtml(divFooterDiv);
+            //tr.InnerHtml.AppendHtml(td);
+            //tableFooter.InnerHtml.AppendHtml(tr);
 
-            return tableFooter;
+            return footerContainerDiv;
         }
 
         private static TagBuilder BuilPagerLink(int pageNumber, NccActionModel model, NccGridTagContext context, string htmlContent = null, bool active = false, bool disabled = false)
