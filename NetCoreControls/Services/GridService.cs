@@ -144,9 +144,13 @@ namespace ByteNuts.NetCoreControls.Services
 
         public static TagBuilder BuildTablePager(NccGridTagContext context, NccGridContext gridContext)
         {
-            var totalPages = gridContext.TotalItems % gridContext.PageSize > 0
-                ? gridContext.TotalItems / gridContext.PageSize + 1
-                : gridContext.TotalItems / gridContext.PageSize;
+            var pageSize = gridContext.PageSize;
+            if (gridContext.Filters.ContainsKey("pageSize"))
+                pageSize = Convert.ToInt32(gridContext.Filters["pageSize"]);
+
+            var totalPages = gridContext.TotalItems % pageSize > 0
+                ? gridContext.TotalItems / pageSize + 1
+                : gridContext.TotalItems / pageSize;
 
             if (totalPages <= 1)
                 return null;
@@ -154,19 +158,14 @@ namespace ByteNuts.NetCoreControls.Services
             var model = new NccActionModel { TargetIds = new [] { gridContext.Id } };
             model.Parameters.Add($"{DefaultParameters.ActionType.ToString().NccAddPrefix()}", "Filter");
 
-            //var tableFooter = new TagBuilder("tfoot");
-            //var tr = new TagBuilder("tr");
-            var footerContainerDiv = new TagBuilder("div");
-            if (!string.IsNullOrEmpty(context.CssClassFooterContainer))
-                footerContainerDiv.Attributes.Add("class", context.CssClassFooterContainer);
+            var footerContainerDiv = new TagBuilder("div") { Attributes = { { "class", context.CssClassFooterContainer ?? "row" } } };
 
-            var divFooterDiv = new TagBuilder("div") {Attributes = {{"class", context.CssClassFooterDiv ?? "row" }}};
             var divColLeft = new TagBuilder("div") {Attributes = {{"class", "col-sm12 col-md-6"}}};
             var divColRight = new TagBuilder("div") { Attributes = { { "class", "col-sm12 col-md-6" } } };
             var divRecordCount = new TagBuilder("div");
             if (!string.IsNullOrEmpty(context.CssClassRecordCountDiv))
                 divRecordCount.Attributes.Add("class", context.CssClassRecordCountDiv);
-            //Add RecordCount html
+            //TODO: Add RecordCount html
 
             var div = new TagBuilder("div") { Attributes = { { "class", context.CssClassPagerDiv ?? "nccGridPagerContainer" } } };
             var ul = new TagBuilder("ul") { Attributes = { { "class", context.CssClassPagerUl ?? "nccGridPagerPagination" } } };
@@ -180,7 +179,7 @@ namespace ByteNuts.NetCoreControls.Services
             var nextLink = BuilPagerLink(gridContext.PageNumber + 1, model, context, ">", false, gridContext.PageNumber == totalPages);
             var lastLink = BuilPagerLink(totalPages, model, context, ">>", false, gridContext.PageNumber == totalPages);
 
-            var navSize = gridContext.PagerNavSize >= totalPages ? totalPages : gridContext.PagerNavSize;
+            var navSize = gridContext.PagerNavigationSize >= totalPages ? totalPages : gridContext.PagerNavigationSize;
             var linksBefore = navSize / 2 < gridContext.PageNumber
                 ? navSize / 2
                 : gridContext.PageNumber - 1;
@@ -226,14 +225,16 @@ namespace ByteNuts.NetCoreControls.Services
             }
 
             if (gridContext.ShowRecordsCount && string.IsNullOrEmpty(context.PagerRecordsCountContent))
-                divRecordCount.InnerHtml.AppendHtml($"<span>Showing {gridContext.PageSize * (gridContext.PageNumber-1)+1} to {gridContext.PageSize * (gridContext.PageNumber - 1)+ gridContext.PageSize} of {gridContext.TotalItems} entries</span>");
+            {
+                var firstRecord = pageSize * (gridContext.PageNumber - 1) + 1;
+                var lastRecord = pageSize * (gridContext.PageNumber - 1) + pageSize;
+                if (lastRecord > gridContext.TotalItems) lastRecord = gridContext.TotalItems;
 
-            divFooterDiv.InnerHtml.AppendHtml(divColLeft);
-            divFooterDiv.InnerHtml.AppendHtml(divColRight);
+                divRecordCount.InnerHtml.AppendHtml($"<span>Showing {firstRecord} to {lastRecord} of {gridContext.TotalItems} entries</span>");
+            }
 
-            footerContainerDiv.InnerHtml.AppendHtml(divFooterDiv);
-            //tr.InnerHtml.AppendHtml(td);
-            //tableFooter.InnerHtml.AppendHtml(tr);
+            footerContainerDiv.InnerHtml.AppendHtml(divColLeft);
+            footerContainerDiv.InnerHtml.AppendHtml(divColRight);
 
             return footerContainerDiv;
         }
@@ -254,6 +255,7 @@ namespace ByteNuts.NetCoreControls.Services
             link.InnerHtml.Append(string.IsNullOrEmpty(htmlContent) ? pageNumber.ToString() : htmlContent);
             if (active)
             {
+                link.Attributes.Add("style", "cursor: pointer;");
                 if (li.Attributes.ContainsKey("class"))
                     li.Attributes["class"] = li.Attributes["class"] + " active";
                 else

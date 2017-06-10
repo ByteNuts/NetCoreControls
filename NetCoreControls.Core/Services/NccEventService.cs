@@ -14,7 +14,6 @@ namespace ByteNuts.NetCoreControls.Core.Services
 {
     public static  class NccEventService
     {
-        //public static void ProcessEvent<T>(object service, ControllerContext controllerContext, T controlCtx, IFormCollection formCollection, Dictionary<string, string> parameters)
         public static void ProcessEvent<T>(object service, Controller controller, T controlCtx, IFormCollection formCollection, Dictionary<string, string> parameters)
         {
             if (!parameters.ContainsKey($"{DefaultParameters.EventName.ToString().NccAddPrefix()}"))

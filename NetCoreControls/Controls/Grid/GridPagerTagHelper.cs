@@ -16,8 +16,8 @@ namespace ByteNuts.NetCoreControls.Controls.Grid
         [ViewContext]
         public ViewContext ViewContext { get; set; }
 
-        [HtmlAttributeName("PagerNavigationSize")]
-        public int? PagerNavigationSize { get; set; }
+        //[HtmlAttributeName("PagerNavigationSize")]
+        //public int? PagerNavigationSize { get; set; }
 
         [HtmlAttributeName("ShowRecordsCount")]
         public bool? ShowRecordsCount { get; set; }
@@ -28,8 +28,6 @@ namespace ByteNuts.NetCoreControls.Controls.Grid
         [HtmlAttributeName("CssClassRecordCountDiv")]
         public string CssClassRecordCountDiv { get; set; }
 
-        [HtmlAttributeName("CssClassFooterDiv")]
-        public string CssClassFooterDiv { get; set; }
 
         [HtmlAttributeName("CssClassPagerDiv")]
         public string CssClassPagerDiv { get; set; }
@@ -68,14 +66,11 @@ namespace ByteNuts.NetCoreControls.Controls.Grid
             if (_context.PageSize == int.MaxValue)
                 _context.PageSize = 10;
 
-            if (PagerNavigationSize.HasValue)
-                _context.PageSize = PagerNavigationSize.Value;
             if (ShowRecordsCount.HasValue)
                 _context.ShowRecordsCount = ShowRecordsCount.Value;
             if (GridPagerPosition.HasValue)
                 _context.GridPagerPosition = GridPagerPosition.Value;
 
-            _nccTagContext.CssClassFooterDiv = CssClassFooterDiv;
             _nccTagContext.CssClassRecordCountDiv = CssClassRecordCountDiv;
             _nccTagContext.CssClassPagerDiv = CssClassPagerDiv;
             _nccTagContext.CssClassPagerUl = CssClassPagerUl;

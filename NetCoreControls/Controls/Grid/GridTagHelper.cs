@@ -52,19 +52,19 @@ namespace ByteNuts.NetCoreControls.Controls.Grid
         public string CssClassFooterContainer { get; set; }
 
         [HtmlAttributeName("RenderForm")]
-        public bool RenderForm { get; set; }
+        public bool? RenderForm { get; set; }
 
         [HtmlAttributeName("AllowPaging")]
-        public bool AllowPaging { get; set; }
+        public bool? AllowPaging { get; set; }
 
         [HtmlAttributeName("PageSize")]
-        public int PageSize { get; set; }
+        public int? PageSize { get; set; }
 
-        [HtmlAttributeName("PagerNavSize")]
-        public int PagerNavSize { get; set; }
+        [HtmlAttributeName("PagerNavigationSize")]
+        public int? PagerNavigationSize { get; set; }
 
         [HtmlAttributeName("AutoGenerateEditButton")]
-        public bool AutoGenerateEditButton { get; set; }
+        public bool? AutoGenerateEditButton { get; set; }
 
 
         private NccGridTagContext _nccTagContext;
@@ -102,15 +102,18 @@ namespace ByteNuts.NetCoreControls.Controls.Grid
             if (!string.IsNullOrEmpty(DataKeys) && DataKeys != Context.DataKeys)
                 Context.DataKeys = DataKeys;
 
-            Context.AutoGenerateEditButton = AutoGenerateEditButton ? AutoGenerateEditButton : Context.AutoGenerateEditButton;
-            Context.AllowPaging = AllowPaging;
-            if (AllowPaging)
+            if (RenderForm.HasValue)
+                Context.RenderForm = RenderForm.Value;
+            if (AutoGenerateEditButton.HasValue)
+                Context.AutoGenerateEditButton = AutoGenerateEditButton.Value;
+            if (AllowPaging.HasValue)
+                Context.AllowPaging = AllowPaging.Value;
+            if (Context.AllowPaging)
             {
-                Context.PagerNavSize = PagerNavSize > 0 ? PagerNavSize : 5;
-                if (Context.Filters.ContainsKey("pageSize"))
-                    Context.PageSize = Convert.ToInt32(Context.Filters["pageSize"]);
-                else if (PageSize > 0)
-                    Context.PageSize = PageSize;
+                if (PagerNavigationSize.HasValue)
+                    Context.PagerNavigationSize = PagerNavigationSize.Value;
+                if (PageSize.HasValue)
+                    Context.PageSize = PageSize.Value;
                 if (Context.PageSize == 0 || Context.PageSize == int.MaxValue)
                     Context.PageSize = 10;
             }
@@ -138,7 +141,7 @@ namespace ByteNuts.NetCoreControls.Controls.Grid
             {
                 tagContext.Items.Add(typeof(NccGridContext), Context);
 
-                if (RenderForm)
+                if (Context.RenderForm)
                 {
                     var form = new TagBuilder("form") { TagRenderMode = TagRenderMode.StartTag };
 
@@ -167,7 +170,7 @@ namespace ByteNuts.NetCoreControls.Controls.Grid
                 output.PreContent.AppendHtml(_nccTagContext.PreContent);
                 output.PostContent.AppendHtml(_nccTagContext.PostContent);
 
-                if (RenderForm)
+                if (Context.RenderForm)
                 {
                     var antiforgeryTag = Generator.GenerateAntiforgery(ViewContext);
                     if (antiforgeryTag != null)
