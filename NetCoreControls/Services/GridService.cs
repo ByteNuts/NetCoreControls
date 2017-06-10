@@ -255,11 +255,14 @@ namespace ByteNuts.NetCoreControls.Services
             link.InnerHtml.Append(string.IsNullOrEmpty(htmlContent) ? pageNumber.ToString() : htmlContent);
             if (active)
             {
-                link.Attributes.Add("style", "cursor: pointer;");
                 if (li.Attributes.ContainsKey("class"))
                     li.Attributes["class"] = li.Attributes["class"] + " active";
                 else
                     li.Attributes.Add("class", "active");
+            }
+            else if (!disabled)
+            {
+                link.Attributes.Add("style", "cursor: pointer;");
             }
             if (!string.IsNullOrEmpty(context.CssClassPagerA)) link.Attributes.Add("class", context.CssClassPagerA);
             if (disabled)
