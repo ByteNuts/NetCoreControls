@@ -106,9 +106,10 @@ namespace ByteNuts.NetCoreControls.Controls.Grid
             Context.AllowPaging = AllowPaging;
             if (AllowPaging)
             {
-
                 Context.PagerNavSize = PagerNavSize > 0 ? PagerNavSize : 5;
-                if (PageSize > 0)
+                if (Context.Filters.ContainsKey("pageSize"))
+                    Context.PageSize = Convert.ToInt32(Context.Filters["pageSize"]);
+                else if (PageSize > 0)
                     Context.PageSize = PageSize;
                 if (Context.PageSize == 0 || Context.PageSize == int.MaxValue)
                     Context.PageSize = 10;
