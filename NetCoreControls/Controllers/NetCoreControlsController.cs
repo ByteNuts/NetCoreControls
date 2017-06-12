@@ -85,6 +85,9 @@ namespace ByteNuts.NetCoreControls.Controllers
 
                     switch (parametersList[$"{DefaultParameters.ActionType.ToString().NccAddPrefix()}"].ToLower())
                     {
+                        case "refresh":
+                            //Do nothing, just reload data just like it is!
+                            break;
                         case "filter":
                             if (!(parametersList.Keys.Any(k => k.StartsWith($"{DefaultParameters.ElemName.ToString().NccAddPrefix()}")) && parametersList.Keys.Any(k => k.StartsWith($"{DefaultParameters.ElemValue.ToString().NccAddPrefix()}"))))
                                 throw new Exception("The filter doesn't contain the necessary name and value pair.");
