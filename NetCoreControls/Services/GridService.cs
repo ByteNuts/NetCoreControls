@@ -11,6 +11,9 @@ using ByteNuts.NetCoreControls.Models.Enums;
 using ByteNuts.NetCoreControls.Models.Grid;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Newtonsoft.Json;
+using OfficeOpenXml;
+using ByteNuts.NetCoreControls.Core.Services;
+using Microsoft.AspNetCore.Http;
 
 namespace ByteNuts.NetCoreControls.Services
 {
@@ -44,6 +47,48 @@ namespace ByteNuts.NetCoreControls.Services
             //return context;
         }
 
+        public static byte[] GetExcelPackage(NccGridContext context, HttpContext httpContext)
+        {
+            NccActionsService.ExtraParameters<NccGridContext> setExtraParameters = GridService.GetExtraParameters;
+            NccActionsService.DataResult<NccGridContext> setDataResult = GridService.SetDataResult;
+            NccControlsService.BindData(context, httpContext, setExtraParameters, setDataResult);
+
+            using (ExcelPackage package = new ExcelPackage())
+            {
+                Int32 row = 2;
+                Int32 col = 1;
+
+                package.Workbook.Worksheets.Add("Tabela");
+
+                var list = context.DataObjects as IList;
+                var propInfo = list.GetType().GetTypeInfo().GenericTypeArguments[0].GetProperties();
+
+                ExcelWorksheet sheet = package.Workbook.Worksheets["Tabela"];
+
+                foreach (var column in propInfo)
+                {
+                    if (column.PropertyType == typeof(string) || !typeof(IEnumerable).IsAssignableFrom(column.PropertyType))
+                    {
+                        sheet.Cells[1, col].Value = "Coluna " + col;
+                        sheet.Column(col++).Width = 18;
+                    }
+                }
+
+                foreach (var gridRow in list)
+                {
+                    col = 1;
+                    foreach (var column in propInfo)
+                    {
+                        if (column.PropertyType == typeof(string) || !typeof(IEnumerable).IsAssignableFrom(column.PropertyType))
+                            sheet.Cells[row, col++].Value = column.GetValue(gridRow, null);
+                    }
+
+                    row++;
+                }
+
+                return package.GetAsByteArray();
+            }
+        }
 
         #region Table Html
 
