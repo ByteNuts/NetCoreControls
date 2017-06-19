@@ -14,6 +14,7 @@ using Newtonsoft.Json;
 using OfficeOpenXml;
 using ByteNuts.NetCoreControls.Core.Services;
 using Microsoft.AspNetCore.Http;
+using OfficeOpenXml.Table;
 
 namespace ByteNuts.NetCoreControls.Services
 {
@@ -23,6 +24,11 @@ namespace ByteNuts.NetCoreControls.Services
         {
             methodParams["pageNumber"] = context.PageNumber;
             methodParams["pageSize"] = context.PageSize;
+        }
+        public static void GetExtraNullableParameters(IDictionary<string, object> methodParams, NccGridContext context)
+        {
+            methodParams["pageNumber"] = 1;
+            methodParams["pageSize"] = int.MaxValue;
         }
 
         public static void SetDataResult(NccGridContext context, object result)
@@ -49,7 +55,7 @@ namespace ByteNuts.NetCoreControls.Services
 
         public static byte[] GetExcelPackage(NccGridContext context, HttpContext httpContext)
         {
-            NccActionsService.ExtraParameters<NccGridContext> setExtraParameters = GridService.GetExtraParameters;
+            NccActionsService.ExtraParameters<NccGridContext> setExtraParameters = GridService.GetExtraNullableParameters;
             NccActionsService.DataResult<NccGridContext> setDataResult = GridService.SetDataResult;
             NccControlsService.BindData(context, httpContext, setExtraParameters, setDataResult);
 
@@ -58,33 +64,75 @@ namespace ByteNuts.NetCoreControls.Services
                 Int32 row = 2;
                 Int32 col = 1;
 
-                package.Workbook.Worksheets.Add("Tabela");
+                if (string.IsNullOrEmpty(context.GridExportExcel.Title))
+                    context.GridExportExcel.Title = context.Id;
+
+                package.Workbook.Properties.Title = context.GridExportExcel.Title;
+                package.Workbook.Properties.Subject = context.GridExportExcel.Subject;
+                package.Workbook.Properties.Company = context.GridExportExcel.Company;
+                package.Workbook.Properties.Author = context.GridExportExcel.Author;
+                package.Workbook.Properties.Keywords = context.GridExportExcel.Keywords;
+
+                package.Workbook.Worksheets.Add(context.GridExportExcel.Title);
 
                 var list = context.DataObjects as IList;
                 var propInfo = list.GetType().GetTypeInfo().GenericTypeArguments[0].GetProperties();
 
-                ExcelWorksheet sheet = package.Workbook.Worksheets["Tabela"];
+                ExcelWorksheet sheet = package.Workbook.Worksheets[context.GridExportExcel.Title];
 
-                foreach (var column in propInfo)
+                foreach(var column in context.GridExportExcel.Columns)
                 {
-                    if (column.PropertyType == typeof(string) || !typeof(IEnumerable).IsAssignableFrom(column.PropertyType))
-                    {
-                        sheet.Cells[1, col].Value = "Coluna " + col;
-                        sheet.Column(col++).Width = 18;
-                    }
+                    if (string.IsNullOrEmpty(column.ColumnTitle))
+                        column.ColumnTitle = $"Coluna {col}";
+
+                    sheet.Cells[1, col].Value = column.ColumnTitle;
+
+                    //if (!string.IsNullOrEmpty(column.HeaderHorizontalAlignment))
+                    //    sheet.Cells[1, col].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.
+
+                    if (!context.GridExportExcel.AutoFitColumns.HasValue || !context.GridExportExcel.AutoFitColumns.Value)
+                        sheet.Column(col).Width = column.Width.Value;
+
+                    col++;
                 }
+                //foreach (var column in propInfo)
+                //{
+                //    if (column.PropertyType == typeof(string) || !typeof(IEnumerable).IsAssignableFrom(column.PropertyType))
+                //    {
+                //        sheet.Cells[1, col].Value = "Coluna " + col;
+                //        sheet.Column(col++).Width = 18;
+                //    }
+                //}
 
                 foreach (var gridRow in list)
                 {
                     col = 1;
-                    foreach (var column in propInfo)
+                    foreach (var column in context.GridExportExcel.Columns)
                     {
-                        if (column.PropertyType == typeof(string) || !typeof(IEnumerable).IsAssignableFrom(column.PropertyType))
-                            sheet.Cells[row, col++].Value = column.GetValue(gridRow, null);
+                        sheet.Cells[row, col++].Value = propInfo.FirstOrDefault(x => x.Name == column.ColumnPropName).GetValue(gridRow, null);
                     }
+                    //foreach (var column in propInfo)
+                    //{
+                    //    if (column.PropertyType == typeof(string) || !typeof(IEnumerable).IsAssignableFrom(column.PropertyType))
+                    //        sheet.Cells[row, col++].Value = column.GetValue(gridRow, null);
+                    //}
 
                     row++;
                 }
+
+                // Add to table / Add summary row
+                var tbl = sheet.Tables.Add(new ExcelAddressBase(fromRow: 1, fromCol: 1, toRow: row-1, toColumn: col-1), context.GridExportExcel.Title);
+                if(context.GridExportExcel.ShowHeader.HasValue)
+                    tbl.ShowHeader = context.GridExportExcel.ShowHeader.Value;
+                //tbl.TableStyle = TableStyles.Medium13;
+                if (context.GridExportExcel.ShowTotal.HasValue)
+                    tbl.ShowTotal = context.GridExportExcel.ShowTotal.Value;
+                //tbl.Columns[3].DataCellStyleName = dataCellStyleName;
+                //tbl.Columns[3].TotalsRowFunction = RowFunctions.Sum;
+                //sheet.Cells[5, 4].Style.Numberformat.Format = numberformat;
+
+                if (context.GridExportExcel.AutoFitColumns.HasValue && context.GridExportExcel.AutoFitColumns.Value)
+                    sheet.Cells[1, 1, row-1, col-1].AutoFitColumns();
 
                 return package.GetAsByteArray();
             }
@@ -275,7 +323,7 @@ namespace ByteNuts.NetCoreControls.Services
                 var lastRecord = pageSize * (gridContext.PageNumber - 1) + pageSize;
                 if (lastRecord > gridContext.TotalItems) lastRecord = gridContext.TotalItems;
 
-                divRecordCount.InnerHtml.AppendHtml($"<span>Showing {firstRecord} to {lastRecord} of {gridContext.TotalItems} entries</span>");
+                divRecordCount.InnerHtml.AppendHtml($"<span>A mostrar {firstRecord} até {lastRecord} de {gridContext.TotalItems} registos</span>");
             }
 
             footerContainerDiv.InnerHtml.AppendHtml(divColLeft);

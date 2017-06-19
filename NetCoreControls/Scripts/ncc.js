@@ -4,6 +4,7 @@ var ajax = true;
 var form;
 
 function nccAction(event, elem, params, prefix) {
+    ajax = true;
     if (event != null) {
         event.preventDefault();
     }
@@ -173,12 +174,14 @@ function showAjaxLoader(targetIds, elem) {
                 div.prop("disabled", true);
             //}
         });
-    if (elem instanceof jQuery) {
+    if (elem instanceof jQuery && !elem.is("input")) {
         elem.prop( "disabled", true );
     } else {
         $.each(elem, function () {
             var ctrl = $("#" + this);
-            ctrl.prop("disabled", true);
+            if (!ctrl.is("input")) {
+                ctrl.prop("disabled", true);
+            }
         });
     }
 }

@@ -18,5 +18,6 @@ namespace ByteNuts.NetCoreControls.Models.Grid
         public int PagerNavigationSize { get; set; } = 10;
         public bool ShowRecordsCount { get; set; } = true;
         public NccGridPagerPositionEnum GridPagerPosition { get; set; } = NccGridPagerPositionEnum.Right;
+        public GridExportExcel GridExportExcel { get; set; }
     }
 }

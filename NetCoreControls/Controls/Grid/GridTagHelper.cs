@@ -16,7 +16,7 @@ using Microsoft.Extensions.Options;
 
 namespace ByteNuts.NetCoreControls.Controls.Grid
 {
-    [RestrictChildren("ncc:grid-columns", "ncc:grid-content", "ncc:grid-pager", "ncc:grid-emptyrow")]
+    [RestrictChildren("ncc:grid-columns", "ncc:grid-content", "ncc:grid-pager", "ncc:grid-emptyrow", "ncc:grid-export-template")]
     [HtmlTargetElement("ncc:grid")]
     public class GridTagHelper : TagHelper
     {
