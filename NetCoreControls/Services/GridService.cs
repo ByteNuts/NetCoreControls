@@ -309,11 +309,13 @@ namespace ByteNuts.NetCoreControls.Services
             if (gridContext.GridPagerPosition == NccGridPagerPositionEnum.Left)
             {
                 divColLeft.InnerHtml.AppendHtml(div);
-                if (gridContext.ShowRecordsCount) divColRight.InnerHtml.AppendHtml(divRecordCount);
+                if (gridContext.ShowRecordsCount && gridContext.GridRecordCountPosition == NccGridPagerPositionEnum.Left) divColLeft.InnerHtml.AppendHtml(divRecordCount);
+                else if (gridContext.ShowRecordsCount && gridContext.GridRecordCountPosition == NccGridPagerPositionEnum.Right) divColRight.InnerHtml.AppendHtml(divRecordCount);
             }
             else
             {
-                if (gridContext.ShowRecordsCount) divColLeft.InnerHtml.AppendHtml(divRecordCount);
+                if (gridContext.ShowRecordsCount && gridContext.GridRecordCountPosition == NccGridPagerPositionEnum.Left) divColLeft.InnerHtml.AppendHtml(divRecordCount);
+                else if (gridContext.ShowRecordsCount && gridContext.GridRecordCountPosition == NccGridPagerPositionEnum.Right) divColRight.InnerHtml.AppendHtml(divRecordCount);
                 divColRight.InnerHtml.AppendHtml(div);
             }
 
@@ -323,7 +325,7 @@ namespace ByteNuts.NetCoreControls.Services
                 var lastRecord = pageSize * (gridContext.PageNumber - 1) + pageSize;
                 if (lastRecord > gridContext.TotalItems) lastRecord = gridContext.TotalItems;
 
-                divRecordCount.InnerHtml.AppendHtml($"<span>A mostrar {firstRecord} até {lastRecord} de {gridContext.TotalItems} registos</span>");
+                divRecordCount.InnerHtml.AppendHtml(string.Format($"<span>{gridContext.GridRecordsTemplate}</span>", firstRecord, lastRecord, gridContext.TotalItems));
             }
 
             footerContainerDiv.InnerHtml.AppendHtml(divColLeft);
