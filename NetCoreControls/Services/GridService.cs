@@ -253,8 +253,8 @@ namespace ByteNuts.NetCoreControls.Services
 
             var footerContainerDiv = new TagBuilder("div") { Attributes = { { "class", context.CssClassFooterContainer ?? "row" } } };
 
-            var divColLeft = new TagBuilder("div") {Attributes = {{"class", "col-sm12 col-md-6"}}};
-            var divColRight = new TagBuilder("div") { Attributes = { { "class", "col-sm12 col-md-6" } } };
+            var divColLeft = new TagBuilder("div") {Attributes = {{"class", "col-sm-12 col-md-6"}}};
+            var divColRight = new TagBuilder("div") { Attributes = { { "class", "col-sm-12 col-md-6" } } };
             var divRecordCount = new TagBuilder("div");
             if (!string.IsNullOrEmpty(context.CssClassRecordCountDiv))
                 divRecordCount.Attributes.Add("class", context.CssClassRecordCountDiv);
