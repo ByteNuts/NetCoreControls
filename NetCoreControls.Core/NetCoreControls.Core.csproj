@@ -8,9 +8,9 @@
   </PropertyGroup>
 
   <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
     <VersionPrefix>1.0.0-beta1</VersionPrefix>
     <Authors>Joao Pereira;Justino Mendes;Duarte Camacho</Authors>
-    <TargetFramework>netstandard1.6</TargetFramework>
     <AssemblyName>ByteNuts.NetCoreControls.Core</AssemblyName>
     <PackageId>NetCoreControls.Core</PackageId>
     <PackageTags>aspnetcore;.NET Core;ASP.NET</PackageTags>
@@ -27,10 +27,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.Razor" Version="1.1.2" />
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.ViewFeatures" Version="1.1.2" />
-    <PackageReference Include="Microsoft.AspNetCore.Razor.Runtime" Version="1.1.1" />
-    <PackageReference Include="Newtonsoft.Json" Version="10.0.2" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.0.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
   </ItemGroup>
 
 </Project>
