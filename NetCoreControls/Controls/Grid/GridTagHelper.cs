@@ -16,7 +16,7 @@ using Microsoft.Extensions.Options;
 
 namespace ByteNuts.NetCoreControls.Controls.Grid
 {
-    [RestrictChildren("ncc:grid-columns", "ncc:grid-content", "ncc:grid-pager", "ncc:grid-emptyrow")]
+    [RestrictChildren("ncc:grid-columns", "ncc:grid-content", "ncc:grid-pager", "ncc:grid-emptyrow", "ncc:grid-export-template")]
     [HtmlTargetElement("ncc:grid")]
     public class GridTagHelper : TagHelper
     {
@@ -112,7 +112,9 @@ namespace ByteNuts.NetCoreControls.Controls.Grid
             {
                 if (PagerNavigationSize.HasValue)
                     Context.PagerNavigationSize = PagerNavigationSize.Value;
-                if (PageSize.HasValue)
+                if (Context.Filters.ContainsKey("pageSize"))
+                    Context.PageSize = Convert.ToInt32(Context.Filters["pageSize"]);
+                else if (PageSize.HasValue)
                     Context.PageSize = PageSize.Value;
                 if (Context.PageSize == 0 || Context.PageSize == int.MaxValue)
                     Context.PageSize = 10;

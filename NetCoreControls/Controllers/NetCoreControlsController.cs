@@ -19,6 +19,7 @@ using ByteNuts.NetCoreControls.Controls.Select.Events;
 using ByteNuts.NetCoreControls.Core;
 using ByteNuts.NetCoreControls.Models.Enums;
 using ByteNuts.NetCoreControls.Models.Grid;
+using ByteNuts.NetCoreControls.Services;
 using Microsoft.Extensions.Options;
 
 namespace ByteNuts.NetCoreControls.Controllers
@@ -85,6 +86,20 @@ namespace ByteNuts.NetCoreControls.Controllers
 
                     switch (parametersList[$"{DefaultParameters.ActionType.ToString().NccAddPrefix()}"].ToLower())
                     {
+                        case "refresh":
+                            //Do nothing, just reload data just like it is!
+                            break;
+                        case "exportexcel":
+                            var gridContext = (NccGridContext)controlCtx;
+                            if (gridContext != null)
+                            {
+                                var excelPackage = GridService.GetExcelPackage(gridContext, HttpContext);
+                                var xlsxContentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+
+                                //Response.Headers.Add("Content-Disposition", "attachment; filename=\"Export.xlsx\"");
+                                return File(excelPackage, xlsxContentType, "Export.xlsx");
+                            }
+                            break;
                         case "filter":
                             if (!(parametersList.Keys.Any(k => k.StartsWith($"{DefaultParameters.ElemName.ToString().NccAddPrefix()}")) && parametersList.Keys.Any(k => k.StartsWith($"{DefaultParameters.ElemValue.ToString().NccAddPrefix()}"))))
                                 throw new Exception("The filter doesn't contain the necessary name and value pair.");

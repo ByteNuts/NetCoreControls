@@ -17,6 +17,9 @@ namespace ByteNuts.NetCoreControls.Models.Grid
         //Pager options
         public int PagerNavigationSize { get; set; } = 10;
         public bool ShowRecordsCount { get; set; } = true;
+        public string GridRecordsTemplate { get; set; } = "A mostrar {0} até {1} de {2} registos";
         public NccGridPagerPositionEnum GridPagerPosition { get; set; } = NccGridPagerPositionEnum.Right;
+        public NccGridPagerPositionEnum GridRecordCountPosition { get; set; } = NccGridPagerPositionEnum.Left;
+        public GridExportExcel GridExportExcel { get; set; }
     }
 }

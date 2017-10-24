@@ -1,7 +1,10 @@
 var posId = 0;
 var pref = "";
+var ajax = true;
+var form;
 
 function nccAction(event, elem, params, prefix) {
+    ajax = true;
     if (event != null) {
         event.preventDefault();
     }
@@ -17,6 +20,9 @@ function nccAction(event, elem, params, prefix) {
 
     $.each(nncActionModel.Parameters,
         function (key, value) {
+            if (value.toLowerCase() == "exportexcel") {
+                ajax = false;
+            };
             postData.push({
                 name: "parameters[" + posId + "].key",
                 value: key
@@ -40,7 +46,7 @@ function nccAction(event, elem, params, prefix) {
 
         var div = $("#" + controlId);
 
-        var form = div.children("form");
+        form = div.children("form");
         if (form.length === 0) {
             form = div.closest("form");
         }
@@ -68,22 +74,41 @@ function nccPost(controlIds, postData, elem) {
         if (basePath != null) {
             basePathUrl = basePath.href;
         }
-        var options = {
-            type: "POST",
-            url: basePathUrl + "/NetCoreControls/ControlAction",
-            data: postData,
-            success: function (data) {
-                for (var i = 0; i < data.length; i++) {
-                    if (data[i] != "") {
-                        var update = $("#" + controlIds[i]);
-                        $(update).replaceWith(data[i]);
+
+        if (ajax) {
+            var options = {
+                type: "POST",
+                url: basePathUrl + "/NetCoreControls/ControlAction",
+                data: postData,
+                success: function (data) {
+                    for (var i = 0; i < data.length; i++) {
+                        if (data[i] != "") {
+                            var update = $("#" + controlIds[i]);
+                            $(update).replaceWith(data[i]);
+                        }
                     }
-                }
-            },
-            beforeSend: function() { showAjaxLoader(controlIds, elem) },
-            complete: function() { hideAjaxLoader(controlIds, elem) }
+                },
+                beforeSend: function() { showAjaxLoader(controlIds, elem) },
+                complete: function() { hideAjaxLoader(controlIds, elem) }
+            }
+            $.ajax(options);
+        } else {
+            $.each(postData, function (key, value) {
+                var input = $("<input>").attr("type", "hidden").attr("name", value.name).val(value.value);
+                form.append($(input));
+            });
+            form.attr('action', basePathUrl + "/NetCoreControls/ControlAction").attr('method', 'post').submit();
+
+            //var form = $("<form>").attr("action", basePathUrl + "/NetCoreControls/ControlAction");
+            //$.each(postData, function (key, value) {
+            //    if (value.name == "target_ids" || value.name == "context" || value.value == "ncc-ActionType" || value.value == "Event" || value.value == "ncc-EventName" || value.value == "exportxlsx") {
+            //        var input = $("<input>").attr("type", "hidden").attr("name", value.name).val(value.value);
+            //        form.append($(input));
+            //    }
+            //});
+            //form.submit();
+
         }
-        $.ajax(options);
     }
 }
 
@@ -149,12 +174,14 @@ function showAjaxLoader(targetIds, elem) {
                 div.prop("disabled", true);
             //}
         });
-    if (elem instanceof jQuery) {
+    if (elem instanceof jQuery && !elem.is("input")) {
         elem.prop( "disabled", true );
     } else {
         $.each(elem, function () {
             var ctrl = $("#" + this);
-            ctrl.prop("disabled", true);
+            if (!ctrl.is("input")) {
+                ctrl.prop("disabled", true);
+            }
         });
     }
 }

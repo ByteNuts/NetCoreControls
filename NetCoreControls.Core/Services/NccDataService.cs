@@ -68,7 +68,8 @@ namespace ByteNuts.NetCoreControls.Core.Services
                 else
                 {
                     var list = item1 as IList;
-                    context.NccSetPropertyValue("DataObjects", list != null ? new List<object>(list.Cast<object>()) : item1);
+                    //context.NccSetPropertyValue("DataObjects", list != null ? new List<object>(list.Cast<object>()) : item1);
+                    context.NccSetPropertyValue("DataObjects", list != null ? list : item1);
                 }
             }
             else

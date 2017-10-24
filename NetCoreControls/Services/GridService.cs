@@ -11,6 +11,10 @@ using ByteNuts.NetCoreControls.Models.Enums;
 using ByteNuts.NetCoreControls.Models.Grid;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Newtonsoft.Json;
+using OfficeOpenXml;
+using ByteNuts.NetCoreControls.Core.Services;
+using Microsoft.AspNetCore.Http;
+using OfficeOpenXml.Table;
 
 namespace ByteNuts.NetCoreControls.Services
 {
@@ -20,6 +24,11 @@ namespace ByteNuts.NetCoreControls.Services
         {
             methodParams["pageNumber"] = context.PageNumber;
             methodParams["pageSize"] = context.PageSize;
+        }
+        public static void GetExtraNullableParameters(IDictionary<string, object> methodParams, NccGridContext context)
+        {
+            methodParams["pageNumber"] = 1;
+            methodParams["pageSize"] = int.MaxValue;
         }
 
         public static void SetDataResult(NccGridContext context, object result)
@@ -44,6 +53,90 @@ namespace ByteNuts.NetCoreControls.Services
             //return context;
         }
 
+        public static byte[] GetExcelPackage(NccGridContext context, HttpContext httpContext)
+        {
+            NccActionsService.ExtraParameters<NccGridContext> setExtraParameters = GridService.GetExtraNullableParameters;
+            NccActionsService.DataResult<NccGridContext> setDataResult = GridService.SetDataResult;
+            NccControlsService.BindData(context, httpContext, setExtraParameters, setDataResult);
+
+            using (ExcelPackage package = new ExcelPackage())
+            {
+                Int32 row = 2;
+                Int32 col = 1;
+
+                if (string.IsNullOrEmpty(context.GridExportExcel.Title))
+                    context.GridExportExcel.Title = context.Id;
+
+                package.Workbook.Properties.Title = context.GridExportExcel.Title;
+                package.Workbook.Properties.Subject = context.GridExportExcel.Subject;
+                package.Workbook.Properties.Company = context.GridExportExcel.Company;
+                package.Workbook.Properties.Author = context.GridExportExcel.Author;
+                package.Workbook.Properties.Keywords = context.GridExportExcel.Keywords;
+
+                package.Workbook.Worksheets.Add(context.GridExportExcel.Title);
+
+                var list = context.DataObjects as IList;
+                var propInfo = list.GetType().GetTypeInfo().GenericTypeArguments[0].GetProperties();
+
+                ExcelWorksheet sheet = package.Workbook.Worksheets[context.GridExportExcel.Title];
+
+                foreach(var column in context.GridExportExcel.Columns)
+                {
+                    if (string.IsNullOrEmpty(column.ColumnTitle))
+                        column.ColumnTitle = $"Coluna {col}";
+
+                    sheet.Cells[1, col].Value = column.ColumnTitle;
+
+                    //if (!string.IsNullOrEmpty(column.HeaderHorizontalAlignment))
+                    //    sheet.Cells[1, col].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.
+
+                    if (!context.GridExportExcel.AutoFitColumns.HasValue || !context.GridExportExcel.AutoFitColumns.Value)
+                        sheet.Column(col).Width = column.Width.Value;
+
+                    col++;
+                }
+                //foreach (var column in propInfo)
+                //{
+                //    if (column.PropertyType == typeof(string) || !typeof(IEnumerable).IsAssignableFrom(column.PropertyType))
+                //    {
+                //        sheet.Cells[1, col].Value = "Coluna " + col;
+                //        sheet.Column(col++).Width = 18;
+                //    }
+                //}
+
+                foreach (var gridRow in list)
+                {
+                    col = 1;
+                    foreach (var column in context.GridExportExcel.Columns)
+                    {
+                        sheet.Cells[row, col++].Value = propInfo.FirstOrDefault(x => x.Name == column.ColumnPropName).GetValue(gridRow, null);
+                    }
+                    //foreach (var column in propInfo)
+                    //{
+                    //    if (column.PropertyType == typeof(string) || !typeof(IEnumerable).IsAssignableFrom(column.PropertyType))
+                    //        sheet.Cells[row, col++].Value = column.GetValue(gridRow, null);
+                    //}
+
+                    row++;
+                }
+
+                // Add to table / Add summary row
+                var tbl = sheet.Tables.Add(new ExcelAddressBase(fromRow: 1, fromCol: 1, toRow: row-1, toColumn: col-1), context.GridExportExcel.Title);
+                if(context.GridExportExcel.ShowHeader.HasValue)
+                    tbl.ShowHeader = context.GridExportExcel.ShowHeader.Value;
+                //tbl.TableStyle = TableStyles.Medium13;
+                if (context.GridExportExcel.ShowTotal.HasValue)
+                    tbl.ShowTotal = context.GridExportExcel.ShowTotal.Value;
+                //tbl.Columns[3].DataCellStyleName = dataCellStyleName;
+                //tbl.Columns[3].TotalsRowFunction = RowFunctions.Sum;
+                //sheet.Cells[5, 4].Style.Numberformat.Format = numberformat;
+
+                if (context.GridExportExcel.AutoFitColumns.HasValue && context.GridExportExcel.AutoFitColumns.Value)
+                    sheet.Cells[1, 1, row-1, col-1].AutoFitColumns();
+
+                return package.GetAsByteArray();
+            }
+        }
 
         #region Table Html
 
@@ -160,8 +253,8 @@ namespace ByteNuts.NetCoreControls.Services
 
             var footerContainerDiv = new TagBuilder("div") { Attributes = { { "class", context.CssClassFooterContainer ?? "row" } } };
 
-            var divColLeft = new TagBuilder("div") {Attributes = {{"class", "col-sm12 col-md-6"}}};
-            var divColRight = new TagBuilder("div") { Attributes = { { "class", "col-sm12 col-md-6" } } };
+            var divColLeft = new TagBuilder("div") {Attributes = {{"class", "col-sm-12 col-md-6"}}};
+            var divColRight = new TagBuilder("div") { Attributes = { { "class", "col-sm-12 col-md-6" } } };
             var divRecordCount = new TagBuilder("div");
             if (!string.IsNullOrEmpty(context.CssClassRecordCountDiv))
                 divRecordCount.Attributes.Add("class", context.CssClassRecordCountDiv);
@@ -216,11 +309,13 @@ namespace ByteNuts.NetCoreControls.Services
             if (gridContext.GridPagerPosition == NccGridPagerPositionEnum.Left)
             {
                 divColLeft.InnerHtml.AppendHtml(div);
-                if (gridContext.ShowRecordsCount) divColRight.InnerHtml.AppendHtml(divRecordCount);
+                if (gridContext.ShowRecordsCount && gridContext.GridRecordCountPosition == NccGridPagerPositionEnum.Left) divColLeft.InnerHtml.AppendHtml(divRecordCount);
+                else if (gridContext.ShowRecordsCount && gridContext.GridRecordCountPosition == NccGridPagerPositionEnum.Right) divColRight.InnerHtml.AppendHtml(divRecordCount);
             }
             else
             {
-                if (gridContext.ShowRecordsCount) divColLeft.InnerHtml.AppendHtml(divRecordCount);
+                if (gridContext.ShowRecordsCount && gridContext.GridRecordCountPosition == NccGridPagerPositionEnum.Left) divColLeft.InnerHtml.AppendHtml(divRecordCount);
+                else if (gridContext.ShowRecordsCount && gridContext.GridRecordCountPosition == NccGridPagerPositionEnum.Right) divColRight.InnerHtml.AppendHtml(divRecordCount);
                 divColRight.InnerHtml.AppendHtml(div);
             }
 
@@ -230,7 +325,7 @@ namespace ByteNuts.NetCoreControls.Services
                 var lastRecord = pageSize * (gridContext.PageNumber - 1) + pageSize;
                 if (lastRecord > gridContext.TotalItems) lastRecord = gridContext.TotalItems;
 
-                divRecordCount.InnerHtml.AppendHtml($"<span>Showing {firstRecord} to {lastRecord} of {gridContext.TotalItems} entries</span>");
+                divRecordCount.InnerHtml.AppendHtml(string.Format($"<span>{gridContext.GridRecordsTemplate}</span>", firstRecord, lastRecord, gridContext.TotalItems));
             }
 
             footerContainerDiv.InnerHtml.AppendHtml(divColLeft);
@@ -255,11 +350,14 @@ namespace ByteNuts.NetCoreControls.Services
             link.InnerHtml.Append(string.IsNullOrEmpty(htmlContent) ? pageNumber.ToString() : htmlContent);
             if (active)
             {
-                link.Attributes.Add("style", "cursor: pointer;");
                 if (li.Attributes.ContainsKey("class"))
                     li.Attributes["class"] = li.Attributes["class"] + " active";
                 else
                     li.Attributes.Add("class", "active");
+            }
+            else if (!disabled)
+            {
+                link.Attributes.Add("style", "cursor: pointer;");
             }
             if (!string.IsNullOrEmpty(context.CssClassPagerA)) link.Attributes.Add("class", context.CssClassPagerA);
             if (disabled)

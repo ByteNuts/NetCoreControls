@@ -22,8 +22,13 @@ namespace ByteNuts.NetCoreControls.Controls.Grid
         [HtmlAttributeName("ShowRecordsCount")]
         public bool? ShowRecordsCount { get; set; }
 
+        [HtmlAttributeName("GridRecordsTemplate")]
+        public string GridRecordsTemplate { get; set; }
+
         [HtmlAttributeName("GridPagerPosition")]
         public NccGridPagerPositionEnum? GridPagerPosition { get; set; }
+        [HtmlAttributeName("GridRecordCountPosition")]
+        public NccGridPagerPositionEnum? GridRecordCountPosition { get; set; }
 
         [HtmlAttributeName("CssClassRecordCountDiv")]
         public string CssClassRecordCountDiv { get; set; }
@@ -68,8 +73,12 @@ namespace ByteNuts.NetCoreControls.Controls.Grid
 
             if (ShowRecordsCount.HasValue)
                 _context.ShowRecordsCount = ShowRecordsCount.Value;
+            if (!string.IsNullOrEmpty(GridRecordsTemplate))
+                _context.GridRecordsTemplate = GridRecordsTemplate;
             if (GridPagerPosition.HasValue)
                 _context.GridPagerPosition = GridPagerPosition.Value;
+            if (GridRecordCountPosition.HasValue)
+                _context.GridRecordCountPosition = GridRecordCountPosition.Value;
 
             _nccTagContext.CssClassRecordCountDiv = CssClassRecordCountDiv;
             _nccTagContext.CssClassPagerDiv = CssClassPagerDiv;
