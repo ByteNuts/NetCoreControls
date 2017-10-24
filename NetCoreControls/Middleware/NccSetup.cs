@@ -9,7 +9,7 @@ namespace ByteNuts.NetCoreControls.Middleware
 {
     public static class NccSetup
     {
-        public static void AddNetCoreControls(this IServiceCollection services, IConfigurationRoot configuration)
+        public static void AddNetCoreControls(this IServiceCollection services, IConfiguration configuration)
         {
             services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.Configure<NccSettings>(options => configuration.GetSection("NccSettings").Bind(options));
