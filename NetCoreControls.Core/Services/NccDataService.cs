@@ -63,18 +63,17 @@ namespace ByteNuts.NetCoreControls.Core.Services
             {
                 var item1 = result.GetType().GetProperty("Item1").GetValue(result);
 
-                if (result.GetType().ToString().Contains("System.Linq.IQueryable"))
+                if (item1 is IQueryable)
                     context.NccSetPropertyValue("DataObjects", ((IQueryable<object>)item1).ToList());
                 else
                 {
                     var list = item1 as IList;
-                    //context.NccSetPropertyValue("DataObjects", list != null ? new List<object>(list.Cast<object>()) : item1);
-                    context.NccSetPropertyValue("DataObjects", list != null ? list : item1);
+                    context.NccSetPropertyValue("DataObjects", list ?? item1);
                 }
             }
             else
             {
-                context.NccSetPropertyValue("DataObjects", result);
+                context.NccSetPropertyValue("DataObjects", result is IQueryable ? ((IQueryable<object>)result).ToList() : result);
             }
 
             dataResult?.Invoke(context, result);

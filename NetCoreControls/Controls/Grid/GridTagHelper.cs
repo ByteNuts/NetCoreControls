@@ -154,6 +154,8 @@ namespace ByteNuts.NetCoreControls.Controls.Grid
                 NccActionsService.DataResult<NccGridContext> setDataResult = GridService.SetDataResult;
                 NccControlsService.BindData(Context, ViewContext.HttpContext, setExtraParameters, setDataResult);
 
+                service?.NccInvokeMethod(NccEventsEnum.DataBound.ToString(), new object[] { new NccEventArgs { NccControlContext = Context, ViewContext = ViewContext, DataObjects = Context.DataObjects } });
+
                 _nccTagContext.GridHeader = new GridRow { Cells = new List<GridCell>(), CssClass = CssClassHeader };
 
                 await output.GetChildContentAsync();

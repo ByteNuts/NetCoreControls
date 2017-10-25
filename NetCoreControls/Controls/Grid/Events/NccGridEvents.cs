@@ -36,7 +36,7 @@ namespace ByteNuts.NetCoreControls.Controls.Grid.Events
             if (model == null)
                 throw new Exception("The DatabaseModelType specified could not be instantiated. Is it public?");
 
-            var ok = await eventArgs.Controller.TryUpdateModelAsync(model, $"{gridContext.Id}[{rowPos}]");
+            var ok = await eventArgs.Controller.TryUpdateModelAsync(model, gridContext.Id); //$"{gridContext.Id}[{rowPos}]"
 
             if (!ok) throw new Exception("Error binding model to object or list");
 

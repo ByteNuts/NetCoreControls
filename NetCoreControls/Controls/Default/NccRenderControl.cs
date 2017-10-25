@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using ByteNuts.NetCoreControls.Core;
 using ByteNuts.NetCoreControls.Core.Extensions;
 using ByteNuts.NetCoreControls.Core.Models;
 using Microsoft.AspNetCore.DataProtection;
@@ -11,7 +12,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 using ByteNuts.NetCoreControls.Core.Services;
 
-namespace ByteNuts.NetCoreControls.Core.Controls
+namespace ByteNuts.NetCoreControls.Controls.Default
 {
     [HtmlTargetElement("ncc:render-control")]
     public class NccRenderControl : TagHelper

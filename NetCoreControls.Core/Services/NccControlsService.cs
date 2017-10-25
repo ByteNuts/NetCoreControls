@@ -56,10 +56,7 @@ namespace ByteNuts.NetCoreControls.Core.Services
             {
 
                 var dataSource = (context as NccContext)?.DataSource;
-                var dataObjects = dataSource.GetType().ToString().Contains("Microsoft.EntityFrameworkCore.Internal.InternalDbSet") ||
-                    dataSource.GetType().ToString().Contains("Microsoft.EntityFrameworkCore.Query.Internal.EntityQueryable") ||
-                    dataSource.GetType().ToString().Contains("System.Linq.IQueryable") ?
-                    ((IQueryable<object>)dataSource).ToList() : dataSource;
+                var dataObjects = dataSource is IQueryable ? ((IQueryable<object>)dataSource).ToList() : dataSource;
 
                 context.NccSetPropertyValue("DataSource", dataObjects);
                 context.NccSetPropertyValue("DataObjects", dataObjects);
