@@ -96,7 +96,7 @@ namespace ByteNuts.NetCoreControls.Controls.Grid
                         _context.DataKeysValues.Add(dataKeysRow);
                     }
 
-                    service?.NccInvokeMethod(NccGridEventsEnum.RowDataBound.ToString(), new object[] { new NccEventArgs { NccTagContext = _nccTagContext, NccControlContext = _context, DataObjects = data }, row });
+                    service?.NccInvokeMethod(NccGridEventsEnum.RowDataBound.ToString(), new object[] { new NccEventArgs { NccTagContext = _nccTagContext, NccControlContext = _context, ViewContext = ViewContext, DataObjects = data }, row });
 
                     _nccTagContext.GridRows.Add(new GridRow { Cells = new List<GridCell>(), RowNumber = _nccTagContext.RowNumber });
 

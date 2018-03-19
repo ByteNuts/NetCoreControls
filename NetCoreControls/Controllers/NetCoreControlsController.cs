@@ -87,8 +87,10 @@ namespace ByteNuts.NetCoreControls.Controllers
                     switch (parametersList[$"{DefaultParameters.ActionType.ToString().NccAddPrefix()}"].ToLower())
                     {
                         case "refresh":
-                            //Do nothing, just reload data just like it is!
-                            break;
+                            {
+                                //Do nothing, just reload data just like it is!
+                                break;
+                            }
                         case "exportexcel":
                             var gridContext = (NccGridContext)controlCtx;
                             if (gridContext != null)
