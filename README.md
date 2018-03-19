@@ -1,6 +1,8 @@
 # NetCoreControls
 A set of UI controls for ASP.NET MVC Core.
 
+![Master branch status](https://ci.appveyor.com/api/projects/status/github/bytenuts/netcorecontrols?svg=true&branch=master)
+
 [Controls website](http://netcorecontrols.bytenuts.com)
 
 
@@ -36,7 +38,7 @@ Refer to the samples repository for examples of usage of the controls.
 
 **- Controls are connected** - you can easily associate a submit button or a filter with more than one control, even with different controls.
 
-**- Subscribe control events or create custom ones** - all controls share the same base events. They also offer some other events related to the control itself. But hey!, if that isn’t enough, you can create your one custom events!
+**- Subscribe control events or create custom ones** - all controls share the same base events. They also offer some other events related to the control itself. But hey!, if that isnâ€™t enough, you can create your one custom events!
 
 
 ## Available controls
