@@ -16,9 +16,9 @@
     <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
     <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
-    <Version>1.0.0-beta2</Version>
+    <Version>1.0.0-beta3</Version>
     <Description>A set of UI controls for ASP.NET MVC Core</Description>
-    <Copyright>2017 - Byte Nuts</Copyright>
+    <Copyright>2018 - Byte Nuts</Copyright>
   </PropertyGroup>
 
   <ItemGroup>
