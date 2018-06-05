@@ -1,0 +1,38 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <AssemblyName>ByteNuts.NetCoreControls</AssemblyName>
+    <RootNamespace>ByteNuts.NetCoreControls</RootNamespace>
+    <VersionPrefix>1.0.0-beta1</VersionPrefix>
+    <Authors>Joao Pereira;Justino Mendes;Duarte Camacho</Authors>
+    <PackageId>NetCoreControls</PackageId>
+    <PackageTags>AspNetCore NetCore MvcCore AspNetMvc AspNetMvcCore MvcControls Grid</PackageTags>
+    <PackageLicenseUrl>https://github.com/ByteNuts/NetCoreControls/blob/master/LICENSE</PackageLicenseUrl>
+    <PackageRequireLicenseAcceptance>False</PackageRequireLicenseAcceptance>
+    <RepositoryType>git</RepositoryType>
+    <RepositoryUrl>https://github.com/ByteNuts/NetCoreControls</RepositoryUrl>
+    <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
+    <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
+    <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+    <Version>1.0.0-beta3</Version>
+    <Description>A set of UI controls for ASP.NET MVC Core</Description>
+    <Copyright>2018 - Byte Nuts</Copyright>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Scripts\ncc.js" />
+    <EmbeddedResource Include="Styles\ncc.css" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="EPPlus.Core" Version="1.5.2" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="2.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\NetCoreControls.Core\NetCoreControls.Core.csproj" />
+  </ItemGroup>
+
+</Project>

@@ -1,8 +1,9 @@
-﻿using ByteNuts.NetCoreControls.Extensions;
+﻿using ByteNuts.NetCoreControls.Core;
 using Microsoft.AspNetCore.Razor.TagHelpers;
-using ByteNuts.NetCoreControls.Models;
-using ByteNuts.NetCoreControls.Models.Enums;
 using Newtonsoft.Json;
+using ByteNuts.NetCoreControls.Core.Models;
+using ByteNuts.NetCoreControls.Core.Models.Enums;
+using ByteNuts.NetCoreControls.Core.Extensions;
 
 namespace ByteNuts.NetCoreControls.Controls.Actions
 {
@@ -48,8 +49,7 @@ namespace ByteNuts.NetCoreControls.Controls.Actions
                 if (output.Attributes.ContainsName(jsEvent.ToLower()))
                     existingJsEvent = output.Attributes[jsEvent.ToLower()].Value.ToString();
 
-                output.Attributes.SetAttribute(jsEvent.ToLower(), $"{existingJsEvent} nccAction(null, " + (string.IsNullOrEmpty(NccFilterIds) ? "$(this)" : $"{JsonConvert.SerializeObject(NccFilterIds.Split(','))}") + $", '{JsonConvert.SerializeObject(model)}', '{Constants.AttributePrefix}');");
-                //output.Attributes.SetAttribute(jsEvent.ToLower(), $"{existingJsEvent} nccAction(null, " + (string.IsNullOrEmpty(NccFilterId) ? "$(this)" : $"$('#{NccFilterId}')") + $", '{JsonConvert.SerializeObject(model)}', '{Constants.AttributePrefix}');");
+                output.Attributes.SetAttribute(jsEvent.ToLower(), $"{existingJsEvent} nccAction(null, " + (string.IsNullOrEmpty(NccFilterIds) ? "$(this)" : $"{JsonConvert.SerializeObject(NccFilterIds.Split(','))}") + $", '{JsonConvert.SerializeObject(model)}', '{NccConstants.AttributePrefix}');");
             }
 
         }

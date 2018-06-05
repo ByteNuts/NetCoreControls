@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using ByteNuts.NetCoreControls.Models.Grid;
+using ByteNuts.NetCoreControls.Core.Services;
 
 namespace ByteNuts.NetCoreControls.Controls.Grid
 {
@@ -21,6 +22,9 @@ namespace ByteNuts.NetCoreControls.Controls.Grid
         [HtmlAttributeName("DataValue")]
         public string DataValue { get; set; }
 
+        [HtmlAttributeName("DataField")]
+        public string DataField { get; set; }
+
         [HtmlAttributeName("CssClass")]
         public string CssClass { get; set; }
 
@@ -33,23 +37,23 @@ namespace ByteNuts.NetCoreControls.Controls.Grid
         [HtmlAttributeName("Aggregate")]
         public bool Aggregate { get; set; }
 
-        private GridNccTagContext _nccTagContext;
-        private GridContext _context;
+        private NccGridTagContext _nccTagContext;
+        private NccGridContext _context;
 
         public override void Init(TagHelperContext tagContext)
         {
-            if (tagContext.Items.ContainsKey(typeof(GridNccTagContext)))
-                _nccTagContext = (GridNccTagContext)tagContext.Items[typeof(GridNccTagContext)];
+            if (tagContext.Items.ContainsKey(typeof(NccGridTagContext)))
+                _nccTagContext = (NccGridTagContext)tagContext.Items[typeof(NccGridTagContext)];
             else
-                throw new Exception("GridNccTagContext was lost between tags...");
+                throw new Exception("NccGridTagContext was lost between tags...");
         }
 
         public override void Process(TagHelperContext tagContext, TagHelperOutput output)
         {
             output.SuppressOutput();
 
-            if (tagContext.Items.ContainsKey(typeof(GridContext)))
-                _context = (GridContext)tagContext.Items[typeof(GridContext)];
+            if (tagContext.Items.ContainsKey(typeof(NccGridContext)))
+                _context = (NccGridContext)tagContext.Items[typeof(NccGridContext)];
             else
                 return;
 
@@ -66,29 +70,58 @@ namespace ByteNuts.NetCoreControls.Controls.Grid
                 {
                     if (_nccTagContext.RowNumber == 0)
                     {
-                        _nccTagContext.GridHeader.Cells.Add(string.IsNullOrEmpty(HeaderText)
-                            ? new GridCell { Value = DataValue }
-                            : new GridCell { Value = HeaderText });
+                        var cell = new GridCell();
+                        cell.Value.AppendHtml(string.IsNullOrEmpty(HeaderText) ? DataValue : HeaderText);
+                        _nccTagContext.GridHeader.Cells.Add(cell);
                     }
                 }
                 else
-                    _nccTagContext.GridHeader.Cells.Add(new GridCell { Value = "" });
+                {
+                    var cell = new GridCell();
+                    cell.Value.AppendHtml("");
+                    _nccTagContext.GridHeader.Cells.Add(cell);
+                }
 
                 if (!ViewContext.ViewBag.EmptyData)
                 {
-                    var cell = new GridCell
+                    if (!string.IsNullOrEmpty(DataField) && _context.AdditionalData.ContainsKey("EditRowNumber") && _context.AdditionalData["EditRowNumber"].ToString() == _nccTagContext.RowNumber.ToString())
                     {
-                        Value = DataValue,
-                        CssClass = CssClass,
-                        Aggregate = Aggregate
-                    };
+                        var cell = new GridCell
+                        {
+                            CssClass = CssClass
+                        };
+                        var val = ViewContext.ViewData.Model.NccGetPropertyValue<string>(DataField);
+                        var input = new TagBuilder("input")
+                        {
+                            Attributes =
+                            {
+                                { "class", "form-control" },
+                                { "name", DataField },
+                                { "value", val }
+                            }
+                        };
+                        cell.Value.AppendHtml(input);
 
-                    var row = _nccTagContext.GridRows.LastOrDefault();
+                        var row = _nccTagContext.GridRows.LastOrDefault();
 
-                    if (row != null)
+                        row?.Cells.Add(cell);
+                    }
+                    else
                     {
-                        row.Cells.Add(cell);
-                        row.CssClass = CssClass;
+                        var cell = new GridCell
+                        {
+                            CssClass = CssClass,
+                            Aggregate = Aggregate
+                        };
+                        cell.Value.AppendHtml(DataValue);
+
+                        var row = _nccTagContext.GridRows.LastOrDefault();
+
+                        if (row != null)
+                        {
+                            row.Cells.Add(cell);
+                            row.CssClass = CssClass;
+                        }
                     }
                 }
             }

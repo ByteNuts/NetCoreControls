@@ -1,137 +1,204 @@
+var posId = 0;
+var pref = "";
+var ajax = true;
+var form;
 
 function nccAction(event, elem, params, prefix) {
+    ajax = true;
     if (event != null) {
         event.preventDefault();
     }
     var nncActionModel = JSON.parse(params);
+    var postData = [];
+    posId = 0;
+    pref = prefix;
+
+    postData.push({
+        name: "target_ids",
+        value: nncActionModel.TargetIds
+    });
+
+    $.each(nncActionModel.Parameters,
+        function (key, value) {
+            if (value.toLowerCase() == "exportexcel") {
+                ajax = false;
+            };
+            postData.push({
+                name: "parameters[" + posId + "].key",
+                value: key
+            });
+            postData.push({
+                name: "parameters[" + posId + "].value",
+                value: value
+            });
+            posId++;
+        });
+
+    addElementParameters(postData, elem);
 
     $.each(nncActionModel.TargetIds, function () {
-        var postData;
         var controlId = this;
 
+        postData.push({
+            name: "context",
+            value: $("#" + controlId + "_context").val()
+        });
+
         var div = $("#" + controlId);
-        var form = div.children("form");
-        var paramId = 0;
-        var elemCount = 0;
-        var elemIds;
+
+        form = div.children("form");
         if (form.length === 0) {
-            postData = {};
-            postData["context"] = $("#" + controlId + "_context").val();
-            $.each(nncActionModel.Parameters,
-                function (key, value) {
-                    postData["parameters[" + paramId + "].key"] = key;
-                    postData["parameters[" + paramId + "].value"] = value;
-                    paramId++;
-                });
-
-            //Add element properties
-            postData = addElementToPostData(postData, elem, paramId, prefix);
-        } else {
-            form.append("<input type='hidden' name='context' value='" + $("#" + controlId + "_context").val() + "' />");
-            $.each(nncActionModel.Parameters,
-                function (key, value) {
-                    form.append("<input type='hidden' name='parameters[" + paramId + "].key' value='" + key + "' />");
-                    form.append("<input type='hidden' name='parameters[" + paramId + "].value' value='" + value + "' />");
-                    paramId++;
-                });
-
-            //Add element properties
-            form = addElementToForm(form, elem, paramId, prefix);
-            postData = form.serializeArray();
+            form = div.closest("form");
         }
-        nccPost(controlId, postData);
+        if (form.length !== 0) {
+            $.each(form.serializeArray(), function (_, field) {
+                var fieldName = controlId + "." + field.name;
+                if (field.name.startsWith("[")) {
+                    fieldName = controlId + field.name;
+                }
+                postData.push({
+                    name: fieldName,
+                    value: field.value
+                });
+            });
+        }
+    });
+    nccPost(nncActionModel.TargetIds, postData, elem);
+}
+
+
+function nccPost(controlIds, postData, elem) {
+    if (postData != null && controlIds != null) {
+        var basePath = document.getElementsByTagName('base')[0];
+        var basePathUrl = "";
+        if (basePath != null) {
+            basePathUrl = basePath.href;
+        }
+
+        if (ajax) {
+            var options = {
+                type: "POST",
+                url: basePathUrl + "/NetCoreControls/ControlAction",
+                data: postData,
+                success: function (data) {
+                    for (var i = 0; i < data.length; i++) {
+                        if (data[i] != "") {
+                            var update = $("#" + controlIds[i]);
+                            $(update).replaceWith(data[i]);
+                        }
+                    }
+                },
+                beforeSend: function() { showAjaxLoader(controlIds, elem) },
+                complete: function() { hideAjaxLoader(controlIds, elem) }
+            }
+            $.ajax(options);
+        } else {
+            $.each(postData, function (key, value) {
+                var input = $("<input>").attr("type", "hidden").attr("name", value.name).val(value.value);
+                form.append($(input));
+            });
+            form.attr('action', basePathUrl + "/NetCoreControls/ControlAction").attr('method', 'post').submit();
+
+            //var form = $("<form>").attr("action", basePathUrl + "/NetCoreControls/ControlAction");
+            //$.each(postData, function (key, value) {
+            //    if (value.name == "target_ids" || value.name == "context" || value.value == "ncc-ActionType" || value.value == "Event" || value.value == "ncc-EventName" || value.value == "exportxlsx") {
+            //        var input = $("<input>").attr("type", "hidden").attr("name", value.name).val(value.value);
+            //        form.append($(input));
+            //    }
+            //});
+            //form.submit();
+
+        }
+    }
+}
+
+function addElementParameters(postData, elem) {
+    if (elem instanceof jQuery) {
+        processElementData(postData, elem, "");
+    } else {
+        var elemCount = 0;
+        $.each(elem, function () {
+            var ctrl = $("#" + this);
+            processElementData(postData, ctrl, elemCount);
+            elemCount++;
+        });
+    }
+}
+function processElementData(postData, elem, elemCount) {
+    appendDataToPostArray(postData, pref + "-ElemId" + elemCount, elem.prop("id"));
+    posId++;
+
+    appendDataToPostArray(postData, pref + "-ElemName" + elemCount, elem.prop("name"));
+    posId++;
+
+    if (elem.attr("value")) {
+        appendDataToPostArray(postData, pref + "-ElemValue" + elemCount, elem.attr("value"));
+    } else {
+        appendDataToPostArray(postData, pref + "-ElemValue" + elemCount, elem.val());
+    }
+    posId++;
+}
+
+function appendDataToPostArray(postData, key, value) {
+    postData.push({
+        name: "parameters[" + posId + "].key",
+        value: key
+    });
+    postData.push({
+        name: "parameters[" + posId + "].value",
+        value: value
     });
 }
 
 
-function nccPost(controlId, postData) {
-    if (postData != null && controlId != null) {
-        var options = {
-            type: "POST",
-            url: "/NetCoreControls/ControlAction",
-            data: postData,
-            success: function (data) {
-                var update = $("#" + controlId);
-                $(update).replaceWith(data);
-            }
-        }
-        $.ajax(options);
-    }
-}
 
-function addElementToForm(form, elem, paramId, prefix) {
-    if (elem instanceof jQuery) {
-        form.append("<input type='hidden' name='parameters[" + paramId + "].key' value='" + prefix + "-ElemId' />");
-        form.append("<input type='hidden' name='parameters[" + paramId + "].value' value='" + elem.prop('id') + "' />");
-        paramId++;
-        form.append("<input type='hidden' name='parameters[" + paramId + "].key' value='" + prefix + "-ElemName' />");
-        form.append("<input type='hidden' name='parameters[" + paramId + "].value' value='" + elem.prop('name') + "' />");
-        paramId++;
-        form.append("<input type='hidden' name='parameters[" + paramId + "].key' value='" + prefix + "-ElemValue' />");
-        if (elem.attr("value") != null) {
-            form.append("<input type='hidden' name='parameters[" + paramId + "].value' value='" + elem.attr("value") + "' />");
-        } else {
-            form.append("<input type='hidden' name='parameters[" + paramId + "].value' value='" + elem.val() + "' />");
-        }
-        paramId++;
+function showAjaxLoader(targetIds, elem) {
+    //var change = false;
+    $.each(targetIds,
+        function () {
+            var controlId = this;
+            var div = $("#" + controlId);
+            //if (elem instanceof jQuery) {
+            //    if (div.attr("id") == elem.attr("id")) {
+            //        change = true; };
+            //} else {
+            //    $.each(elem, function () {
+            //        var ctrl = $("#" + this);
+            //        if (div.attr("id") == ctrl.attr("id")) {
+            //            change = true;
+            //        };
+            //    });
+            //}
+            //if (change) {
+                div.find(".ajaxLoader, .overlayAjaxLoader").fadeIn(500);
+                div.prop("disabled", true);
+            //}
+        });
+    if (elem instanceof jQuery && !elem.is("input")) {
+        elem.prop( "disabled", true );
     } else {
-        var elemCount = 0;
         $.each(elem, function () {
             var ctrl = $("#" + this);
-            form.append("<input type='hidden' name='parameters[" + paramId + "].key' value='" + prefix + "-ElemId" + elemCount + "' />");
-            form.append("<input type='hidden' name='parameters[" + paramId + "].value' value='" + ctrl.prop('id') + "' />");
-            paramId++;
-            form.append("<input type='hidden' name='parameters[" + paramId + "].key' value='" + prefix + "-ElemName" + elemCount + "' />");
-            form.append("<input type='hidden' name='parameters[" + paramId + "].value' value='" + ctrl.prop("name") + "' />");
-            paramId++;
-            form.append("<input type='hidden' name='parameters[" + paramId + "].key' value='" + prefix + "-ElemValue" + elemCount + "' />");
-            if (ctrl.attr("value") != null) {
-                form.append("<input type='hidden' name='parameters[" + paramId + "].value' value='" + ctrl.attr("value") + "' />");
-            } else {
-                form.append("<input type='hidden' name='parameters[" + paramId + "].value' value='" + ctrl.val() + "' />");
+            if (!ctrl.is("input")) {
+                ctrl.prop("disabled", true);
             }
-            paramId++;
-            elemCount++;
         });
     }
-    return form;
 }
-
-function addElementToPostData(postData, elem, paramId, prefix) {
+function hideAjaxLoader(targetIds, elem) {
+    $.each(targetIds,
+        function () {
+            var controlId = this;
+            var div = $("#" + controlId);
+            div.find(".ajaxLoader, .overlayAjaxLoader").fadeOut(500);
+            div.prop("disabled", false);
+        });
     if (elem instanceof jQuery) {
-        postData["parameters[" + paramId + "].key"] = prefix + "-ElemId";
-        postData["parameters[" + paramId + "].value"] = elem.prop("id");
-        paramId++;
-        postData["parameters[" + paramId + "].key"] = prefix + "-ElemName";
-        postData["parameters[" + paramId + "].value"] = elem.prop("name");
-        paramId++;
-        postData["parameters[" + paramId + "].key"] = prefix + "-ElemValue";
-        if (elem.attr("value") != null) {
-            postData["parameters[" + paramId + "].value"] = elem.attr("value");
-        } else {
-            postData["parameters[" + paramId + "].value"] = elem.val();
-        }
-
-        paramId++;
+        elem.prop("disabled", false);
     } else {
-        var elemCount = 0;
         $.each(elem, function () {
             var ctrl = $("#" + this);
-            postData["parameters[" + paramId + "].key"] = prefix + "-ElemId" + elemCount;
-            postData["parameters[" + paramId + "].value"] = ctrl.prop("id");
-            paramId++;
-            postData["parameters[" + paramId + "].key"] = prefix + "-ElemName" + elemCount;
-            postData["parameters[" + paramId + "].value"] = ctrl.prop("name");
-            paramId++;
-            postData["parameters[" + paramId + "].key"] = prefix + "-ElemValue" + elemCount;
-            if (ctrl.attr("value") != null) {
-                postData["parameters[" + paramId + "].value"] = ctrl.attr("value");
-            } else {
-                postData["parameters[" + paramId + "].value"] = ctrl.val();
-            }
-            paramId++;
-            elemCount++;
+            ctrl.prop("disabled", false);
         });
     }
-    return postData;
 }

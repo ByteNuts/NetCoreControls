@@ -18,13 +18,13 @@ namespace ByteNuts.NetCoreControls.Controls.Grid
         [HtmlAttributeName("CssClass")]
         public string CssClass { get; set; }
 
-        private GridNccTagContext _nccTagContext;
-        private GridContext _context;
+        private NccGridTagContext _nccTagContext;
+        private NccGridContext _context;
 
         public override void Init(TagHelperContext tagContext)
         {
-            if (tagContext.Items.ContainsKey(typeof(GridNccTagContext)))
-                _nccTagContext = (GridNccTagContext)tagContext.Items[typeof(GridNccTagContext)];
+            if (tagContext.Items.ContainsKey(typeof(NccGridTagContext)))
+                _nccTagContext = (NccGridTagContext)tagContext.Items[typeof(NccGridTagContext)];
             else
                 throw new Exception("GridViewNccTagContext was lost between tags...");
         }
@@ -33,8 +33,8 @@ namespace ByteNuts.NetCoreControls.Controls.Grid
         {
             output.SuppressOutput();
 
-            if (tagContext.Items.ContainsKey(typeof(GridContext)))
-                _context = (GridContext)tagContext.Items[typeof(GridContext)];
+            if (tagContext.Items.ContainsKey(typeof(NccGridContext)))
+                _context = (NccGridContext)tagContext.Items[typeof(NccGridContext)];
             else
                 return;
 
@@ -49,13 +49,16 @@ namespace ByteNuts.NetCoreControls.Controls.Grid
             {
                 var childContent = await output.GetChildContentAsync();
 
-                _nccTagContext.GridHeader.Cells.Add(new GridCell { Value = childContent.GetContent(), CssClass = CssClass });
+                _nccTagContext.GridHeader.Cells.Add(new GridCell { Value = childContent, CssClass = CssClass });
 
                 tagContext.Items.Remove("ShowHeader");
             }
             else
             {
-                _nccTagContext.GridHeader.Cells.Add(new GridCell { Value = "", CssClass = CssClass });
+                var cell = new GridCell();
+                cell.Value.AppendHtml("");
+                cell.CssClass = CssClass;
+                _nccTagContext.GridHeader.Cells.Add(cell);
             }
 
         }
