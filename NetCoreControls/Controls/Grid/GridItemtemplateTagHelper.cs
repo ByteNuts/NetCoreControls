@@ -21,17 +21,17 @@ namespace ByteNuts.NetCoreControls.Controls.Grid
         [HtmlAttributeName("Aggregate")]
         public bool Aggregate { get; set; }
 
-        private GridNccTagContext _nccTagContext;
-        private GridContext _context;
+        private NccGridTagContext _nccTagContext;
+        private NccGridContext _context;
 
         public override void Init(TagHelperContext tagContext)
         {
-            if (tagContext.Items.ContainsKey(typeof(GridNccTagContext)))
-                _nccTagContext = (GridNccTagContext)tagContext.Items[typeof(GridNccTagContext)];
+            if (tagContext.Items.ContainsKey(typeof(NccGridTagContext)))
+                _nccTagContext = (NccGridTagContext)tagContext.Items[typeof(NccGridTagContext)];
             else
             {
-                _nccTagContext = new GridNccTagContext();
-                tagContext.Items.Add(typeof(GridNccTagContext), _nccTagContext);
+                _nccTagContext = new NccGridTagContext();
+                tagContext.Items.Add(typeof(NccGridTagContext), _nccTagContext);
             }
         }
 
@@ -39,27 +39,30 @@ namespace ByteNuts.NetCoreControls.Controls.Grid
         {
             output.SuppressOutput();
 
-            if (tagContext.Items.ContainsKey(typeof(GridContext)))
-                _context = (GridContext)tagContext.Items[typeof(GridContext)];
+            if (tagContext.Items.ContainsKey(typeof(NccGridContext)))
+                _context = (NccGridContext)tagContext.Items[typeof(NccGridContext)];
             else
                 return;
 
-            var data = _context.DataObjects as IList;
-            if (data == null || data.Count == 0)
-                return;
-
-            var childContent = await output.GetChildContentAsync();
-
-            var cell = new GridCell
+            if (!_context.AdditionalData.ContainsKey("EditRowNumber") || _context.AdditionalData["EditRowNumber"].ToString() != _nccTagContext.RowNumber.ToString())
             {
-                Value = childContent.GetContent(),
-                CssClass = CssClass,
-                Aggregate = Aggregate
-            };
+                var data = _context.DataObjects as IList;
+                if (data == null || data.Count == 0)
+                    return;
 
-            var row = _nccTagContext.GridRows.LastOrDefault();
+                var childContent = await output.GetChildContentAsync();
 
-            row?.Cells.Add(cell);
+                var cell = new GridCell
+                {
+                    Value = childContent,
+                    CssClass = CssClass,
+                    Aggregate = Aggregate
+                };
+
+                var row = _nccTagContext.GridRows.LastOrDefault();
+
+                row?.Cells.Add(cell);
+            }
         }
     }
 }

@@ -1,18 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using ByteNuts.NetCoreControls.Core;
+using ByteNuts.NetCoreControls.Core.Models;
+using ByteNuts.NetCoreControls.Core.Models.Enums;
+using ByteNuts.NetCoreControls.Core.Services;
 using ByteNuts.NetCoreControls.Services;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Razor.TagHelpers;
-using ByteNuts.NetCoreControls.Helpers;
-using ByteNuts.NetCoreControls.Models;
 using ByteNuts.NetCoreControls.Models.Grid;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Options;
 
 namespace ByteNuts.NetCoreControls.Controls.Grid
 {
-    [RestrictChildren("ncc:grid-columns", "ncc:grid-content", "ncc:grid-pager")]
+    [RestrictChildren("ncc:grid-columns", "ncc:grid-content", "ncc:grid-pager", "ncc:grid-emptyrow", "ncc:grid-export-template")]
     [HtmlTargetElement("ncc:grid")]
     public class GridTagHelper : TagHelper
     {
@@ -21,60 +25,97 @@ namespace ByteNuts.NetCoreControls.Controls.Grid
         public ViewContext ViewContext { get; set; }
 
         [HtmlAttributeName("Context")]
-        public GridContext Context { get; set; }
+        public NccGridContext Context { get; set; }
 
         [HtmlAttributeName("DataKeys")]
         public string DataKeys { get; set; }
 
-        [HtmlAttributeName("CssClass")]
-        public string CssClass { get; set; }
+        [HtmlAttributeName("CssClassTable")]
+        public string CssClassTable { get; set; }
 
-        [HtmlAttributeName("HeaderCssClass")]
-        public string HeaderCssClass { get; set; }
+        [HtmlAttributeName("CssClassHeader")]
+        public string CssClassHeader { get; set; }
 
-        [HtmlAttributeName("BodyCssClass")]
-        public string BodyCssClass { get; set; }
+        [HtmlAttributeName("CssClassBody")]
+        public string CssClassBody { get; set; }
 
-        [HtmlAttributeName("FooterCssClass")]
-        public string FooterCssClass { get; set; }
+        [HtmlAttributeName("CssClassFooter")]
+        public string CssClassFooter { get; set; }
+
+        [HtmlAttributeName("CssClassHeaderContainer")]
+        public string CssClassHeaderContainer { get; set; }
+
+        [HtmlAttributeName("CssClassTableContainer")]
+        public string CssClassTableContainer { get; set; }
+
+        [HtmlAttributeName("CssClassFooterContainer")]
+        public string CssClassFooterContainer { get; set; }
 
         [HtmlAttributeName("RenderForm")]
-        public bool RenderForm { get; set; }
+        public bool? RenderForm { get; set; }
 
         [HtmlAttributeName("AllowPaging")]
-        public bool AllowPaging { get; set; }
+        public bool? AllowPaging { get; set; }
 
-        private GridNccTagContext _nccTagContext;
+        [HtmlAttributeName("PageSize")]
+        public int? PageSize { get; set; }
+
+        [HtmlAttributeName("PagerNavigationSize")]
+        public int? PagerNavigationSize { get; set; }
+
+        [HtmlAttributeName("AutoGenerateEditButton")]
+        public bool? AutoGenerateEditButton { get; set; }
+
+
+        private NccGridTagContext _nccTagContext;
         private IDataProtector _protector;
+        private readonly NccSettings _nccSettings;
         protected IHtmlGenerator Generator { get; }
 
-        public GridTagHelper(IDataProtectionProvider protector, IHtmlGenerator generator)
+        public GridTagHelper(IDataProtectionProvider protector, IHtmlGenerator generator, IHttpContextAccessor contextAccessor)
         {
-            _protector = protector.CreateProtector(Constants.DataProtectionKey);
+            var options = NccReflectionService.NccGetClassInstanceWithDi(contextAccessor.HttpContext, NccConstants.OptionsAssemblyName);
+            _nccSettings = options != null ? ((IOptions<NccSettings>)options).Value : new NccSettings();
+
+            _protector = protector.CreateProtector(_nccSettings.DataProtectionKey);
             Generator = generator;
         }
 
         public override void Init(TagHelperContext tagContext)
         {
-            _nccTagContext = new GridNccTagContext();
-            tagContext.Items.Add(typeof(GridNccTagContext), _nccTagContext);
+            _nccTagContext = new NccGridTagContext();
+            tagContext.Items.Add(typeof(NccGridTagContext), _nccTagContext);
         }
 
         public override async Task ProcessAsync(TagHelperContext tagContext, TagHelperOutput output)
         {
-            if (Context == null) throw new Exception("The GridViewContext is null... Please check the reference.");
+            if (Context == null) throw new Exception("The NccGridContext is null... Please check the reference.");
 
-            _nccTagContext.CssClassGrid = CssClass;
-            _nccTagContext.CssClassBody = BodyCssClass;
-            _nccTagContext.CssClassHeader = HeaderCssClass;
-            _nccTagContext.CssClassFooter = FooterCssClass;
+            _nccTagContext.CssClassGrid = CssClassTable;
+            _nccTagContext.CssClassBody = CssClassBody;
+            _nccTagContext.CssClassHeader = CssClassHeader;
+            _nccTagContext.CssClassFooter = CssClassFooter;
+            _nccTagContext.CssClassHeaderContainer = CssClassHeaderContainer;
+            _nccTagContext.CssClassTableContainer = CssClassTableContainer;
+            _nccTagContext.CssClassFooterContainer = CssClassFooterContainer;
 
             if (!string.IsNullOrEmpty(DataKeys) && DataKeys != Context.DataKeys)
                 Context.DataKeys = DataKeys;
 
-            Context.AllowPaging = AllowPaging;
-            if (AllowPaging)
+            if (RenderForm.HasValue)
+                Context.RenderForm = RenderForm.Value;
+            if (AutoGenerateEditButton.HasValue)
+                Context.AutoGenerateEditButton = AutoGenerateEditButton.Value;
+            if (AllowPaging.HasValue)
+                Context.AllowPaging = AllowPaging.Value;
+            if (Context.AllowPaging)
             {
+                if (PagerNavigationSize.HasValue)
+                    Context.PagerNavigationSize = PagerNavigationSize.Value;
+                if (Context.Filters.ContainsKey("pageSize"))
+                    Context.PageSize = Convert.ToInt32(Context.Filters["pageSize"]);
+                else if (PageSize.HasValue)
+                    Context.PageSize = PageSize.Value;
                 if (Context.PageSize == 0 || Context.PageSize == int.MaxValue)
                     Context.PageSize = 10;
             }
@@ -86,49 +127,54 @@ namespace ByteNuts.NetCoreControls.Controls.Grid
 
             object service = null;
 
-            if (!string.IsNullOrEmpty(Context.EventHandlerClass)) service = ReflectionService.NccGetClassInstance(Context.EventHandlerClass, null);
+            if (!string.IsNullOrEmpty(Context.EventHandlerClass)) service = NccReflectionService.NccGetClassInstance(Context.EventHandlerClass, null);
 
-            service?.NccInvokeMethod(Models.Enums.NccEvents.Load, new object[] { new NccEventArgs { NccTagContext = _nccTagContext, NccControlContext = Context, ViewContext = ViewContext } });
+            service?.NccInvokeMethod(NccEventsEnum.Load.ToString(), new object[] { new NccEventArgs { NccTagContext = _nccTagContext, NccControlContext = Context, ViewContext = ViewContext } });
 
             //Get grid id and share it with siblings parents
             if (string.IsNullOrEmpty(Context.Id))
                 Context.Id = Guid.NewGuid().ToString();
 
-            //_nccTagContext.GridId = Context.Id;
-
             output.TagName = "div";
             output.Attributes.SetAttribute("id", Context.Id);
+            output.Attributes.SetAttribute("style", "position:relative");
 
             if (Context.Visible)
             {
-                tagContext.Items.Add(typeof(GridContext), Context);
+                tagContext.Items.Add(typeof(NccGridContext), Context);
 
-                if (RenderForm)
+                if (Context.RenderForm)
                 {
                     var form = new TagBuilder("form") { TagRenderMode = TagRenderMode.StartTag };
 
                     output.PreContent.AppendHtml(form);
                 }
 
-                if (Context.AutoBind)
-                {
-                    Context = DataService.GetControlData(Context, ViewContext.HttpContext);
+                NccActionsService.ExtraParameters<NccGridContext> setExtraParameters = GridService.GetExtraParameters;
+                NccActionsService.DataResult<NccGridContext> setDataResult = GridService.SetDataResult;
+                NccControlsService.BindData(Context, ViewContext.HttpContext, setExtraParameters, setDataResult);
 
-                    service?.NccInvokeMethod(Models.Enums.NccEvents.DataBound, new object[] { new NccEventArgs { NccTagContext = _nccTagContext, NccControlContext = Context, ViewContext = ViewContext, DataObjects = Context.DataObjects } });
-                }
-                else
-                    Context.DataObjects = Context.DataSource;
+                service?.NccInvokeMethod(NccEventsEnum.DataBound.ToString(), new object[] { new NccEventArgs { NccControlContext = Context, ViewContext = ViewContext, DataObjects = Context.DataObjects } });
 
-                _nccTagContext.GridHeader = new GridRow { Cells = new List<GridCell>(), CssClass = HeaderCssClass };
+                _nccTagContext.GridHeader = new GridRow { Cells = new List<GridCell>(), CssClass = CssClassHeader };
 
                 await output.GetChildContentAsync();
 
-                output.Content.SetHtmlContent(GridService.BuildTableHtml(_nccTagContext, Context));
+                var tableContainerDiv = new TagBuilder("div");
+                if (!string.IsNullOrEmpty(_nccTagContext.CssClassTableContainer))
+                    tableContainerDiv.Attributes.Add("class", _nccTagContext.CssClassTableContainer);
+
+                tableContainerDiv.InnerHtml.AppendHtml(GridService.BuildTableHtml(_nccTagContext, Context));
+
+                output.Content.SetHtmlContent(tableContainerDiv);
+
+                if (Context.AllowPaging)
+                    output.Content.AppendHtml(GridService.BuildTablePager(_nccTagContext, Context));
 
                 output.PreContent.AppendHtml(_nccTagContext.PreContent);
                 output.PostContent.AppendHtml(_nccTagContext.PostContent);
 
-                if (RenderForm)
+                if (Context.RenderForm)
                 {
                     var antiforgeryTag = Generator.GenerateAntiforgery(ViewContext);
                     if (antiforgeryTag != null)
@@ -139,16 +185,13 @@ namespace ByteNuts.NetCoreControls.Controls.Grid
                 }
             }
 
-            service?.NccInvokeMethod(Models.Enums.NccEvents.PreRender, new object[] { new NccEventArgs { NccTagContext = _nccTagContext, NccControlContext = Context, ViewContext = ViewContext } });
+            service?.NccInvokeMethod(NccEventsEnum.PreRender.ToString(), new object[] { new NccEventArgs { NccTagContext = _nccTagContext, NccControlContext = Context, ViewContext = ViewContext } });
 
             _nccTagContext.ControlContext = Context;
 
-            var encContext = new TagBuilder("input");
-            encContext.Attributes.Add("name", "encContext");
-            encContext.Attributes.Add("id", $"{Context.Id}_context");
-            encContext.Attributes.Add("type", "hidden");
-            encContext.Attributes.Add("value", _protector.Protect(NccJson.SetObjectAsJson(Context)));
-            output.PostContent.AppendHtml(encContext);
+            output.PostContent.AppendHtml(NccControlsService.GetEncodedContext(_protector, Context.Id, Context));
+            output.PostContent.AppendHtml(NccControlsService.GetAjaxLoaderOverlay());
+            output.PostContent.AppendHtml(NccControlsService.GetAjaxLoaderImage());
         }
     }
 }

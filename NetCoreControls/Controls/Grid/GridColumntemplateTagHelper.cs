@@ -6,7 +6,7 @@ using ByteNuts.NetCoreControls.Models.Grid;
 namespace ByteNuts.NetCoreControls.Controls.Grid
 {
     [HtmlTargetElement("ncc:grid-columntemplate", ParentTag = "ncc:grid-columns")]
-    [RestrictChildren("ncc:grid-headertemplate", "ncc:grid-itemtemplate")]
+    [RestrictChildren("ncc:grid-headertemplate", "ncc:grid-itemtemplate", "ncc:grid-edittemplate")]
     public class GridColumntemplateTagHelper : TagHelper
     {
         [HtmlAttributeName("ShowHeader")]
@@ -15,20 +15,20 @@ namespace ByteNuts.NetCoreControls.Controls.Grid
         [HtmlAttributeName("Visible")]
         public bool Visible { get; set; } = true;
 
-        private GridNccTagContext _nccTagContext;
+        private NccGridTagContext _nccTagContext;
 
 
         public override void Init(TagHelperContext tagContext)
         {
-            if (tagContext.Items.ContainsKey(typeof(GridNccTagContext)))
-                _nccTagContext = (GridNccTagContext)tagContext.Items[typeof(GridNccTagContext)];
+            if (tagContext.Items.ContainsKey(typeof(NccGridTagContext)))
+                _nccTagContext = (NccGridTagContext)tagContext.Items[typeof(NccGridTagContext)];
             else
                 throw new Exception("GridViewNccTagContext was lost between tags...");
         }
 
         public override async Task ProcessAsync(TagHelperContext tagContext, TagHelperOutput output)
         {
-            if (!tagContext.Items.ContainsKey(typeof(GridContext)))
+            if (!tagContext.Items.ContainsKey(typeof(NccGridContext)))
             {
                 output.SuppressOutput();
                 return;
