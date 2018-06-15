@@ -350,24 +350,27 @@ namespace ByteNuts.NetCoreControls.Services
             link.InnerHtml.Append(string.IsNullOrEmpty(htmlContent) ? pageNumber.ToString() : htmlContent);
             if (active)
             {
-                if (li.Attributes.ContainsKey("class"))
-                    li.Attributes["class"] = li.Attributes["class"] + " active";
+                if (link.Attributes.ContainsKey("class"))
+                    link.Attributes["class"] = li.Attributes["class"] + " active";
                 else
-                    li.Attributes.Add("class", "active");
+                    link.Attributes.Add("class", "active");
             }
-            else if (!disabled)
+            else if (disabled)
+            {
+                if (link.Attributes.ContainsKey("class"))
+                    link.Attributes["class"] = link.Attributes["class"] + " disabled";
+                else
+                    link.Attributes.Add("class", "disabled");
+                link.Attributes.Remove("onclick");
+            }
+                        
+            if (!disabled)
             {
                 link.Attributes.Add("style", "cursor: pointer;");
             }
-            if (!string.IsNullOrEmpty(context.CssClassPagerA)) link.Attributes.Add("class", context.CssClassPagerA);
-            if (disabled)
-            {
-                if (li.Attributes.ContainsKey("class"))
-                    li.Attributes["class"] = li.Attributes["class"] + " disabled";
-                else
-                    li.Attributes.Add("class", "disabled");
-                link.Attributes.Remove("onclick");
-            }
+
+            if (!string.IsNullOrEmpty(context.CssClassPagerA))
+                link.Attributes.Add("class", context.CssClassPagerA);
 
             li.InnerHtml.AppendHtml(link);
 
