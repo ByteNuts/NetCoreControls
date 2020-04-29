@@ -24,6 +24,7 @@ using Microsoft.Extensions.Options;
 
 namespace ByteNuts.NetCoreControls.Controllers
 {
+    [Route("[controller]/[action]")]
     public class NetCoreControlsController : Controller
     {
         private readonly IDataProtector _protector;
