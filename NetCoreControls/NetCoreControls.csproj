@@ -5,9 +5,9 @@
     <AssemblyName>ByteNuts.NetCoreControls</AssemblyName>
     <RootNamespace>ByteNuts.NetCoreControls</RootNamespace>
     <VersionPrefix>1.0.0-beta1</VersionPrefix>
-    <Authors>Joao Pereira;Justino Mendes;Duarte Camacho</Authors>
+    <Authors>Joao Pereira</Authors>
     <PackageId>NetCoreControls</PackageId>
-    <PackageTags>AspNetCore NetCore MvcCore AspNetMvc AspNetMvcCore MvcControls Grid</PackageTags>
+    <PackageTags>AspNetCore NetCore MvcCore mVC AspNetMvc AspNetMvcCore MvcControls Grid</PackageTags>
     <PackageLicenseUrl>https://github.com/ByteNuts/NetCoreControls/blob/master/LICENSE</PackageLicenseUrl>
     <PackageRequireLicenseAcceptance>False</PackageRequireLicenseAcceptance>
     <RepositoryType>git</RepositoryType>
@@ -17,8 +17,8 @@
     <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     <Version>1.0.0-beta3</Version>
-    <Description>A set of UI controls for ASP.NET MVC Core</Description>
-    <Copyright>2018 - Byte Nuts</Copyright>
+    <Description>A set of UI controls for ASP.NET Core MVC</Description>
+    <Copyright>2020 - Byte Nuts</Copyright>
   </PropertyGroup>
 
   <ItemGroup>
@@ -27,8 +27,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="EPPlus.Core" Version="1.5.2" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="2.0.0" />
+    <PackageReference Include="EPPlus.Core" Version="1.5.4" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="3.1.3" />
   </ItemGroup>
 
   <ItemGroup>
